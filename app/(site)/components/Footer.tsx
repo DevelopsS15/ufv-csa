@@ -30,22 +30,36 @@ export default function Footer() {
             <Link
               className={FooterSocialMediaClassName}
               href={AppDiscordInviteLink}
+              target="_blank"
             >
               <SiDiscord />
             </Link>
-            <Link className={FooterSocialMediaClassName} href={AppLinkedInLink}>
+            <Link
+              className={FooterSocialMediaClassName}
+              target="_blank"
+              href={AppLinkedInLink}
+            >
               <SiLinkedin />
             </Link>
             <Link
               className={FooterSocialMediaClassName}
               href={AppInstagramLink}
+              target="_blank"
             >
               <SiInstagram />
             </Link>
-            <Link className={FooterSocialMediaClassName} href={AppTwitterLink}>
+            <Link
+              className={FooterSocialMediaClassName}
+              target="_blank"
+              href={AppTwitterLink}
+            >
               <SiTwitter />
             </Link>
-            <Link className={FooterSocialMediaClassName} href={AppFacebookLink}>
+            <Link
+              className={FooterSocialMediaClassName}
+              target="_blank"
+              href={AppFacebookLink}
+            >
               <SiFacebook />
             </Link>
           </div>
@@ -57,7 +71,7 @@ export default function Footer() {
           </div>
           <div>
             &copy; 2006-{new Date().getFullYear()} {AppFullName} (
-            {AppAbbreviationName}).
+            {AppAbbreviationName})
           </div>
         </div>
       </div>

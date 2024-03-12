@@ -34,7 +34,7 @@ const BasicDialog = ({
         {...props.pt?.content}
         className={cn(
           "max-h-[90%] overflow-y-auto",
-          props?.pt?.content?.className
+          props?.pt?.content?.className,
         )}
       >
         {children}

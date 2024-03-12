@@ -8,7 +8,11 @@ export const AppDiscordInviteLink = "https://discord.gg/nu4kTTR";
 export const AppInstagramLink = "https://www.instagram.com/ufvcsa/";
 export const AppLinkedInLink = "https://www.linkedin.com/company/ufvcsa";
 export const AppFacebookLink = "https://www.facebook.com/UFV.CISSA";
-export const AppTwitterLink = "https://twitter.com/ufvcsa";
+export const AppTwitterName = "ufvcsa";
+export const AppTwitterLink = "https://twitter.com/" + AppTwitterName;
 export const AppEmail = "csa.ufv@gmail.com";
 export const AppDiscordWidgetLink =
   "https://discordapp.com/widget?id=287455376994205716&theme=dark";
+//
+export const UniversityFullName = "University of the Fraser Valley";
+export const UniversityAbbreviationName = "UFV";

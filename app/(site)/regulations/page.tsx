@@ -1,9 +1,15 @@
 import { PropsWithChildren } from "react";
-import { AppAbbreviationName } from "../config";
+import { AppAbbreviationName, AppFullName } from "../config";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Regulations",
+  description: `The official regulations for the ${AppFullName}`,
+};
 
 export default function Page() {
   return (
-    <main className="w-6/12 mx-auto py-8 flex flex-col gap-2">
+    <main className="w-11/12 md:w-8/12 lg:w-6/12 mx-auto py-8 flex flex-col gap-2">
       <div className="text-3xl font-bold">
         {AppAbbreviationName} Regulations
       </div>

@@ -1,17 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  AppFullName,
-  AppLogoBlendedGreen,
-  AppLogoDarkGreen,
-  AppLogoLightGreen,
-} from "../config";
+import { AppFullName, AppLogoLightGreen } from "../config";
 
 export default function LogoWithCSAStacked() {
   return (
-    <Link className="flex items-center mr-2" href="/">
+    <Link className="flex items-center text-left" href="/">
       <Image
-        src={"/icon-144x144.png"}
+        src={"/CSA_Leaf_144x144.png"}
         width={64}
         height={64}
         alt={`${AppFullName} logo`}

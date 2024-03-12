@@ -1,15 +1,17 @@
 import blockContent from "./blockContent";
-import category from "./category";
-import post from "./post";
-import author from "./author";
+import event from "./event";
 import executives from "./executives";
 import executivePositions from "./executivePositions";
+import discordMessages from "./discordMessages";
+import announcement from "./announcement";
+import meetingMinutes from "./meetingMinutes";
 
 export const schemaTypes = [
-  post,
-  author,
-  category,
+  event,
+  announcement,
   blockContent,
+  meetingMinutes,
   executives,
   executivePositions,
+  discordMessages,
 ];

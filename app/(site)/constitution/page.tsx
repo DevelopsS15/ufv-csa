@@ -1,5 +1,11 @@
-import { AppAbbreviationName } from "../config";
+import { Metadata } from "next";
+import { AppAbbreviationName, AppFullName } from "../config";
 import { cn } from "../utils";
+
+export const metadata: Metadata = {
+  title: "Constitution",
+  description: `The official constitution for the ${AppFullName}`,
+};
 
 export default function Page() {
   return (

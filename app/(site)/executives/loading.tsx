@@ -1,12 +1,10 @@
 import { LucideLoader2 } from "lucide-react";
-import { ExecutiveDisplay } from "./page";
+import { ExecutiveDisplay } from "./ExecutiveDisplay";
+import RootLayout from "./root";
 
 export default function Loading() {
   return (
-    <main className="w-11/12 mx-auto py-8">
-      <div className="text-center font-bold text-3xl mb-4">
-        Meet The Executives
-      </div>
+    <RootLayout>
       <div className="flex flex-col gap-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 items-center justify-center w-max mx-auto gap-4">
           {[1, 2].map((pres) => (
@@ -19,6 +17,6 @@ export default function Loading() {
           ))}
         </div>
       </div>
-    </main>
+    </RootLayout>
   );
 }

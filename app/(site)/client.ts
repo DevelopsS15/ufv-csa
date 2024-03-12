@@ -1,8 +1,9 @@
 import { createClient } from "@sanity/client";
 
 export default createClient({
-  projectId: "aldsu8ui", // you can find this in sanity.json
-  dataset: "production", // or the name you chose in step 1
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: "2024-03-05",
-  useCdn: false, // `false` if you want to ensure fresh data
+  useCdn: false,
+  withCredentials: true,
 });
