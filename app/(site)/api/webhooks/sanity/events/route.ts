@@ -1,32 +1,43 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 import groq from "groq";
-import { getEventType } from "~/app/sanity/lib/query";
+import { getEventType, getLatestAnnouncement } from "~/app/sanity/lib/query";
 import {
   SanityImageWithAltType,
   getURLForSanityImage,
 } from "~/app/(site)/utils";
 const toMarkdown = require("@sanity/block-content-to-markdown");
 import { EventLocationDisplay } from "~/app/(site)/events/EventLocationDisplay";
-import axios from "axios";
-import { token } from "~/app/sanity/lib/token";
-import { createClient } from "next-sanity";
+import axios, { AxiosHeaders } from "axios";
+import { SanityAnnouncementType } from "~/app/types";
+import { writeServerClient } from "~/app/(site)/serverClient";
+import { revalidatePath } from "next/cache";
+import { SendDiscordAPIRequest } from "../../../utils";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
-const discordEventWebhookURL = process.env.DISCORD_EVENT_WEBHOOK!;
-const discordAnnouncementWebhookURL = process.env.DISCORD_ANNOUNCEMENT_WEBHOOK!;
+const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
 
-const client = createClient({
-  projectId: projectId,
-  dataset: dataset,
-  apiVersion: "2024-03-05",
-  useCdn: false,
-  token: token,
-});
+const discordServerId = process.env.DISCORD_SERVER_ID;
+const discordServerInvite = process.env.DISCORD_SERVER_INVITE_LINK;
+
+const discordChannelIdsAnnouncement: Record<SanityAnnouncementType, string> = {
+  CSA: process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID_CSA!,
+  IEEE: process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID_IEEE!,
+};
+const validAnnouncementCategories: SanityAnnouncementType[] = [
+  SanityAnnouncementType.CSA,
+  SanityAnnouncementType.IEEE,
+];
+
+const eventDirectLinkDomain =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : `https://ufv-csa.vercel.app`;
+
 export const dynamic = "force-dynamic";
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     interface getEventTypeWithType extends getEventType {
       _type: string;
@@ -56,10 +67,45 @@ export async function POST(req: NextRequest) {
 
     const documentType = body.before?._type ?? body.after?._type;
     const documentId = body.before?._id ?? body.after?._id;
-    if (
-      !documentType ||
-      (documentType !== "event" && documentType !== "announcement")
-    ) {
+    if (typeof documentType !== `string`) {
+      console.log(`No document type or event/announcement`);
+      const message = "Bad Request";
+      return NextResponse.json({ message, body });
+    }
+
+    let parentStaleRoute = "";
+    const documentSlug = (body.after?.slug ?? body.before?.slug) as unknown as {
+      current?: string;
+    };
+
+    const staleRouteSlug = documentSlug?.current ?? documentSlug?.current ?? "";
+
+    switch (documentType) {
+      case "event":
+        parentStaleRoute = "events";
+        revalidatePath("/", "page");
+        revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
+        break;
+      case "meetingMinutes":
+        parentStaleRoute = "minutes";
+        revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
+        break;
+      case "announcement":
+        parentStaleRoute = "announcements";
+        revalidatePath("/api/announcements/latest", "page");
+        revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
+        break;
+      case "executives":
+        parentStaleRoute = "executives";
+        break;
+    }
+
+    if (parentStaleRoute.length > 0) {
+      console.log(`Revalidated parent route: ${parentStaleRoute}`);
+      revalidatePath(`/${parentStaleRoute}`, "page");
+    }
+
+    if (documentType !== "event" && documentType !== "announcement") {
       console.log(`No document type or event/announcement`);
       const message = "Bad Request";
       return NextResponse.json({ message, body });
@@ -68,14 +114,13 @@ export async function POST(req: NextRequest) {
     const revisionId = body.after?._rev;
 
     const decimalColorCode = 5414976;
-    const maxTextLength = 3000;
+    const maxDiscordTextLength = 3000;
 
     console.log(`Received potential event/announcement from Sanity`);
 
     const embeds = [];
-    const slug = body.after?.slug as unknown as { current: string };
-    const eventDirectLink = `http://localhost:3000/${documentType}s/${
-      slug.current ?? ""
+    const eventDirectLink = `${eventDirectLinkDomain}/${documentType}s/${
+      documentSlug?.current ?? ""
     }`;
     let numberOfEmbedImages = 0;
     const textDescription = Array.isArray(body.after?.body)
@@ -90,6 +135,10 @@ export async function POST(req: NextRequest) {
                 return `:frame_photo: [Image ${numberOfEmbedImages}](${url})`;
               },
             },
+            marks: {
+              link: (props: { mark: { href: string; title: unknown } }) =>
+                props.mark.href,
+            },
           },
           imageOptions: { w: 320, h: 240, fit: "max" },
           projectId: projectId,
@@ -99,12 +148,12 @@ export async function POST(req: NextRequest) {
 
     switch (documentType) {
       case "event":
-        const previousEventDiscordMessage = await client.fetch(
+        const previousEventDiscordMessage = (await writeServerClient.fetch(
           groq`*[_type == "discordMessages" && type == "event" && eventDocumentId._ref == $documentId][0]`,
           {
             documentId: documentId,
           }
-        );
+        )) as Record<string, any> | null;
 
         const eventDiscordMessageId =
           previousEventDiscordMessage?.discordMessageId ?? undefined;
@@ -113,19 +162,31 @@ export async function POST(req: NextRequest) {
           `Handling ${body.after ? "CREATE/UPDATE" : "DELETE"} event.`,
           previousEventDiscordMessage
         );
+
+        const previousDiscordEvent = (await writeServerClient.fetch(
+          groq`*[_type == "discordEvents" && eventDocumentId._ref == $documentId][0]`,
+          {
+            documentId: documentId,
+          }
+        )) as Record<string, any> | null;
+        const prevDiscordEventId = previousDiscordEvent?.discordEventId;
+
         if (body.after) {
           // Discord Message
           const startDateSeconds = Math.round(
             new Date(body.after.startDate).getTime() / 1000
           );
 
+          const eventLocationString = EventLocationDisplay({
+            event: body.after,
+            type: "string",
+          });
+
           let mainEmbedDescription = `:calendar_spiral: **Start:** <t:${startDateSeconds}> (<t:${startDateSeconds}:R>)\n`;
           mainEmbedDescription += `:calendar_spiral: **End:** <t:${Math.round(
             new Date(body.after.endDate).getTime() / 1000
           )}>\n`;
-          mainEmbedDescription += `:round_pushpin: **Location:** ${EventLocationDisplay(
-            { event: body.after }
-          )}\n`;
+          mainEmbedDescription += `:round_pushpin: **Location:** ${eventLocationString}\n`;
 
           if (body.after.bookTicket) {
             mainEmbedDescription += `:tickets: **Register:** ${body.after.bookTicket}`;
@@ -150,28 +211,80 @@ export async function POST(req: NextRequest) {
             embeds.push({
               color: decimalColorCode,
               description:
-                textDescription.length > maxTextLength
-                  ? `${textDescription.substring(0, maxTextLength)}...`
+                textDescription.length > maxDiscordTextLength
+                  ? `${textDescription.substring(0, maxDiscordTextLength)}...`
                   : textDescription,
             });
           }
 
+          const eventTitle = body?.after.title ?? "No Title";
           const discordMessageBody = {
-            content: `@everyone\n# [${
-              body?.after.title ?? "No Title"
-            }](${eventDirectLink})`,
+            content: `@everyone\n# [${eventTitle}](${eventDirectLink})`,
             embeds: embeds,
           };
 
-          //
+          let discordEventId = "";
+          try {
+            const discordEventBody = {
+              name: eventTitle,
+              channel_id: null,
+              privacy_level: 2,
+              scheduled_start_time: body.after.startDate,
+              scheduled_end_time: body.after.endDate,
+              description:
+                textDescription.length > 975
+                  ? `${textDescription.substring(0, 975)}...`
+                  : textDescription,
+              entity_type: 3,
+              entity_metadata: {
+                location: eventLocationString ?? "Unknown",
+              },
+            };
+
+            if (previousDiscordEvent) {
+              console.log(`Updating Discord Event ${prevDiscordEventId}`);
+              discordMessageBody.content += `\n${discordServerInvite}?event=${prevDiscordEventId}`;
+              await SendDiscordAPIRequest({
+                method: "patch",
+                path: `guilds/${discordServerId}/scheduled-events/${prevDiscordEventId}`,
+                body: discordEventBody,
+              });
+            } else {
+              const apiEvent = await SendDiscordAPIRequest({
+                method: "post",
+                path: `guilds/${discordServerId}/scheduled-events`,
+                body: discordEventBody,
+              });
+              discordEventId = apiEvent.data.id;
+              console.log(`Created Discord Event ${discordEventId}`);
+
+              const newDiscordEvent = await writeServerClient.create({
+                _type: "discordEvents",
+                discordEventId: discordEventId,
+                revisionId: revisionId,
+                eventDocumentId: {
+                  _type: "reference",
+                  _ref: documentId,
+                  _weak: true,
+                },
+              });
+              console.log(newDiscordEvent);
+              discordMessageBody.content += `\n${discordServerInvite}?event=${discordEventId}`;
+            }
+          } catch (e) {
+            console.log(`Unable to add discord event`);
+          }
+
+          // Create / update the Discord message via Webhook
+
           if (
             await HandleSendOrUpdateWebhookMessage({
               messageId: eventDiscordMessageId,
+              channelId: discordChannelIdEvent,
               type: "event",
               documentId: documentId!,
               revisionId: revisionId!,
               messageDocumentId: discordEventMessageDocumentId,
-              webhookURL: discordEventWebhookURL,
               body: discordMessageBody,
             })
           ) {
@@ -180,63 +293,106 @@ export async function POST(req: NextRequest) {
             );
           } else {
             console.log(
-              `Unable to post message  ${documentId} event (Revision: ${revisionId})`
+              `Unable to post message ${documentId} event (Revision: ${revisionId})`
             );
           }
         } else {
+          // TODO: Make Discord events also delete
           const resDelete = await DeleteWebhookMessage({
             messageId: eventDiscordMessageId,
+            channelId: discordChannelIdEvent,
             discordMessageDocumentId: discordEventMessageDocumentId,
-            webhookURL: discordEventWebhookURL,
           });
           if (resDelete) {
-            console.log(`Successfully deleted message`);
+            console.log(`Successfully deleted message for an event`);
           } else {
-            console.log(`Unable to delete message`);
+            console.log(`Unable to delete message for an event`);
+          }
+
+          // Deletes the existing discord event
+          if (previousDiscordEvent?._id) {
+            await SendDiscordAPIRequest({
+              method: "delete",
+              path: `guilds/${discordServerId}/scheduled-events/${prevDiscordEventId}`,
+            });
+            console.log(`Deleting the document for a Discord Event`);
+            await writeServerClient.delete(previousDiscordEvent._id);
           }
         }
         break;
       case "announcement":
-        const previousAnnounceDiscordMessage = await client.fetch(
+        const announcementBody = body as {
+          before: getLatestAnnouncement | null;
+          after: getLatestAnnouncement | null;
+        };
+        // Parse for a valid announcement category
+        const announcementCategory = (announcementBody.before?.category ??
+          announcementBody.after?.category) as
+          | SanityAnnouncementType
+          | undefined;
+
+        if (
+          !announcementCategory ||
+          !validAnnouncementCategories.includes(announcementCategory)
+        ) {
+          console.log(`Unable to parse valid announcement category`);
+          return NextResponse.json({
+            success: false,
+            data: `Unable to parse valid announcement category`,
+          });
+        }
+
+        const previousAnnounceDiscordMessage = await writeServerClient.fetch(
           groq`*[_type == "discordMessages" && type == "announcement" && announcementDocumentId._ref == $documentId][0]`,
           {
             documentId: documentId,
           }
         );
 
+        const discordChannelIdsAnnouncementForType =
+          discordChannelIdsAnnouncement[announcementCategory];
+
         const discordMessageDocumentMessageId =
           previousAnnounceDiscordMessage?.discordMessageId ?? undefined;
+
         const discordAnnouncementMessageDocumentId =
           previousAnnounceDiscordMessage?._id;
+
         console.log(
-          `Handling ${body.after ? "CREATE/UPDATE" : "DELETE"} announcement.`,
+          `Handling ${
+            announcementBody.after ? "CREATE/UPDATE" : "DELETE"
+          } announcement.`,
           previousAnnounceDiscordMessage
         );
-        if (body.after) {
+        if (announcementBody.after) {
           // Discord Message
           const mainEmbed: { color: number; image?: { url: string } } = {
             color: decimalColorCode,
           };
-          if (body.after.image) {
+          if (announcementBody.after.image) {
             mainEmbed.image = {
-              url: getURLForSanityImage(body.after.image).quality(75).url(),
+              url: getURLForSanityImage(announcementBody.after.image)
+                .quality(75)
+                .url(),
             };
+            embeds.push(mainEmbed);
           }
-          embeds.push(mainEmbed);
 
           if (textDescription.length > 0) {
             embeds.push({
               color: decimalColorCode,
               description:
-                textDescription.length > maxTextLength
-                  ? `${textDescription.substring(0, maxTextLength)}...`
+                textDescription.length > maxDiscordTextLength
+                  ? `${textDescription.substring(0, maxDiscordTextLength)}...`
                   : textDescription,
             });
           }
 
+          const pingEveryone = announcementBody.after.pingEveryone;
+
           const discordMessageBody = {
-            content: `@everyone\n# [${
-              body?.after.title ?? "No Title"
+            content: `${pingEveryone ? `@everyone\n` : ""}# [${
+              announcementBody?.after.title ?? "No Title"
             }](${eventDirectLink})`,
             embeds: embeds,
           };
@@ -245,11 +401,11 @@ export async function POST(req: NextRequest) {
           if (
             await HandleSendOrUpdateWebhookMessage({
               messageId: discordMessageDocumentMessageId,
+              channelId: discordChannelIdsAnnouncementForType,
               type: "announcement",
               documentId: documentId!,
               revisionId: revisionId!,
               messageDocumentId: discordAnnouncementMessageDocumentId,
-              webhookURL: discordAnnouncementWebhookURL,
               body: discordMessageBody,
             })
           ) {
@@ -264,22 +420,18 @@ export async function POST(req: NextRequest) {
         } else {
           const resDelete = await DeleteWebhookMessage({
             messageId: discordMessageDocumentMessageId,
+            channelId: discordChannelIdsAnnouncementForType,
             discordMessageDocumentId: discordAnnouncementMessageDocumentId,
-            webhookURL: discordAnnouncementWebhookURL,
           });
           if (resDelete) {
-            console.log(`Successfully deleted message`);
+            console.log(`Successfully deleted message for an announcement`);
           } else {
-            console.log(`Unable to delete message`);
+            console.log(`Unable to delete message for an announcement`);
           }
         }
         break;
     }
 
-    // If the `_type` is `testimonial`, then all `client.fetch` calls with
-    // `{next: {tags: ['testimonial']}}` will be revalidated
-    // await revalidateTag(body._type);
-    // console.log(body);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -288,8 +440,8 @@ export async function POST(req: NextRequest) {
 }
 
 async function HandleSendOrUpdateWebhookMessage({
-  webhookURL,
   messageId,
+  channelId,
   type,
   documentId,
   messageDocumentId,
@@ -297,7 +449,7 @@ async function HandleSendOrUpdateWebhookMessage({
   body,
 }: {
   messageId?: string;
-  webhookURL: string;
+  channelId: string;
   type: "event" | "announcement";
   revisionId: string;
   documentId: string;
@@ -309,16 +461,12 @@ async function HandleSendOrUpdateWebhookMessage({
     `Trying to send/update webhook message for ${bodyType} ${documentId}`
   );
   if (messageId) {
-    const updatedMessage = await UpdateWebhookMessage({
-      webhookURL,
-      messageId,
-      body,
+    const updatedMessage = await SendDiscordAPIRequest({
+      method: "patch",
+      path: `/channels/${channelId}/messages/${messageId}`,
+      body: body,
     });
-    // if (body?.revisionId === body?._rev) {
-    //   console.log(`Already updated this message for this revision.`);
-    //   return NextResponse.json({ success: true }, { status: 204 });
-    // }
-    await client
+    await writeServerClient
       .patch(messageDocumentId)
       .set({ revisionId: revisionId })
       .commit();
@@ -327,13 +475,14 @@ async function HandleSendOrUpdateWebhookMessage({
     );
     return true;
   } else {
-    const sentMessage = await SendWebhookMessage({
-      webhookURL,
+    const sentMessage = await SendDiscordAPIRequest({
+      method: "post",
+      path: `/channels/${channelId}/messages`,
       body,
     });
     const sentMessageId = sentMessage.data?.id;
     if (sentMessageId) {
-      const info = await client.create({
+      await writeServerClient.create({
         _type: "discordMessages",
         discordMessageId: sentMessageId,
         type: bodyType,
@@ -361,50 +510,21 @@ async function HandleSendOrUpdateWebhookMessage({
   return false;
 }
 
-async function SendWebhookMessage({
-  webhookURL,
-  body,
-}: {
-  webhookURL: string;
-  body: object;
-}) {
-  return await axios({
-    method: "post",
-    url: `${webhookURL}?wait=true`,
-    data: body,
-  });
-}
-
-async function UpdateWebhookMessage({
-  webhookURL,
-  body,
-  messageId,
-}: {
-  body: object;
-  webhookURL: string;
-  messageId: string;
-}) {
-  return await axios({
-    method: "patch",
-    url: `${webhookURL}/messages/${messageId}`,
-    data: body,
-  });
-}
-
 async function DeleteWebhookMessage({
-  webhookURL,
   discordMessageDocumentId,
+  channelId,
   messageId,
 }: {
   messageId?: string;
+  channelId: string;
   discordMessageDocumentId?: string;
-  webhookURL: string;
 }): Promise<boolean> {
-  if (discordMessageDocumentId) await client.delete(discordMessageDocumentId);
+  if (discordMessageDocumentId)
+    await writeServerClient.delete(discordMessageDocumentId);
   if (typeof messageId !== `string`) return true;
-  const deleteMessage = await axios({
+  const deleteMessage = await SendDiscordAPIRequest({
     method: "delete",
-    url: `${webhookURL}/messages/${messageId}`,
+    path: `/channels/${channelId}/messages/${messageId}`,
   });
   return deleteMessage.status >= 200 && deleteMessage.status < 300;
 }
