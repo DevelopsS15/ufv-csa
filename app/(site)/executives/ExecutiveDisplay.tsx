@@ -43,7 +43,7 @@ export function ExecutiveDisplay({
             "flex items-center justify-center mx-auto rounded-full mb-2 size-[160px] bg-slate-500 dark:bg-slate-600",
             {
               "animate-pulse": loading,
-            },
+            }
           )}
         >
           {!loading && <LucideUser2 className="size-32" />}

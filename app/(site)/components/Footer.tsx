@@ -1,21 +1,16 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   SiDiscord,
-  SiFacebook,
   SiInstagram,
   SiLinkedin,
-  SiTwitter,
 } from "@icons-pack/react-simple-icons";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
-  AppFacebookLink,
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
   AppLogoBlendedGreen,
-  AppTwitterLink,
 } from "../config";
 import LogoWithCSAStacked from "./LogoWithCSAStacked";
 
@@ -26,7 +21,7 @@ export default function Footer() {
       <div className="w-11/12 sm:w-9/12 flex flex-col sm:flex-row items-center mx-auto gap-4 sm:gap-8">
         <div className="flex flex-col gap-2">
           <LogoWithCSAStacked />
-          <div className="flex items-center gap-2">
+          <div className="flex justify-center items-center gap-2">
             <Link
               className={FooterSocialMediaClassName}
               href={AppDiscordInviteLink}
@@ -47,20 +42,6 @@ export default function Footer() {
               target="_blank"
             >
               <SiInstagram />
-            </Link>
-            <Link
-              className={FooterSocialMediaClassName}
-              target="_blank"
-              href={AppTwitterLink}
-            >
-              <SiTwitter />
-            </Link>
-            <Link
-              className={FooterSocialMediaClassName}
-              target="_blank"
-              href={AppFacebookLink}
-            >
-              <SiFacebook />
             </Link>
           </div>
         </div>

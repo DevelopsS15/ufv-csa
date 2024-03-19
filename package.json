@@ -32,6 +32,7 @@
     "@sanity/client": "^6.15.1",
     "@sanity/icons": "^2.10.3",
     "@sanity/image-url": "^1.0.2",
+    "@sanity/preview-kit": "^5.0.33",
     "@sanity/vision": "^3.32.0",
     "@sanity/webhook": "^4.0.2",
     "axios": "^1.6.7",

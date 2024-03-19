@@ -27,9 +27,9 @@ export function EventLocationDisplay({
       ? hasBuilding
         ? `, ${buildingText}${eventBuilding}`
         : "TBD"
-      : additionalDetails;
+      : `${additionalDetails}`;
 
-    return `${campusName}${eventBuildingOrAdditionalDetails}${eventRoom}`;
+    return `${campusName} ${eventBuildingOrAdditionalDetails}${eventRoom}`;
   } else {
     return (
       <>
@@ -41,7 +41,7 @@ export function EventLocationDisplay({
               <Link
                 href={`/FloorPlans/${campus}-${eventBuilding}${eventRoom.substring(
                   0,
-                  1,
+                  1
                 )}.pdf`}
                 target="_blank"
                 className="underline"

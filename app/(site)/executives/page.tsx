@@ -18,19 +18,26 @@ export default async function Page() {
 
   const presidents = executives.filter(filterForExecs);
   const otherExecs = executives.filter((exec) => !filterForExecs(exec));
+
+  const execGroupClassName =
+    "flex flex-wrap justify-center mx-auto max-w-4xl";
+  const execItemClassName = `w-full sm:w-2/4 md:w-1/3 lg:w-1/4 p-4`;
+
   return (
     <RootLayout>
-      <div className="flex flex-col gap-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 items-center justify-center w-max mx-auto gap-4">
-          {presidents.map((pres) => (
-            <ExecutiveDisplay key={pres._id} executive={pres} />
-          ))}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center justify-center mx-auto w-max gap-4">
-          {otherExecs.map((exec) => (
-            <ExecutiveDisplay key={exec._id} executive={exec} />
-          ))}
-        </div>
+      <div className={execGroupClassName}>
+        {presidents.map((pres) => (
+          <div className={execItemClassName} key={pres._id}>
+            <ExecutiveDisplay executive={pres} />
+          </div>
+        ))}
+      </div>
+      <div className={execGroupClassName}>
+        {otherExecs.map((exec) => (
+          <div className={execItemClassName} key={exec._id}>
+            <ExecutiveDisplay executive={exec} />
+          </div>
+        ))}
       </div>
     </RootLayout>
   );

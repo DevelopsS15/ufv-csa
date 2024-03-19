@@ -6,19 +6,23 @@ import {
   getURLForSanityImage,
 } from "../utils";
 import {
+  LucideCalendarCheck,
   LucideCalendarDays,
+  LucideCalendarMinus2,
+  LucideCalendarX,
   LucideClock,
   LucideImageOff,
   LucideMapPin,
 } from "lucide-react";
 import InternalLinkButton from "../components/General/InternalLinkButton";
 import { EventLocationDisplay } from "./EventLocationDisplay";
+import BasicTooltip from "../components/General/Tooltip";
 
 export function BasicEventDisplay({ event }: { event: getUpcomingEventType }) {
   const todayDate = new Date();
   const startDate = new Date(event.startDate);
-  const isEventOccuring =
-    todayDate > startDate && todayDate < new Date(event.endDate);
+  const endDate = new Date(event.endDate);
+  const isEventOccuring = todayDate > startDate && todayDate < endDate;
 
   const isStartingSoon =
     todayDate >
@@ -26,17 +30,34 @@ export function BasicEventDisplay({ event }: { event: getUpcomingEventType }) {
 
   const isEventToday = AreDatesTheSame(todayDate, startDate);
 
+  const statusOfEvent = isEventOccuring
+    ? "now"
+    : isStartingSoon
+    ? "soon"
+    : isEventToday
+    ? "today"
+    : "";
+
   return (
-    <div
-      className="bg-slate-200 dark:bg-slate-900 rounded-md block w-full h-full"
-      key={event._id}
-    >
+    <div className="bg-slate-200 dark:bg-slate-900 rounded-md block w-full h-full">
+      {(isEventOccuring || isStartingSoon || isEventToday) && (
+        <div className="relative">
+          <div className="absolute right-0 top-0">
+            <span
+              className="ml-2 bg-green-500 px-2 py-0.5 rounded-tr-md rounded-bl-md"
+              aria-label={`The event is happening ${statusOfEvent}`}
+            >
+              {statusOfEvent.toUpperCase()}
+            </span>
+          </div>
+        </div>
+      )}
       <div className="w-full bg-slate-300 dark:bg-slate-950/50 rounded-t-md h-32 md:h-48 flex items-center justify-center">
         {event.image ? (
           <Image
             className="max-h-32 md:max-h-48 rounded-t-md w-auto"
             src={getURLForSanityImage(event.image).width(512).url()}
-            alt={"Author image"}
+            alt={`${event.title} Banner Image`}
             width={512}
             height={128}
           />
@@ -46,27 +67,27 @@ export function BasicEventDisplay({ event }: { event: getUpcomingEventType }) {
       </div>
       <div className="p-3">
         <div className="text-xl font-bold">{event.title}</div>
-        <div className="flex items-center gap-1 text-sm">
-          <LucideCalendarDays className="size-4" />
-          <div>{startDate.toDateString()}</div>
+        <div
+          className="flex items-center gap-1 text-sm"
+          aria-label={`Start of event on ${startDate.toDateString()} at ${GetTimeStringFromDate(
+            startDate
+          )}`}
+        >
+          <BasicTooltip content="Start of event">
+            <LucideCalendarCheck className="size-4" />
+          </BasicTooltip>
+          {startDate.toDateString()} at {GetTimeStringFromDate(startDate)}
         </div>
-        <div className="flex items-center gap-1 text-sm">
-          <LucideClock className="size-4" />
-          <div>
-            {GetTimeStringFromDate(startDate)} to{" "}
-            {GetTimeStringFromDate(new Date(event.endDate))}
-            {(isEventOccuring || isStartingSoon || isEventToday) && (
-              <span className="ml-2 bg-green-500 px-2 py-0.5 rounded-full">
-                {isEventOccuring
-                  ? "NOW"
-                  : isStartingSoon
-                    ? "SOON"
-                    : isEventToday
-                      ? "TODAY"
-                      : ""}
-              </span>
-            )}
-          </div>
+        <div
+          className="flex items-center gap-1 text-sm"
+          aria-label={`End of event on ${startDate.toDateString()} at ${GetTimeStringFromDate(
+            startDate
+          )}`}
+        >
+          <BasicTooltip content="End of event">
+            <LucideCalendarX className="size-4" />
+          </BasicTooltip>
+          {endDate.toDateString()} at {GetTimeStringFromDate(endDate)}
         </div>
         <div className="flex items-center gap-1 text-sm mb-2">
           <LucideMapPin className="size-4" />

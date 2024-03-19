@@ -3,19 +3,15 @@ import {
   SiFacebook,
   SiInstagram,
   SiLinkedin,
-  SiTwitter,
 } from "@icons-pack/react-simple-icons";
 import Link from "next/link";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
-  AppDiscordWidgetLink,
   AppEmail,
-  AppFacebookLink,
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
-  AppTwitterLink,
 } from "../config";
 import { LucideMail, LucideMapPin } from "lucide-react";
 import DiscordWidget from "./DiscordWidget";
@@ -78,22 +74,6 @@ export default function Page() {
           >
             <SiInstagram className="inline" />{" "}
             <span className="underline">ufvcsa</span>
-          </Link>
-          <Link
-            href={AppTwitterLink}
-            target="_blank"
-            className={socialMediaLinkClassName}
-          >
-            <SiTwitter className="inline" />{" "}
-            <span className="underline">@UFVCSA</span>
-          </Link>
-          <Link
-            href={AppFacebookLink}
-            target="_blank"
-            className={socialMediaLinkClassName}
-          >
-            <SiFacebook className="inline" />{" "}
-            <span className="underline">UFV {AppFullName}</span>
           </Link>
         </div>
         <DiscordWidget />
