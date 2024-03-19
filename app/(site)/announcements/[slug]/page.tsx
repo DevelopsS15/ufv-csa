@@ -8,7 +8,6 @@ import Link from "next/link";
 import BannerImageWithBlurredBackground from "../../components/BannerImageWithBlurredBackground";
 import { Metadata, ResolvingMetadata } from "next";
 import { AppEmail, AppFullName } from "../../config";
-import { PortableTextBlock, PortableTextSpan } from "sanity";
 
 type Props = {
   params: { slug: string };
@@ -28,9 +27,9 @@ export async function generateMetadata(
   }
 
   // @ts-expect-error Type doesn't match due to non-existent Sanity Types
-  const descriptionText = toPlainText(announcement.body);
+  const descriptionText = toPlainText(announcement.body).trim();
   const description =
-    announcement.body === undefined ? "No description" : descriptionText;
+    descriptionText.length > 1 ? descriptionText : "No description";
   const limitedDescription =
     description.length > 384
       ? `${description.substring(0, 384)}...`
@@ -54,7 +53,7 @@ export async function generateMetadata(
   };
 }
 
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 3600; // 1 hour
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 3600; // 1 hour
 export default async function Page({ params }: Props) {
   const { slug } = params;
   const announcement = await getAnnouncement(slug);
