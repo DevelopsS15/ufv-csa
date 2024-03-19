@@ -1,18 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "~/app/globals.css";
-import {
-  AppDescription,
-  AppFullName,
-  AppLogoBlendedGreen,
-  AppTwitterName,
-} from "./config";
+import { AppDescription, AppFullName, AppLogoBlendedGreen } from "./config";
 import { cn } from "./utils";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/General/ScrollToTop";
 import LayoutWrapper from "./components/LayoutWrapper";
 import LatestAnnouncementBanner from "./components/LatestAnnouncementBanner";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,11 +19,6 @@ export const metadata: Metadata = {
   },
   description: AppDescription,
   icons: "/CSA.ico",
-  twitter: {
-    title: AppFullName,
-    description: AppDescription,
-    creator: `@${AppTwitterName}`,
-  },
 };
 
 export const viewport: Viewport = {
@@ -55,6 +46,11 @@ export default function RootLayout({
           </div>
           <Footer />
         </LayoutWrapper>
+        <Script
+          defer
+          src="https://analytics.us.umami.is/script.js"
+          data-website-id={process.env.NEXT_PUBLIC_UMAMI_ANALYTICS_SITE_ID}
+        />
       </body>
     </html>
   );

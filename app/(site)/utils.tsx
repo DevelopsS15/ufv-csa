@@ -1,18 +1,13 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import imageUrlBuilder from "@sanity/image-url";
-import client from "~/app/(site)/client";
-import {
-  BlockStyleProps,
-  PortableTextBlock,
-  PortableTextTextBlock,
-  Image as SanityImageType,
-} from "sanity";
+import { PortableTextBlock, Image as SanityImageType } from "sanity";
 import { PropsWithChildren } from "react";
 import Link from "next/link";
 import { MeetingMinutesExecutive } from "../sanity/lib/query";
 import { PortableTextComponents } from "@portabletext/react";
 import { allCampusOptions } from "../sanity/schemas/event";
+import { readClient } from "./client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -23,7 +18,7 @@ export interface SanityImageWithAltType extends SanityImageType {
 }
 
 export function getURLForSanityImage(source: SanityImageWithAltType) {
-  return imageUrlBuilder(client).image(source);
+  return imageUrlBuilder(readClient).image(source);
 }
 
 export function AreDatesTheSame(date1: Date, date2: Date) {
@@ -45,7 +40,7 @@ export function CalculateHourAndMinutesBetweenTwoDates(start: Date, end: Date) {
 }
 
 export function GetMeetingMinutesCreatedBy(
-  executives: MeetingMinutesExecutive[],
+  executives: MeetingMinutesExecutive[]
 ): string {
   return Array.isArray(executives)
     ? executives
@@ -55,7 +50,7 @@ export function GetMeetingMinutesCreatedBy(
               index === executives.length - 1 && executives.length > 1
                 ? "and "
                 : ""
-            }${createdBy.fullName}`,
+            }${createdBy.fullName}`
         )
         .join(", ")
     : "";
@@ -96,6 +91,23 @@ export const getSlugFromDate = (date: Date) =>
   `${date.getFullYear()}-${(date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
+export const CapitalizeFirstLetter = (string: string) =>
+  typeof string === `string`
+    ? string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase()
+    : "";
+
+export function isXDaysAhead(date1: string, date2: string, daysAhead: number) {
+  // Convert date strings to Date objects
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  // Calculate the difference in milliseconds
+  const timeDiff = d2.getTime() - d1.getTime();
+  // Convert milliseconds to days
+  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  // Check if the second date is exactly 30 days ahead of the first date
+  return daysDiff === daysAhead;
+}
 
 export const longMonthDayYearDateFormatOption: Intl.DateTimeFormatOptions = {
   month: "long",

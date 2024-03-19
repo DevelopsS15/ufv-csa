@@ -75,7 +75,7 @@ export default async function Page() {
                 Student Association (CISSA)
               </strong>
               , the {AppFullName} aims to represent computing students to{" "}
-              {UniversityAbbreviationName}
+              {UniversityAbbreviationName}{" "}
               faculty and staff.
             </div>
             <div className="my-4">
