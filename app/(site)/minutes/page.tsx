@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Meeting Minutes",
   description: `View all the meeting minutes posted by the ${AppFullName}.`,
 };
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 86400;
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 86400;
 export default async function Page() {
   const minutes = await getMeetingMinutes();
   return (

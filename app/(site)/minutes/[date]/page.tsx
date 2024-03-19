@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const calledAtDate = new Date(meetingMinute.calledAt);
   const limitedTitle = `Meeting Minutes for ${calledAtDate.toDateString()} at ${GetTimeStringFromDate(
-    calledAtDate,
+    calledAtDate
   )}`;
 
   return {
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 43_200; // 12 hours
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 43_200; // 12 hours
 export default async function Page({ params }: Props) {
   const { date } = params;
   const meetingMinute = await getMeetingMinute(date);
@@ -86,10 +86,10 @@ export default async function Page({ params }: Props) {
   const adjournedAt = new Date(meetingMinute.adjournedAt);
   const meetingDuration = CalculateHourAndMinutesBetweenTwoDates(
     calledAt,
-    adjournedAt,
+    adjournedAt
   );
   const nextScheduledMeetingAt = new Date(
-    meetingMinute.nextScheduledMeetingAt!,
+    meetingMinute.nextScheduledMeetingAt!
   );
   const createdBy = Array.isArray(meetingMinute.createdBy)
     ? meetingMinute.createdBy
@@ -101,7 +101,7 @@ export default async function Page({ params }: Props) {
         <div className="text-lg sm:text-xl font-bold">
           {calledAt.toLocaleDateString(
             undefined,
-            longMonthDayYearDateFormatOption,
+            longMonthDayYearDateFormatOption
           )}
         </div>
         <div>
@@ -110,7 +110,7 @@ export default async function Page({ params }: Props) {
           <strong>
             {calledAt.toLocaleDateString(
               undefined,
-              longMonthDayYearDateFormatOption,
+              longMonthDayYearDateFormatOption
             )}
           </strong>
         </div>
@@ -140,7 +140,7 @@ export default async function Page({ params }: Props) {
           <strong>
             {adjournedAt.toLocaleDateString(
               undefined,
-              longMonthDayYearDateFormatOption,
+              longMonthDayYearDateFormatOption
             )}
           </strong>
           .
@@ -163,7 +163,7 @@ export default async function Page({ params }: Props) {
               {GetTimeStringFromDate(nextScheduledMeetingAt)} on{" "}
               {nextScheduledMeetingAt.toLocaleDateString(
                 undefined,
-                longMonthDayYearDateFormatOption,
+                longMonthDayYearDateFormatOption
               )}
             </>
           ) : (
@@ -185,7 +185,7 @@ export default async function Page({ params }: Props) {
           <strong>
             {createdAt.toLocaleDateString(
               undefined,
-              longMonthDayYearDateFormatOption,
+              longMonthDayYearDateFormatOption
             )}
           </strong>
           .

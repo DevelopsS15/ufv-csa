@@ -10,7 +10,7 @@ export default function Page({ reset }: { reset: () => void }) {
         <div className="text-center">
           Unable to load meeting minutes due to an error
         </div>
-        <div className="mx-auto w-max">
+        <div className="mx-auto w-max mt-4">
           <Button variant="information" onClick={() => reset()}>
             Try again
           </Button>

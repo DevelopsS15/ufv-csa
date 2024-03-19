@@ -8,9 +8,11 @@ export default function Page({ reset }: { reset: () => void }) {
       <div className="text-center">
         Unable to load the meeting minutes due to an error
       </div>
-      <Button variant="information" onClick={() => reset()}>
-        Try again
-      </Button>
+      <div className="mx-auto w-max mt-4">
+        <Button variant="information" onClick={() => reset()}>
+          Try again
+        </Button>
+      </div>
     </div>
   );
 }
