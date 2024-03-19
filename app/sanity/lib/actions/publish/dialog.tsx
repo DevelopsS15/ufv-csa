@@ -9,7 +9,6 @@ import {
   DocumentActionProps,
   useDocumentOperation,
 } from "sanity";
-import client from "~/app/(site)/client";
 
 export function ConfirmDialogAction({
   id,

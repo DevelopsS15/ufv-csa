@@ -1,6 +1,21 @@
 import { LucideCalendarRange, LucideMegaphone } from "lucide-react";
 import { defineField, defineType } from "sanity";
-import { AppAbbreviationName } from "~/app/(site)/config";
+import { AppAbbreviationName, AppFullName } from "~/app/(site)/config";
+import { SanityAnnouncementType } from "~/app/types";
+
+const announcementCategoryOptions: {
+  value: SanityAnnouncementType;
+  title: string;
+}[] = [
+  {
+    title: `${AppFullName} (${AppAbbreviationName})`,
+    value: SanityAnnouncementType.CSA,
+  },
+  {
+    title: "Institute of Electrical and Electronics Engineers (IEEE)",
+    value: SanityAnnouncementType.IEEE,
+  },
+];
 
 export default defineType({
   name: "announcement",
@@ -42,6 +57,16 @@ export default defineType({
       description: `This will ping everyone in the ${AppAbbreviationName} Server`,
       type: "boolean",
       initialValue: true,
+    }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "string",
+      initialValue: "csa",
+      options: {
+        list: announcementCategoryOptions,
+      },
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "body",

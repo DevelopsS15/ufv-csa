@@ -5,6 +5,7 @@ import executivePositions from "./executivePositions";
 import discordMessages from "./discordMessages";
 import announcement from "./announcement";
 import meetingMinutes from "./meetingMinutes";
+import discordEvents from "./discordEvents";
 
 export const schemaTypes = [
   event,
@@ -14,4 +15,5 @@ export const schemaTypes = [
   executives,
   executivePositions,
   discordMessages,
+  discordEvents,
 ];
