@@ -96,7 +96,7 @@ export default defineType({
       fieldset: "location",
       hidden: ({ document }) =>
         isEventOnCampus(
-          typeof document?.campus === `string` ? document?.campus : "",
+          typeof document?.campus === `string` ? document?.campus : ""
         ),
     }),
     defineField({
@@ -108,18 +108,19 @@ export default defineType({
       fieldset: "location",
       hidden: ({ document }) =>
         !isEventOnCampus(
-          typeof document?.campus === `string` ? document?.campus : "",
+          typeof document?.campus === `string` ? document?.campus : ""
         ),
     }),
     defineField({
       name: "room",
       title: "Room",
-      description: "The room number (Ex. 224)",
+      description:
+        "The room number (Ex. 224). Leave blank for To Be Announced (TBA).",
       type: "string",
       fieldset: "location",
       hidden: ({ document }) =>
         !isEventOnCampus(
-          typeof document?.campus === `string` ? document?.campus : "",
+          typeof document?.campus === `string` ? document?.campus : ""
         ) ||
         typeof document?.building !== `string` ||
         document?.building.length === 0,
@@ -180,7 +181,7 @@ export default defineType({
           typeof title === `string` && title.length > 1 ? title : "No name",
         subtitle: isValidDate
           ? `${startDateInstance.toDateString()} @ ${GetTimeStringFromDate(
-              startDateInstance,
+              startDateInstance
             )}`
           : "Date: Unknown",
         media: image ?? LucideCalendarRange,
