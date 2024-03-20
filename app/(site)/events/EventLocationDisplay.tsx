@@ -22,14 +22,15 @@ export function EventLocationDisplay({
   const buildingText = eventRoom.length > 0 ? "" : "Building ";
   const additionalDetails = getValidString(event?.additionalDetails);
   const hasBuilding = eventBuilding.length > 0;
+  const eventRoomOrTBD = eventRoom.length > 0 ? eventRoom : "Room: TBD";
   if (type === "string") {
     const eventBuildingOrAdditionalDetails = isEventOnCampus(campus)
       ? hasBuilding
-        ? `, ${buildingText}${eventBuilding}`
-        : "TBD"
-      : `${additionalDetails}`;
+        ? `, ${buildingText}${eventBuilding} ${eventRoomOrTBD}`
+        : " TBD"
+      : ` ${additionalDetails}`;
 
-    return `${campusName} ${eventBuildingOrAdditionalDetails}${eventRoom}`;
+    return `${campusName}${eventBuildingOrAdditionalDetails}`;
   } else {
     return (
       <>
@@ -50,7 +51,7 @@ export function EventLocationDisplay({
                 {eventRoom}
               </Link>
             ) : (
-              <>{hasBuilding ? eventBuilding : "TBD"}</>
+              <>{hasBuilding ? `${eventBuilding} ${eventRoomOrTBD}` : "TBD"}</>
             )}
           </>
         ) : (
