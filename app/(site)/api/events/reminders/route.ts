@@ -6,7 +6,9 @@ import { SendDiscordAPIRequest } from "../../utils";
 import { isXDaysAhead } from "~/app/(site)/utils";
 
 const discordServerId = process.env.DISCORD_SERVER_ID;
-const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
+const discordChannelIdEventReminder =
+  process.env.DISCORD_EVENT_REMINDER_CHANNEL_ID!;
+
 const discordServerInvite = process.env.DISCORD_SERVER_INVITE_LINK;
 
 // TODO March 18, 2024: Look into parsing headers for Discord Rate Limits.
@@ -207,7 +209,7 @@ export async function GET() {
 
         const newReminderMessageRequest = await SendDiscordAPIRequest({
           method: "post",
-          path: `/channels/${discordChannelIdEvent}/messages`,
+          path: `/channels/${discordChannelIdEventReminder}/messages`,
           headers: {
             "X-Audit-Log-Reason": `Reminder for: ${eventDocumentIdRef}`,
           },
