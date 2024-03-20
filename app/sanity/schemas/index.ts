@@ -6,6 +6,7 @@ import discordMessages from "./discordMessages";
 import announcement from "./announcement";
 import meetingMinutes from "./meetingMinutes";
 import discordEvents from "./discordEvents";
+import idempotencyKey from "./idempotencyKey";
 
 export const schemaTypes = [
   event,
@@ -16,4 +17,5 @@ export const schemaTypes = [
   executivePositions,
   discordMessages,
   discordEvents,
+  idempotencyKey,
 ];
