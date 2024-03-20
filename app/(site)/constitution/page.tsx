@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { AppAbbreviationName, AppFullName } from "../config";
 import { cn } from "../utils";
+import { BulletPoints } from "../components/General/BulletPoints";
 
 export const metadata: Metadata = {
   title: "Constitution",
@@ -35,6 +36,10 @@ export default function Page() {
                   To spread information of concern or interest to the members of
                   the Association.
                 </>,
+                <>
+                  Host and promote events that foster the social and career
+                  growth of Association members.
+                </>,
               ]}
             />
           </>,
@@ -43,7 +48,7 @@ export default function Page() {
             <BulletPoints
               points={[
                 <>
-                  All students of UFV shall be eligible for membership of the
+                  All students of UFV shall be eligible for membership in the
                   Association so long as they are in good standing with the
                   Association and with UFV SUS.
                 </>,
@@ -75,24 +80,23 @@ export default function Page() {
                       <>
                         A student who is not granted a membership status by
                         articles 3.2.1, 3.2.2, or 3.2.3 shall be granted
-                        associative membership at the student&apos;s request,
-                        with the approval of the Executive.
+                        associative membership at the student’s request, with
+                        the approval of the Executive.
                       </>,
                       <>
-                        A member of the UFV Alumni who may or may not be either
-                        currently or historically enrolled in any Computer
-                        Information Systems or Computer Science program or
-                        course shall be granted associative membership at the
-                        alumni member&apos;s request.
+                        A student who is voted into an executive position
+                        regardless of their program is automatically granted
+                        membership.
                       </>,
                     ]}
                   />
                 </>,
                 <>
                   <div>
-                    Membership Types: There are three types of membership within
-                    the Association that expand the abilities of a given member
-                    to participate.
+                    <strong>Membership Types</strong>
+                    <br /> There are three types of membership within the
+                    Association that expand the abilities of a given member to
+                    participate.
                   </div>
                   <BulletPoints
                     className="list-disc"
@@ -102,11 +106,11 @@ export default function Page() {
                         meetings and voice their opinion on present matters. In
                         addition, members gain full access to the resources of
                         the Association within the limitations set by the
-                        Executive, which are outlined in the Association&apos;s
+                        Executive, which are outlined in the Association’s
                         Regulations document.
                       </>,
                       <>
-                        A full membership includes the ability to vote in
+                        Full membership includes the ability to vote in
                         non-executive decisions, as well as the ability to
                         suggest equipment purchases to the Executive to be
                         considered for the use of other Association members.
@@ -132,14 +136,31 @@ export default function Page() {
                         violate the Constitution or Regulation of the
                         Association, abuse association funds, or represent the
                         Association in any way that conflicts with the decisions
-                        of the Association Executive. In order to dismiss a
-                        member of the Association, 75% of the Executive must be
-                        in favour at an executive meeting.
+                        of the Association Executive.
                       </>,
                       <>
                         If a member of the Association graduates, they cease to
                         be a full member of the Association upon receiving their
                         parchments (graduation documents).
+                      </>,
+                      <>
+                        An EGM must be held in order to remove an Executive
+                        Member or Member.
+                      </>,
+                      <>
+                        A quorum of fifty percent (50%) of the
+                        Association&apos;s Members, including all the Executive
+                        Members, the Club & Associates Coordinator, and the VP
+                        Students must be present at the EGM to remove a member.
+                      </>,
+                      <>
+                        Removal of a Member must be voted based on majority
+                        vote.
+                      </>,
+                      <>
+                        The Association acknowledges that the Executive Member
+                        or Member in the question has the right to plead their
+                        case throughout the removal process.
                       </>,
                     ]}
                   />
@@ -168,23 +189,7 @@ export default function Page() {
                             "Vice President",
                             "Secretary",
                             "Finance Officer",
-                          ]}
-                        />
-                      </>,
-                      <>
-                        <div>General Executive</div>
-                        <BulletPoints
-                          className="list-disc"
-                          points={[
-                            "Active members of the Association",
-                            <>
-                              An active member of the association is a member
-                              who regularly contributes to the Association in
-                              some way. For the purpose of voting at executive
-                              meetings, any member in good standing who attends
-                              the meeting is considered an active member of the
-                              Association.
-                            </>,
+                            "Communication Manager",
                           ]}
                         />
                       </>,
@@ -192,13 +197,13 @@ export default function Page() {
                   />
                 </>,
                 <>
-                  The Executive shall meet at least twice a month during the
-                  fall and winter semesters, the time and place to be determined
-                  by the Executive.
+                  The Executive shall meet at least once a month during the fall
+                  and winter semesters, the time and place to be determined by
+                  the Executive.
                 </>,
                 <>
-                  The Executive shall meet at least once a month during the
-                  summer semester, the time and place to be determined by the
+                  The Executive shall meet at least once during the summer
+                  semester, the time and place to be determined by the
                   Executive.
                 </>,
                 <>
@@ -210,9 +215,9 @@ export default function Page() {
                   deems necessary, provided that Regulation does not conflict
                   with the Constitution. Changes to Regulation must follow the
                   rules set forth within Regulation, except where the changes
-                  are brought to a vote at either an annual general meeting, or
+                  are brought to a vote at either an annual general meeting or
                   an extraordinary general meeting, in which case the procedure
-                  for constitutional amendments is followed.
+                  for constitutional amendments is followed
                 </>,
                 <>
                   <div>
@@ -287,14 +292,14 @@ export default function Page() {
                       </>,
                       <>
                         <div>
-                          Attending SUS meetings in an official capacity.
+                          Attending SUS meetings in an official capacity
                         </div>
                         <BulletPoints
                           className="list-disc"
                           points={[
                             <>
                               At least one Signing Executive should attend each
-                              SUS meeting where possible, however more than one
+                              SUS meeting where possible, however, more than one
                               signing executive or any general executive members
                               are also encouraged to attend.
                             </>,
@@ -315,6 +320,34 @@ export default function Page() {
                     className="list-disc"
                     points={[
                       <>
+                        Being the chief executive officer of the Computing
+                        Student Association.
+                      </>,
+                      <>
+                        Ensuring all Executive Members and Members are following
+                        the SUS Clubs & Associations Guidelines, SUS Clubs &
+                        Associations Handbook, and SUS and UFV policies
+                      </>,
+                      <>Creating an inclusive and cooperative environment.</>,
+                      <>
+                        Facilitating the direction of the Computing Student
+                        Association.
+                      </>,
+                      <>
+                        Communicating with the Clubs & Associations Coordinator
+                        to ensure all SUS Clubs & Associations Guidelines and
+                        SUS liability & risk procedures are being followed.
+                      </>,
+                      <>
+                        Managing the Computing Student Association&apos;s QPay
+                        account
+                      </>,
+                      <>Overseeing all portals available on QPay.</>,
+                      <>Submitting requests through QPay.</>,
+                      <>
+                        Booking rental spaces for meetings, events or activities
+                      </>,
+                      <>
                         Maintaining the Association&apos;s good reputation
                         through co-operative involvement with UFV&apos;s
                         Administration, the Computer Information Systems
@@ -325,13 +358,13 @@ export default function Page() {
                         the Student Union Society through actively participating
                         in activities and events held by the Student Union
                         Society, as well as sharing concerns and thoughts with
-                        SUS&apos;s Professional Studies&apos; Representative.
+                        SUS&apos;s Professional Studies Representative.
                       </>,
                       <>
                         Ensuring that all Executive members uphold their duties
                         as described in the Constitution, and take proper
-                        action, in accordance to current policy, when Executive
-                        members are in default of said duties.
+                        action, in accordance with current policy, when
+                        Executive members are in default of said duties.
                       </>,
                     ]}
                   />
@@ -341,7 +374,7 @@ export default function Page() {
                   <BulletPoints
                     className="list-disc"
                     points={[
-                      "Assuming all responsibilities of the President in their absence.",
+                      "Assuming all responsibilities of the President in their absence",
                       "Coordinate and assist in all duties carried out by the President.",
                     ]}
                   />
@@ -354,8 +387,7 @@ export default function Page() {
                       <>
                         <div>
                           Prepare agendas and minutes for all Association
-                          meetings, and distributing them to members as
-                          following:
+                          meetings, and distribute them to members as follows:
                         </div>
                         <BulletPoints
                           className="list-disc"
@@ -379,6 +411,9 @@ export default function Page() {
                         designated bulletin boards.
                       </>,
                       "Issuing and receiving correspondence on behalf of the Association.",
+                      "Act as a representative of the association if the need arises.",
+                      "Overseeing the Communications Portal on QPay",
+                      "Handling and organising all the Computing Student Association records",
                     ]}
                   />
                 </>,
@@ -396,7 +431,11 @@ export default function Page() {
                         <BulletPoints
                           className="list-disc"
                           points={[
-                            `Prepare and present a report at each executive meeting detailing all financial records for the Association.`,
+                            <>
+                              Prepare and present a report at each executive
+                              meeting detailing all financial records for the
+                              Association.
+                            </>,
                             <>
                               <div>
                                 Maintain the bank account of the Association, if
@@ -407,16 +446,16 @@ export default function Page() {
                                 className="list-disc"
                                 points={[
                                   <>
-                                    Ensure the President, vice-President,
+                                    Ensure the President, Vice-President,
                                     Secretary and Finance Officer are registered
                                     with the bank as signing officers within two
                                     (2) weeks of the beginning of their elected
-                                    term.
+                                    term
                                   </>,
                                   <>
                                     Ensuring that any signer who is no longer
                                     holding a position of The Executive is
-                                    unregistered from the bank as a signer.
+                                    unregistered from the bank as a signer
                                   </>,
                                   <>
                                     Ensure that the bank account requires a
@@ -430,23 +469,87 @@ export default function Page() {
                                     the newly elected Executive. The newly
                                     elected Executive must follow the rules of
                                     this section but cannot exercise spending
-                                    authority before the start of their term.
+                                    authority before the start of their term
                                   </>,
                                 ]}
                               />
                             </>,
                             <>
-                              Upon request, assisting the Association in
-                              developing draft budget, and tentative plan of
-                              expenditures for a given semester.
+                              Upon request, assist the Association in developing
+                              a draft budget, and tentative plan of expenditures
+                              for a given semester.
                             </>,
                             <>
                               Ensuring all withdrawals have been approved by the
                               Executive, and at least two signing officers have
-                              endorsed all cheques written and withdrawals made.
+                              endorsed all cheques written and withdrawals made
+                            </>,
+                            <>
+                              Submitting requests through QPay and overseeing
+                              the Settlements Portal on QPay
                             </>,
                           ]}
                         />
+                      </>,
+                    ]}
+                  />
+                </>,
+                <>
+                  <div>Duties of the Projects Manager shall include:</div>
+                  <BulletPoints
+                    points={[
+                      <>
+                        Collaborating with members of the association to support
+                        any student projects, be it with financial means or
+                        other support.
+                      </>,
+                      <>
+                        Coordinate with the Webmaster to showcase projects on
+                        the website
+                      </>,
+                    ]}
+                  />
+                </>,
+                <>
+                  <div>Duties of the Webmaster shall include:</div>
+                  <BulletPoints
+                    points={[
+                      <>
+                        Keeping the website up to date and adding new sections
+                        if the need arises.
+                      </>,
+                      <>
+                        Post the meeting minutes and any other relevant
+                        documents to the website
+                      </>,
+                      <>
+                        Maintain the student portfolio section in collaboration
+                        with the Projects Manager.
+                      </>,
+                    ]}
+                  />
+                </>,
+                <>
+                  <div>
+                    Duties of the e Communication Manager shall include:
+                  </div>
+                  <BulletPoints
+                    points={[
+                      <>
+                        Maintain and grow our presence on social media
+                        platforms.
+                      </>,
+                      <>
+                        Answer questions and replies that are received from
+                        social media platforms.
+                      </>,
+                      <>
+                        Share information regarding CSA events and other
+                        information that will be relevant to our members.
+                      </>,
+                      <>
+                        Act as a representative of the association if the need
+                        arises.
                       </>,
                     ]}
                   />
@@ -462,13 +565,13 @@ export default function Page() {
                 <>
                   <div>
                     All funds of the Association must be kept in one of the
-                    following:
+                    following
                   </div>
                   <BulletPoints
                     className="list-disc"
                     points={[
                       "The possession of an Executive member.",
-                      "A secure lock-box in a central place as agreed to by the Executive.",
+                      "A secure lockbox in a central place as agreed to by the Executive.",
                       "The Association's bank account.",
                       "The Association's PayPal account.",
                     ]}
@@ -496,41 +599,37 @@ export default function Page() {
                 </>,
                 <>
                   The Association recognizes the standard Fiscal Year of the
-                  Canadian Federal Government, running from April 1st to March
-                  31st.
+                  Canadian Federal Government, running from April 1<sup>st</sup>{" "}
+                  to March 31<sup>st</sup>.
                 </>,
               ]}
             />
           </>,
           <>
-            <div className="text-xl font-semibold">General Meetings</div>
+            <div className="text-xl font-semibold">
+              Annual General Meeting (AGM)
+            </div>
             <BulletPoints
               className="list-decimal"
               points={[
                 <>
+                  The Computing Student Association shall hold one (1) AGM each
+                  calendar year.
+                </>,
+                <>
                   <div>
-                    There shall be a General Meeting of the Association each
-                    year to:
+                    The Computing Student Association must give members fifteen
+                    (15) business days notice before the AGM is held.
                   </div>
                   <BulletPoints
-                    className="list-disc"
                     points={[
-                      "Receive a report from the Executive.",
                       <>
-                        Receive the audited financial report of the financial
-                        affairs of the Association for the previous year, and
-                        the budget for the following year.
-                      </>,
-                      <>
-                        <div>
-                          Accept nominations from the floor and hold an election
-                          to determine the Executive members for the term of
-                          October 1 to September 31 of the following year.
-                        </div>
+                        <div>This notice will include the following</div>
                         <BulletPoints
-                          className="list-disc"
                           points={[
-                            "Executive members may only be nominated after being accredited at least 30 credits by UFV.",
+                            <>The date of the AGM</>,
+                            <>The time of the AGM</>,
+                            <>The location of the AGM</>,
                           ]}
                         />
                       </>,
@@ -538,51 +637,56 @@ export default function Page() {
                   />
                 </>,
                 <>
-                  Each General Meeting must be held after all necessary
-                  preparation work is complete and ready to be presented, within
-                  the first 30 days of the fall semester beginning.
-                </>,
-                <>
-                  The secretary or Designate shall give fourteen (14) days
-                  notice of a General Meeting on the front page of the
-                  Association&apos;s website and any relevant social media.
+                  The Computing Student Association acknowledges that a quorum
+                  of at least fifty percent (50%) of Members and all Executive
+                  Members must be present at the AGM for the proceedings to be
+                  valid.
                 </>,
               ]}
             />
           </>,
           <>
-            <div className="text-xl font-semibold">Special Meetings</div>
+            <div className="text-xl font-semibold">
+              Extraordinary General Meetings (EGM)
+            </div>
             <BulletPoints
               className="list-decimal"
               points={[
                 <>
                   <div>
-                    The Secretary shall convene a Special Meeting of the
-                    Association:
+                    Extraordinary General Meetings can only be called due to
+                    extraordinary circumstances
                   </div>
                   <BulletPoints
-                    className="list-disc"
                     points={[
-                      "At the directive of the Executive.",
-                      <>
-                        Within fourteen (14) days of a petition signed by
-                        one-third (1/3) of the total membership or ten (10)
-                        members of the association, whichever is the least,
-                        provided such a petition shall state the business to be
-                        discussed at the Special Meeting.
-                      </>,
+                      <>Changes that need to be made to the Constitution.</>,
+                      <>Dismissal of an Executive Member or Member</>,
                     ]}
                   />
                 </>,
                 <>
-                  The secretary shall give seven (7) days notice of a Special
-                  Meeting by means of notices placed around the UFV Campus in
-                  accordance with section 7.3.
+                  A motion must be signed by at least fifty percent (50%) of
+                  Computing Student Association Members to hold an EGM.
                 </>,
                 <>
-                  The secretary or Designate shall give seven (7) days notice of
-                  a Special Meeting on the front page of the Association’s
-                  website and any relevant social media.
+                  <div>
+                    All Computing Student Association Members must be notified
+                    ten (10) business days before the General Meeting is held.
+                  </div>
+                  <BulletPoints
+                    points={[
+                      <>
+                        This notice must include the date, location, and time of
+                        the General Meeting.
+                      </>,
+                      <>Information about why the EGM is being called</>,
+                    ]}
+                  />
+                </>,
+                <>
+                  At least fifty percent (50%) of the Computing Student
+                  Association Members must be present at the EGM for the
+                  proceedings to be valid.
                 </>,
               ]}
             />
@@ -603,14 +707,14 @@ export default function Page() {
                     className="list-disc"
                     points={[
                       "At Executive Meetings, members of the Executive, both signing and general.",
-                      "At General Meetings, those members of the Association present who hold full membership.",
+                      "At General Meetings, those members of the Association present who hold full membership",
                     ]}
                   />
                 </>,
                 <>
-                  In the event of the tie, the Chairperson of the meeting has
-                  the authority to either break the tie, or postpone the vote
-                  until the next meeting.
+                  In the event of a tie, the Chairperson of the meeting has the
+                  authority to either break the tie or postpone the vote until
+                  the next meeting.
                 </>,
                 <>
                   All questions before meetings of the Association shall be
@@ -626,16 +730,16 @@ export default function Page() {
               className="list-decimal"
               points={[
                 <>
-                  The Quorum for an executive Meeting shall be half of all
-                  current Executive, rounded up if necessary.
+                  The Quorum for an Executive Meeting shall be half of all
+                  current Executive, rounded up if necessary
                 </>,
                 <>
                   The Quorum for General Meetings shall be one-third (1/3) of
                   the total membership, or fifteen (15) members of the
                   Association, whichever is the least, provided that for a
                   Special Meeting called under section 8.1.2 of this
-                  Constitution, the quorum shall include at least ninety percent
-                  (90%) of the petitioning members.
+                  Constitution, the quorum shall include at least ninety per
+                  cent (90%) of the petitioning members.
                 </>,
                 <>
                   <div>
@@ -676,8 +780,18 @@ export default function Page() {
                     points={[
                       <>
                         The proposed amendments shall be read out in full before
-                        the members attending the General Meeting in which the
-                        changes are to be adopted.
+                        the members attending the Annual General Meeting in
+                        which the changes are to be adopted.
+                      </>,
+                      <>
+                        If amendments need to be made before the Annual General
+                        Meeting, an Extraordinary General Meeting (EGM) must be
+                        held.
+                      </>,
+                      <>
+                        At least fifty percent (50%) of the Computing Student
+                        Association Members must be present at the EGM for the
+                        proceedings to be valid.
                       </>,
                       <>
                         The amendments must be met with a two-thirds (2/3)
@@ -686,11 +800,11 @@ export default function Page() {
                       </>,
                       <>
                         The Constitution is the official version of the
-                        constitution effective September 18, 2017. All future
+                        constitution effective May 18, 2022. All future
                         revisions to the Constitution must modify this section
                         to reflect the date that changes take effect. All
                         previous versions of the constitution are rescinded
-                        effective September 18, 2017.
+                        effective, May 18, 2022.
                       </>,
                     ]}
                   />
@@ -705,11 +819,11 @@ export default function Page() {
               points={[
                 <>
                   Should the Association be disbanded or in any way become
-                  defunct, that all assets of the Association shall be held in
-                  trust by the Student Union Society of UFV as a ledger entry
-                  until such time as the Association is reconstituted and
+                  defunct, all assets of the Association shall be held in trust
+                  by the Student Union Society of UFV as a ledger entry until
+                  such time as the Association is reconstituted and
                   re-affiliated, or for a period of five years. If after this
-                  period, the Association in not reconstituted and
+                  period, the Association is not reconstituted and
                   re-affiliated, the assets will be transferred to the Student
                   Union Society. This clause cannot be altered unless approved
                   by the Student Union Society.
@@ -720,21 +834,5 @@ export default function Page() {
         ]}
       />
     </main>
-  );
-}
-
-function BulletPoints({
-  className,
-  points,
-}: {
-  className?: string;
-  points: React.ReactNode[];
-}) {
-  return (
-    <ol className={cn("list-decimal flex flex-col gap-3 pl-6", className)}>
-      {points.map((point, index) => (
-        <li key={index}>{point}</li>
-      ))}
-    </ol>
   );
 }
