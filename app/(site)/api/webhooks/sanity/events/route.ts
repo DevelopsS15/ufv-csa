@@ -8,11 +8,16 @@ import {
 } from "~/app/(site)/utils";
 const toMarkdown = require("@sanity/block-content-to-markdown");
 import { EventLocationDisplay } from "~/app/(site)/events/EventLocationDisplay";
-import axios, { AxiosHeaders } from "axios";
 import { SanityAnnouncementType } from "~/app/types";
 import { writeServerClient } from "~/app/(site)/serverClient";
 import { revalidatePath } from "next/cache";
-import { SendDiscordAPIRequest } from "../../../utils";
+import {
+  GetDiscordTimestampString,
+  NotifyInterestedDiscordMembersAboutEvent,
+  SendDiscordAPIRequest,
+} from "../../../utils";
+import { allCampusOptions } from "~/app/sanity/schemas/event";
+import { headers } from "next/headers";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
@@ -35,6 +40,8 @@ const eventDirectLinkDomain =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
     : `https://ufv-csa.vercel.app`;
+
+// Possible TODO: Switch Discord API requests to https://www.npmjs.com/package/@discordjs/rest
 
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -63,6 +70,29 @@ export async function POST(req: NextRequest, res: NextResponse) {
     if (!body) {
       console.log(`No body provided`);
       return NextResponse.json({ success: false });
+    }
+
+    const reqHeaders = headers();
+    const idempotencyKey = reqHeaders.get("idempotency-key");
+    if (typeof idempotencyKey !== `string`) {
+      console.log(`No idempotency-key provided`);
+      return NextResponse.json({ success: false });
+    }
+    const getIdempotencyKey = await writeServerClient.fetch(
+      groq`*[_type=="idempotencyKey" && value==$idempotencyKey][0]`,
+      {
+        idempotencyKey,
+      }
+    );
+    console.log(getIdempotencyKey);
+    if (getIdempotencyKey) {
+      console.log(`Already handled idempotency-key provided ${idempotencyKey}`);
+      return NextResponse.json({ success: false });
+    } else {
+      await writeServerClient.create({
+        _type: "idempotencyKey",
+        value: idempotencyKey,
+      });
     }
 
     const documentType = body.before?._type ?? body.after?._type;
@@ -169,23 +199,23 @@ export async function POST(req: NextRequest, res: NextResponse) {
             documentId: documentId,
           }
         )) as Record<string, any> | null;
-        const prevDiscordEventId = previousDiscordEvent?.discordEventId;
+        const previousDiscordEventId = previousDiscordEvent?.discordEventId;
 
         if (body.after) {
           // Discord Message
-          const startDateSeconds = Math.round(
-            new Date(body.after.startDate).getTime() / 1000
-          );
+          const afterStartDate = new Date(body.after.startDate);
 
           const eventLocationString = EventLocationDisplay({
             event: body.after,
             type: "string",
           });
 
-          let mainEmbedDescription = `:calendar_spiral: **Start:** <t:${startDateSeconds}> (<t:${startDateSeconds}:R>)\n`;
-          mainEmbedDescription += `:calendar_spiral: **End:** <t:${Math.round(
-            new Date(body.after.endDate).getTime() / 1000
-          )}>\n`;
+          let mainEmbedDescription = `:calendar_spiral: **Start:** ${GetDiscordTimestampString(
+            afterStartDate
+          )} (${GetDiscordTimestampString(afterStartDate, "R")})\n`;
+          mainEmbedDescription += `:calendar_spiral: **End:** ${GetDiscordTimestampString(
+            new Date(body.after.endDate)
+          )}\n`;
           mainEmbedDescription += `:round_pushpin: **Location:** ${eventLocationString}\n`;
 
           if (body.after.bookTicket) {
@@ -223,7 +253,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             embeds: embeds,
           };
 
-          let discordEventId = "";
           try {
             const discordEventBody = {
               name: eventTitle,
@@ -241,24 +270,112 @@ export async function POST(req: NextRequest, res: NextResponse) {
               },
             };
 
+            // Event already has Discord Event
             if (previousDiscordEvent) {
-              console.log(`Updating Discord Event ${prevDiscordEventId}`);
-              discordMessageBody.content += `\n${discordServerInvite}?event=${prevDiscordEventId}`;
+              console.log(`Updating Discord Event ${previousDiscordEventId}`);
+              discordMessageBody.content += `\n${discordServerInvite}?event=${previousDiscordEventId}`;
               await SendDiscordAPIRequest({
                 method: "patch",
-                path: `guilds/${discordServerId}/scheduled-events/${prevDiscordEventId}`,
+                path: `guilds/${discordServerId}/scheduled-events/${previousDiscordEventId}`,
                 body: discordEventBody,
               });
+
+              // Only send Event Notification if one of the below values have changed.
+              const detectedChanges: {
+                variableName: string;
+                beforeValue: string;
+                afterValue: string;
+              }[] = [];
+              const { before, after } = body;
+
+              const pushIfHasChanged = (
+                beforeValue: string,
+                afterValue: string,
+                variableName: string
+              ) => {
+                if (beforeValue === afterValue) return;
+                detectedChanges.push({ variableName, beforeValue, afterValue });
+              };
+
+              // If start date changed, output dates as Discord timestamp format
+              if (before?.startDate !== after.startDate) {
+                const beforeStartDate = new Date(body.before?.startDate!);
+                detectedChanges.push({
+                  variableName: "Start of Event",
+                  beforeValue: GetDiscordTimestampString(beforeStartDate),
+                  afterValue: GetDiscordTimestampString(afterStartDate),
+                });
+              }
+
+              // If end date changed, output dates as Discord timestamp format
+              if (before?.endDate !== after.endDate) {
+                const beforeEndDate = new Date(body.before?.endDate!);
+                const afterEndDate = new Date(body.after?.endDate!);
+                detectedChanges.push({
+                  variableName: "End of Event",
+                  beforeValue: GetDiscordTimestampString(beforeEndDate),
+                  afterValue: GetDiscordTimestampString(afterEndDate),
+                });
+              }
+
+              // If campus changed, get campus name instead of abbreviation
+              if (before?.campus !== after.campus) {
+                const beforeCampusData = allCampusOptions.find(
+                  (campus) => campus.value === before?.campus
+                );
+                const afterCampusData = allCampusOptions.find(
+                  (campus) => campus.value === after?.campus
+                );
+                detectedChanges.push({
+                  variableName: "Campus",
+                  beforeValue: beforeCampusData?.title ?? before?.campus!,
+                  afterValue: afterCampusData?.title ?? after?.campus!,
+                });
+              }
+
+              pushIfHasChanged(
+                before?.building ?? "TBD",
+                after.building ?? "TBD",
+                "Building"
+              );
+              pushIfHasChanged(
+                before?.room ?? "TBD",
+                after.room ?? "TBD",
+                "Room"
+              );
+
+              if (detectedChanges.length > 0) {
+                const statusOfNotification =
+                  await NotifyInterestedDiscordMembersAboutEvent({
+                    eventDocumentId: documentId!,
+                    discordEventId: previousDiscordEventId,
+                    customMessageContents: `\n${detectedChanges
+                      .map(
+                        (change) =>
+                          `**${change.variableName}**: ${change.beforeValue} **==>** ${change.afterValue}`
+                      )
+                      .join("\n")}\n`,
+                    typeOfNotification: "update",
+                    eventData: body.after,
+                  });
+                console.log(
+                  `Updating Discord Event notification: ${statusOfNotification}`
+                );
+              } else {
+                console.log(
+                  `No Discord Event notification as no relevant variables changed.`
+                );
+              }
             } else {
               const apiEvent = await SendDiscordAPIRequest({
                 method: "post",
                 path: `guilds/${discordServerId}/scheduled-events`,
                 body: discordEventBody,
               });
-              discordEventId = apiEvent.data.id;
+              const discordEventId = apiEvent.data.id;
               console.log(`Created Discord Event ${discordEventId}`);
 
-              const newDiscordEvent = await writeServerClient.create({
+              await writeServerClient.create({
                 _type: "discordEvents",
                 discordEventId: discordEventId,
                 revisionId: revisionId,
@@ -268,7 +385,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
                   _weak: true,
                 },
               });
-              console.log(newDiscordEvent);
               discordMessageBody.content += `\n${discordServerInvite}?event=${discordEventId}`;
             }
           } catch (e) {
@@ -297,8 +413,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
             );
           }
         } else {
-          // TODO: Make Discord events also delete
-          const resDelete = await DeleteWebhookMessage({
+          // Deletes the corresponding Discord Message
+          const resDelete = await DeleteDiscordMessageViaAPI({
             messageId: eventDiscordMessageId,
             channelId: discordChannelIdEvent,
             discordMessageDocumentId: discordEventMessageDocumentId,
@@ -313,7 +429,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           if (previousDiscordEvent?._id) {
             await SendDiscordAPIRequest({
               method: "delete",
-              path: `guilds/${discordServerId}/scheduled-events/${prevDiscordEventId}`,
+              path: `guilds/${discordServerId}/scheduled-events/${previousDiscordEventId}`,
             });
             console.log(`Deleting the document for a Discord Event`);
             await writeServerClient.delete(previousDiscordEvent._id);
@@ -418,7 +534,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             );
           }
         } else {
-          const resDelete = await DeleteWebhookMessage({
+          const resDelete = await DeleteDiscordMessageViaAPI({
             messageId: discordMessageDocumentMessageId,
             channelId: discordChannelIdsAnnouncementForType,
             discordMessageDocumentId: discordAnnouncementMessageDocumentId,
@@ -510,7 +626,7 @@ async function HandleSendOrUpdateWebhookMessage({
   return false;
 }
 
-async function DeleteWebhookMessage({
+async function DeleteDiscordMessageViaAPI({
   discordMessageDocumentId,
   channelId,
   messageId,
