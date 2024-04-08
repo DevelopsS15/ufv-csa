@@ -57,7 +57,7 @@ export async function GET() {
       if (!eventData) continue;
       try {
         type typeOfReminderEnum = "month" | "week" | "day";
-        let periodReminder: typeOfReminderEnum | null = "month";
+        let periodReminder: typeOfReminderEnum | null = null;
 
         const currentDateISO = new Date().toISOString();
         const CheckReminder = (
