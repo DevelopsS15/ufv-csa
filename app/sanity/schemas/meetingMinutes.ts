@@ -171,9 +171,10 @@ export default defineType({
           typeof input === `string` ? input.substring(0, 10) : "",
       },
       validation: (rule) =>
-        rule.required().custom((value: { current?: string }, context) => {
+        rule.required().custom((value, context) => {
+          const valueType = value as { current?: string };
           const calledAtValue = context.document?.calledAt as string;
-          const slugValue = value?.current;
+          const slugValue = valueType?.current;
           if (!calledAtValue) return true;
           if (!slugValue) return "You must provide a slug";
           if (slugValue.length !== 10)

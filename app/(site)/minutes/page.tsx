@@ -66,7 +66,10 @@ function BasicMeetingMinutesDisplay({ minutes }: { minutes: MeetingMinutes }) {
           </BasicTooltip>{" "}
           <span className="hidden sm:inline">Present: </span>
           {executivesPresent.map((executive) => (
-            <ExecutiveAvatar key={executive.fullName} executive={executive} />
+            <ExecutiveAvatar
+              key={executive.fullName}
+              executive={{ ...executive, position: "" }}
+            />
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-1">
@@ -76,7 +79,10 @@ function BasicMeetingMinutesDisplay({ minutes }: { minutes: MeetingMinutes }) {
           <span className="hidden sm:inline">Regrets: </span>
           {executivesAbsent.length > 0 ? (
             executivesAbsent.map((executive) => (
-              <ExecutiveAvatar key={executive.fullName} executive={executive} />
+              <ExecutiveAvatar
+                key={executive.fullName}
+                executive={{ ...executive, position: "" }}
+              />
             ))
           ) : (
             <span>None</span>
