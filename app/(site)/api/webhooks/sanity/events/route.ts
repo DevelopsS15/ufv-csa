@@ -10,14 +10,15 @@ const toMarkdown = require("@sanity/block-content-to-markdown");
 import { EventLocationDisplay } from "~/app/(site)/events/EventLocationDisplay";
 import { SanityAnnouncementType } from "~/app/types";
 import { writeServerClient } from "~/app/(site)/serverClient";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import {
   GetDiscordTimestampString,
   NotifyInterestedDiscordMembersAboutEvent,
-  SendDiscordAPIRequest,
+  discordAPIRest,
 } from "../../../utils";
 import { allCampusOptions } from "~/app/sanity/schemas/event";
 import { headers } from "next/headers";
+import { Routes } from "discord-api-types/v10";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
@@ -40,8 +41,6 @@ const eventDirectLinkDomain =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
     : `https://ufv-csa.vercel.app`;
-
-// Possible TODO: Switch Discord API requests to https://www.npmjs.com/package/@discordjs/rest
 
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -98,7 +97,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const documentType = body.before?._type ?? body.after?._type;
     const documentId = body.before?._id ?? body.after?._id;
     if (typeof documentType !== `string`) {
-      console.log(`No document type or event/announcement`);
+      console.log(`No document type`);
       const message = "Bad Request";
       return NextResponse.json({ message, body });
     }
@@ -114,18 +113,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
       case "event":
         parentStaleRoute = "events";
         revalidatePath("/", "page");
+        revalidateTag("events");
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "meetingMinutes":
         parentStaleRoute = "minutes";
+        revalidateTag("meetingMinutes");
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "announcement":
         parentStaleRoute = "announcements";
+        revalidateTag("announcements");
         revalidatePath("/api/announcements/latest", "page");
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "executives":
+        revalidateTag("executives");
         parentStaleRoute = "executives";
         break;
     }
@@ -136,7 +139,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     if (documentType !== "event" && documentType !== "announcement") {
-      console.log(`No document type or event/announcement`);
+      console.log(`Not an event/announcement so ignoring`);
       const message = "Bad Request";
       return NextResponse.json({ message, body });
     }
@@ -274,11 +277,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
             if (previousDiscordEvent) {
               console.log(`Updating Discord Event ${previousDiscordEventId}`);
               discordMessageBody.content += `\n${discordServerInvite}?event=${previousDiscordEventId}`;
-              await SendDiscordAPIRequest({
-                method: "patch",
-                path: `guilds/${discordServerId}/scheduled-events/${previousDiscordEventId}`,
-                body: discordEventBody,
-              });
+              await discordAPIRest.patch(
+                Routes.guildScheduledEvent(
+                  discordServerId!,
+                  previousDiscordEventId
+                ),
+                { body: discordEventBody }
+              );
 
               // Only send Event Notification if one of the below values have changed.
               const detectedChanges: {
@@ -367,12 +372,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 );
               }
             } else {
-              const apiEvent = await SendDiscordAPIRequest({
-                method: "post",
-                path: `guilds/${discordServerId}/scheduled-events`,
-                body: discordEventBody,
-              });
-              const discordEventId = apiEvent.data.id;
+              const apiEvent = (await discordAPIRest.post(
+                Routes.guildScheduledEvents(discordServerId!),
+                {
+                  body: discordEventBody,
+                }
+              )) as { id: string };
+              const discordEventId = apiEvent?.id;
               console.log(`Created Discord Event ${discordEventId}`);
 
               await writeServerClient.create({
@@ -427,10 +433,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
           // Deletes the existing discord event
           if (previousDiscordEvent?._id) {
-            await SendDiscordAPIRequest({
-              method: "delete",
-              path: `guilds/${discordServerId}/scheduled-events/${previousDiscordEventId}`,
-            });
+            await discordAPIRest.delete(
+              Routes.guildScheduledEvent(
+                discordServerId!,
+                previousDiscordEventId
+              )
+            );
             console.log(`Deleting the document for a Discord Event`);
             await writeServerClient.delete(previousDiscordEvent._id);
           }
@@ -577,26 +585,26 @@ async function HandleSendOrUpdateWebhookMessage({
     `Trying to send/update webhook message for ${bodyType} ${documentId}`
   );
   if (messageId) {
-    const updatedMessage = await SendDiscordAPIRequest({
-      method: "patch",
-      path: `/channels/${channelId}/messages/${messageId}`,
-      body: body,
-    });
+    const updatedMessage = (await discordAPIRest.patch(
+      Routes.channelMessage(channelId, messageId),
+      { body }
+    )) as { id: string };
     await writeServerClient
       .patch(messageDocumentId)
       .set({ revisionId: revisionId })
       .commit();
     console.log(
-      `Updated ${documentId} event (Revision: ${revisionId}) to discord message: ${updatedMessage.data.id}`
+      `Updated ${documentId} event (Revision: ${revisionId}) to discord message: ${updatedMessage?.id}`
     );
     return true;
   } else {
-    const sentMessage = await SendDiscordAPIRequest({
-      method: "post",
-      path: `/channels/${channelId}/messages`,
-      body,
-    });
-    const sentMessageId = sentMessage.data?.id;
+    const sentMessage = (await discordAPIRest.post(
+      Routes.channelMessages(channelId),
+      {
+        body,
+      }
+    )) as { id: string };
+    const sentMessageId = sentMessage?.id;
     if (sentMessageId) {
       await writeServerClient.create({
         _type: "discordMessages",
@@ -638,9 +646,10 @@ async function DeleteDiscordMessageViaAPI({
   if (discordMessageDocumentId)
     await writeServerClient.delete(discordMessageDocumentId);
   if (typeof messageId !== `string`) return true;
-  const deleteMessage = await SendDiscordAPIRequest({
-    method: "delete",
-    path: `/channels/${channelId}/messages/${messageId}`,
-  });
-  return deleteMessage.status >= 200 && deleteMessage.status < 300;
+  try {
+    await discordAPIRest.delete(Routes.channelMessage(channelId, messageId));
+    return true;
+  } catch (e) {
+    return false;
+  }
 }

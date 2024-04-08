@@ -11,10 +11,10 @@ export const readClient = createClient({
   withCredentials: true,
 });
 
-export const writeUserClient = createClient({
+export const readClientWithCDN = createClient({
   projectId: projectId,
   dataset: dataset,
   apiVersion: apiVersion,
-  useCdn: false,
+  useCdn: true,
   withCredentials: true,
 });

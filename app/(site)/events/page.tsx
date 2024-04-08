@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Events",
   description: `View all the events hosted by the ${AppFullName} or our partners.`,
 };
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 1800;
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 1800;
 export default async function Page() {
   const events = await getUpcomingEvents();
   return (

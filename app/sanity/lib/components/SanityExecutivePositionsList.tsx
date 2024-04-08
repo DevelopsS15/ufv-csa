@@ -1,7 +1,7 @@
 // @ts-nocheck
 import groq from "groq";
 import React from "react";
-import { readClient } from "~/app/(site)/client";
+import { readClient, readClientWithCDN } from "~/app/(site)/client";
 import { Skeleton } from "~/app/(site)/components/UI/skeleton";
 import { longMonthDayYearDateFormatOption } from "~/app/(site)/utils";
 
@@ -26,7 +26,7 @@ function CustomPreviewComponent(itemProp, props) {
     const runAsync = async () => {
       try {
         setFetchingPositionName(true);
-        const data = await readClient.fetch(
+        const data = await readClientWithCDN.fetch(
           groq`*[_type=="executivePositions" && _id == $ref][0]`,
           {
             ref: itemPositionRef,

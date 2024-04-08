@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <article className="w-11/12 sm:w-9/12 md:w-7/12 py-8 mx-auto">
+    <article className="w-11/12 sm:w-9/12 lg:w-7/12 py-8 mx-auto">
       <div className="mb-2">
         <Link
           href={`/minutes/`}

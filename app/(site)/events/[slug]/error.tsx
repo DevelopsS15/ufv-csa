@@ -6,7 +6,7 @@ export default function Page({ reset }: { reset: () => void }) {
   return (
     <div>
       <div className="text-center">
-        Unable to load that announcement due to an error
+        Unable to load that event due to an error
       </div>
       <div className="mx-auto w-max mt-4">
         <Button variant="information" onClick={() => reset()}>

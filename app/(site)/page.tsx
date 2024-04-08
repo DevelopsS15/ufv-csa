@@ -4,61 +4,116 @@ import {
   AppAbbreviationName,
   AppDiscordInviteLink,
   AppFullName,
+  AppInstagramLink,
+  AppLinkedInLink,
+  AppLogoBlendedGreen,
   UniversityAbbreviationName,
 } from "./config";
 import InternalLink from "./components/General/InternalLink";
 import InternalLinkButton from "./components/General/InternalLinkButton";
 import { getUpcomingEventType, getUpcomingEvents } from "../sanity/lib/query";
 import { BasicEventDisplay } from "./events/BasicEventDisplay";
+import { CodingTypeAnimation } from "./components/Home/CodingTypeAnimation";
+import Link from "next/link";
+import {
+  SiDiscord,
+  SiInstagram,
+  SiLinkedin,
+} from "@icons-pack/react-simple-icons";
+import { cn } from "./utils";
 
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 10_800; // 3 hours
 export default async function Page() {
-  const threeUpcomingEvents = await getUpcomingEvents(3);
-  // const [, setForward] = React.useState<boolean>(false);
+  const upcomingEvents = await getUpcomingEvents(3);
+  const SocialMediaClassName = `fill-white hover:fill-green-500 transition-colors`;
+  interface HighlightsImage {
+    localPath: string;
+    sourcePath: string;
+    eventName: string;
+  }
 
-  // const csaLogoSpring = useSpring({
-  //   from: {
-  //     x: -512,
-  //     opacity: 0,
-  //   },
-  //   to: {
-  //     x: 0,
-  //     opacity: 1,
-  //   },
-  // });
+  const columnOneHighlightImages: HighlightsImage[] = [
+    {
+      localPath: "TechPanel_1.jpg",
+      eventName: "Tech Panel",
+      sourcePath: `https://flickr.com/photos/ufv/53589642941/in/album-72177720315460690/`,
+    },
+    {
+      localPath: "TechPanel_2.jpg",
+      eventName: "Tech Panel",
+      sourcePath:
+        "https://flickr.com/photos/ufv/53589642776/in/album-72177720315460690/",
+    },
+  ];
 
-  // const csaTextSpring = useSpring({
-  //   from: {
-  //     x: 512,
-  //     opacity: 0,
-  //   },
-  //   to: {
-  //     x: 0,
-  //     opacity: 1,
-  //   },
-  // });
+  const columnTwoHighlightImages: HighlightsImage[] = [
+    {
+      localPath: "2023_OpenHouse.jpg",
+      sourcePath:
+        "https://www.instagram.com/stories/highlights/17950247879254495/",
+      eventName: "2023 Open House",
+    },
+    {
+      localPath: "TechPanel_3.jpg",
+      eventName: "Tech Panel",
+      sourcePath: `https://flickr.com/photos/ufv/53590086235/in/album-72177720315460690/`,
+    },
+  ];
 
-  // useEffect(() => {
-  //   setForward(true);
-  // }, []);
+  const columnThreeHighlightImages: HighlightsImage[] = [
+    {
+      localPath: "TechPanel_4.jpg",
+      sourcePath:
+        "https://flickr.com/photos/ufv/53588768322/in/album-72177720315460690/",
+      eventName: "Tech Panel",
+    },
+    {
+      localPath: "TechPanel_5.jpg",
+      sourcePath:
+        "https://flickr.com/photos/ufv/53588768442/in/album-72177720315460690/",
+      eventName: "Tech Panel",
+    },
+  ];
+
+  const highlightImages: HighlightsImage[][] = [
+    columnOneHighlightImages,
+    columnTwoHighlightImages,
+    columnThreeHighlightImages,
+  ];
 
   return (
     <main>
-      <div className="w-11/12 sm:w-9/12 mx-auto py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 text-center lg:text-left items-center mx-auto justify-center gap-4 lg:gap-8">
-          <Image
-            className="mx-auto"
-            src="/CSA_Leaf_512x512.png"
-            alt={`${AppFullName} Logo`}
-            width={256}
-            height={256}
-          />
+      <div className="w-11/12 lg:w-9/12 mx-auto py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-4 text-center lg:text-left items-center mx-auto justify-center lg:gap-4 min-h-[512px]">
           <div>
-            <div className="text-2xl sm:text-3xl font-bold">{AppFullName}</div>
+            <Image
+              className="mx-auto w-full max-w-80"
+              src="/CSA_Leaf_512x512.png"
+              alt={`${AppFullName} Logo`}
+              width={320}
+              height={320}
+              quality={100}
+            />
+          </div>
+          <div className="sm:w-10/12 mx-auto col-span-3">
+            {/* hidden md:block  */}
+            <div className="min-h-20">
+              <CodingTypeAnimation />
+            </div>
+            {/* <div className="md:hidden text-2xl sm:text-3xl font-bold">
+              {AppFullName}
+            </div> */}
             <div className="text-lg sm:text-xl">
               Representing computing students to {UniversityAbbreviationName}{" "}
               faculty and staff since 2006
             </div>
+            <InternalLinkButton
+              variant={"success"}
+              className="mt-2"
+              href={AppDiscordInviteLink}
+              target="_blank"
+            >
+              Join Today
+            </InternalLinkButton>
           </div>
         </div>
       </div>
@@ -74,18 +129,20 @@ export default async function Page() {
                 {UniversityAbbreviationName} Computer Information Systems
                 Student Association (CISSA)
               </strong>
-              , the {AppFullName} aims to represent computing students to{" "}
-              {UniversityAbbreviationName}{" "}
-              faculty and staff.
+              , the <strong>{AppFullName}</strong> aims to represent computing
+              students to {UniversityAbbreviationName} faculty and staff.
             </div>
             <div className="my-4">
               We provide a space for students to hangout, make friends, and
               request tutors or help for projects through our{" "}
               <InternalLink href={AppDiscordInviteLink}>Discord</InternalLink>{" "}
               and events. We manage the{" "}
-              <strong>Student Computing Centre (SCC)</strong> in room D224 at
-              the Abbotsford campus and it has numerous resources for students
-              to take advantage of.
+              <strong>Student Computing Centre (SCC)</strong> in room{" "}
+              <InternalLink target="_blank" href="./FloorPlans/A-D2.pdf">
+                D224
+              </InternalLink>{" "}
+              at the Abbotsford campus and it has numerous resources for
+              students to take advantage of.
             </div>
             <div>
               Interested in planning an event or starting a project? Let us know
@@ -99,38 +156,84 @@ export default async function Page() {
         </div>
       </div>
       <div className="w-11/12 sm:w-9/12 mx-auto py-20">
-        <div className="text-3xl font-bold text-center">Upcoming Events</div>
-        {threeUpcomingEvents.length > 0 ? (
-          <div
-            className={
-              "grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 my-4"
-            }
-          >
-            <DisplayEvents events={threeUpcomingEvents} />
-          </div>
-        ) : (
-          <div className="my-4 text-center">No events</div>
-        )}
-        <div className="w-max mx-auto">
-          <InternalLinkButton variant="information" href="/events">
-            View More
-          </InternalLinkButton>
+        <h1 className="text-3xl font-bold text-center">Highlights</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 max-w-6xl mx-auto">
+          {highlightImages.map((images, index) => (
+            <div
+              key={index}
+              className={cn("gap-3", index === 2 ? "hidden lg:grid" : "grid")}
+            >
+              {images.map((image) => (
+                <InternalLink
+                  href={image.sourcePath}
+                  target="_blank"
+                  key={image.localPath}
+                >
+                  <Image
+                    alt={image.eventName}
+                    className="w-full h-auto rounded-lg"
+                    width={512}
+                    height={512}
+                    src={`/home/${image.localPath}`}
+                  />
+                </InternalLink>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 justify-center items-center w-full md:w-10/12 mx-auto gap-4">
-        <animated.div className="overflow-hidden" style={csaLogoSpring}>
-          <Image src="/csalogo.png" alt="" width={512} height={512} />
-        </animated.div>
-        <animated.div className="overflow-hidden" style={csaTextSpring}>
-          UFV&apos;s Computing Student Association exists to represent computing
-          students to UFV faculty and Staff. We provide a space for students to
-          hang out, make friends, and inquire about tutoring or help with
-          projects. We manage the Student Computing Centre (SCC) in room D224 in
-          D-building at the Abbotsford campus. If you have an event you want to
-          organize, or a project you would like to run, talk with us and
-          we&apos;ll work with you to make it happen.
-        </animated.div>
-      </div> */}
+      <div className="bg-slate-900/50">
+        <div className="w-11/12 sm:w-9/12 mx-auto py-8">
+          <h1 className="text-3xl font-bold text-center">Upcoming Events</h1>
+          {upcomingEvents.length > 0 ? (
+            <div
+              className={
+                "grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 my-4"
+              }
+            >
+              <DisplayEvents events={upcomingEvents} />
+            </div>
+          ) : (
+            <div className="my-4 text-center">No events</div>
+          )}
+          <div className="w-max mx-auto">
+            <InternalLinkButton variant="information" href="/events">
+              View More
+            </InternalLinkButton>
+          </div>
+        </div>
+      </div>
+      <div className="w-11/12 sm:w-9/12 mx-auto py-20 text-center">
+        <h1 className="text-3xl font-bold">
+          Want the latest {AppAbbreviationName} news?
+        </h1>
+        <div className="text-lg">
+          Follow all our social media and join our Discord server.
+        </div>
+        <div className="flex gap-4 items-center justify-center mt-2">
+          <Link
+            className={SocialMediaClassName}
+            href={AppDiscordInviteLink}
+            target="_blank"
+          >
+            <SiDiscord className="size-8 fill-inherit" />
+          </Link>
+          <Link
+            className={SocialMediaClassName}
+            target="_blank"
+            href={AppLinkedInLink}
+          >
+            <SiLinkedin className="size-8 fill-inherit" />
+          </Link>
+          <Link
+            className={SocialMediaClassName}
+            href={AppInstagramLink}
+            target="_blank"
+          >
+            <SiInstagram className="size-8 fill-inherit" />
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

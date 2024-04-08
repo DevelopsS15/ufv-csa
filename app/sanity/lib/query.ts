@@ -3,12 +3,6 @@ import { PortableTextBlock, Image as SanityImageType } from "sanity";
 import { readClient } from "~/app/(site)/client";
 import { SanityAnnouncementType } from "~/app/types";
 
-const sanityFetchNextOptions = {
-  next: {
-    revalidate: 0,
-  },
-};
-
 export interface getCurrentExecutiveType {
   _id: string;
   fullName: string;
@@ -26,7 +20,11 @@ export interface getCurrentExecutiveType {
     endDate: string;
   } | null;
 }
-
+const sanityFetchNextOptions_Executives = {
+  next: {
+    tags: ["executives"],
+  },
+};
 export async function getCurrentExecutives() {
   return readClient.fetch<getCurrentExecutiveType[]>(
     groq`*[_type == "executives" && isCurrent == true]{
@@ -46,10 +44,15 @@ export async function getCurrentExecutives() {
     discordId
   }`,
     {},
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Executives
   );
 }
 
+const sanityFetchNextOptions_Events = {
+  next: {
+    tags: ["events"],
+  },
+};
 export async function getEvent(slug: string) {
   return readClient.fetch<getEventType>(
     groq`*[_type == "event" && slug.current == $slug] {
@@ -72,7 +75,7 @@ export async function getEvent(slug: string) {
     bookTicket
   }[0]`,
     { slug },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Events
   );
 }
 
@@ -95,6 +98,16 @@ export interface getEventType {
   relevantLinks?: string[];
   body?: PortableTextBlock;
   bookTicket?: string;
+}
+
+export async function getEventsForStaticParams() {
+  return readClient.fetch<{ slug: string }[]>(
+    groq`*[_type == "event" && dateTime(now()) <= dateTime(endDate)] | order(startDate) {
+    "slug": slug.current,
+  }`,
+    {},
+    sanityFetchNextOptions_Events
+  );
 }
 
 export async function getEvents(limit = 25) {
@@ -121,7 +134,7 @@ export async function getEvents(limit = 25) {
     {
       limit,
     },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Events
   );
 }
 
@@ -155,7 +168,7 @@ export async function getUpcomingEvents(limit = 25) {
     {
       limit,
     },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Events
   );
 }
 
@@ -178,11 +191,27 @@ export interface getLatestAnnouncement {
   body?: PortableTextBlock;
 }
 
+const sanityFetchNextOptions_Announcements = {
+  next: {
+    tags: ["announcements"],
+  },
+};
+
+export async function getAnnouncementsForStaticParams() {
+  return readClient.fetch<{ slug: string }[]>(
+    groq`*[_type == "announcement"]{
+    "slug": slug.current,
+  }`,
+    {},
+    sanityFetchNextOptions_Announcements
+  );
+}
+
 export async function getAnnouncement(slug: string) {
   return readClient.fetch<getLatestAnnouncement>(
     groq`*[_type == "announcement" && slug.current == $slug][0]`,
     { slug },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Announcements
   );
 }
 
@@ -192,7 +221,7 @@ export async function getLatestAnnouncements(limit = 25) {
     {
       limit,
     },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_Announcements
   );
 }
 
@@ -205,12 +234,21 @@ export interface MeetingMinutesExecutive {
   avatar?: SanityImageType;
 }
 
+export interface MeetingMinutesExecutiveAttendance {
+  fullName: string;
+  avatar?: SanityImageType;
+  positions: {
+    position: string;
+    startDate?: string;
+    endDate?: string;
+  }[];
+}
 export interface MeetingMinutes extends SanityDocument {
   calledBy: MeetingMinutesExecutive;
   calledAt: string;
   slug: string;
-  executivesPresent: MeetingMinutesExecutive[];
-  executivesAbsent: MeetingMinutesExecutive[];
+  executivesPresent: MeetingMinutesExecutiveAttendance[];
+  executivesAbsent: MeetingMinutesExecutiveAttendance[];
   membersPresent: {
     position: string;
     name: string;
@@ -221,6 +259,23 @@ export interface MeetingMinutes extends SanityDocument {
   nextScheduledMeetingAt?: string;
   createdBy: MeetingMinutesExecutive[];
 }
+
+const sanityFetchNextOptions_MeetingMinutes = {
+  next: {
+    tags: ["meetingMinutes"],
+  },
+};
+
+export async function getMeetingMinutesForStaticParams() {
+  return readClient.fetch<{ slug: string }[]>(
+    groq`*[_type == "meetingMinutes"]{
+    "slug": slug.current,
+  }`,
+    {},
+    sanityFetchNextOptions_MeetingMinutes
+  );
+}
+
 export async function getMeetingMinutes(limit = 25) {
   return readClient.fetch<MeetingMinutes[]>(
     groq`*[_type == "meetingMinutes"] | order(calledAt desc)[0...$limit]{
@@ -238,12 +293,12 @@ export async function getMeetingMinutes(limit = 25) {
       calledAt,
       "executivesPresent": executivesPresent[]->{
         fullName,
-        "position": positions[0].position->title,
+        "positions": positions[0].position->title,
         avatar
       },
       "executivesAbsent": executivesAbsent[]->{
         fullName,
-        "position": positions[0].position->title,
+        "positions": positions[0].position->title,
         avatar
       },
       membersPresent,
@@ -264,7 +319,7 @@ export async function getMeetingMinutes(limit = 25) {
     {
       limit,
     },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_MeetingMinutes
   );
 }
 
@@ -284,12 +339,20 @@ export async function getMeetingMinute(slugDate: string) {
       calledAt,
       "executivesPresent": executivesPresent[]->{
         fullName,
-        "position": positions[0].position->title,
+        "positions": positions[]{
+          startDate,
+          "position": position->title,
+          endDate
+        },
         avatar
       },
       "executivesAbsent": executivesAbsent[]->{
         fullName,
-        "position": positions[0].position->title,
+        "positions": positions[]{
+          startDate,
+          "position": position->title,
+          endDate
+        },
         avatar
       },
       membersPresent,
@@ -310,6 +373,6 @@ export async function getMeetingMinute(slugDate: string) {
     {
       slug: slugDate,
     },
-    sanityFetchNextOptions
+    sanityFetchNextOptions_MeetingMinutes
   );
 }

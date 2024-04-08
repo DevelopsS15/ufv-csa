@@ -6,7 +6,12 @@ import {
   sanityBlocksToText,
   sanityBodyPTComponents,
 } from "../../utils";
-import { getEvent, getEventType } from "~/app/sanity/lib/query";
+import {
+  getEvent,
+  getEventType,
+  getEvents,
+  getEventsForStaticParams,
+} from "~/app/sanity/lib/query";
 import {
   LucideArrowLeft,
   LucideCalendarClock,
@@ -32,15 +37,22 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const slug = params.slug;
   const event: getEventType = await getEvent(slug);
+  if (!event) {
+    return {
+      title: "Unknown event",
+      description: "Unable to find this event.",
+    };
+  }
+  
   const previousImages = (await parent).openGraph?.images || [];
   if (event.image) {
     previousImages.unshift(getURLForSanityImage(event.image).quality(50).url());
   }
 
   // @ts-expect-error Type doesn't match due to non-existent Sanity Types
-  const bodyPlainText = toPlainText(event.body);
+  const bodyPlainText = event.body ? toPlainText(event.body) : undefined;
   const description =
-    event.body === undefined ? "No description" : bodyPlainText;
+    event.body === undefined ? "No description" : bodyPlainText ?? "";
   const limitedDescription =
     description.length > 384
       ? `${description.substring(0, 384)}...`
@@ -63,7 +75,13 @@ export async function generateMetadata(
     },
   };
 }
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 1800;
+
+export async function generateStaticParams() {
+  const events = await getEventsForStaticParams();
+  return events;
+}
+
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 1800;
 export default async function Page({ params }: Props) {
   const { slug } = params;
   const event: getEventType = await getEvent(slug);

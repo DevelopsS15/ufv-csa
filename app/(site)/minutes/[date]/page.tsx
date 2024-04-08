@@ -9,7 +9,12 @@ import {
   sanityBlocksToText,
   sanityBodyPTComponents,
 } from "../../utils";
-import { getAnnouncement, getMeetingMinute } from "~/app/sanity/lib/query";
+import {
+  MeetingMinutesExecutiveAttendance,
+  getAnnouncement,
+  getMeetingMinute,
+  getMeetingMinutesForStaticParams,
+} from "~/app/sanity/lib/query";
 import {
   LucideArrowLeft,
   LucideUserCheck,
@@ -35,8 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!meetingMinute) {
     return {
-      title: "Meeting minutes not found",
-      description: "",
+      title: "Unknown meeting minutes",
+      description: "Unable to find these meeting minutes",
     };
   }
 
@@ -62,6 +67,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
     },
   };
+}
+
+export async function generateStaticParams() {
+  const meetingMinutes = await getMeetingMinutesForStaticParams();
+  return meetingMinutes.map((meetingMinute) => ({
+    date: meetingMinute.slug,
+  }));
 }
 
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 43_200; // 12 hours
@@ -119,17 +131,24 @@ export default async function Page({ params }: Props) {
           <MembersPresentDisplay
             type="Executives"
             members={meetingMinute.executivesPresent}
+            date={calledAt}
           />
           <MembersPresentDisplay
             type="Regrets"
             members={meetingMinute.executivesAbsent}
+            date={calledAt}
           />
           {Array.isArray(meetingMinute.membersPresent) && (
             <MembersPresentDisplay
               type="Guests"
+              date={calledAt}
               members={meetingMinute.membersPresent.map((member) => ({
                 fullName: member.name,
-                position: member.position,
+                positions: [
+                  {
+                    position: member.position,
+                  },
+                ],
               }))}
             />
           )}
@@ -149,12 +168,16 @@ export default async function Page({ params }: Props) {
           <strong>Meeting Duration:</strong>{" "}
           {meetingDuration.hours > 0 && (
             <>
-              {meetingDuration.hours} hour{meetingDuration.hours > 1 ? "s" : ""}{" "}
-              and{" "}
+              {meetingDuration.hours} hour{meetingDuration.hours > 1 ? "s" : ""}
+              {meetingDuration.minutes > 0 && <> and </>}
             </>
           )}
-          {meetingDuration.minutes} minute
-          {meetingDuration.minutes > 1 ? "s" : ""}
+          {meetingDuration.minutes > 0 && (
+            <>
+              {meetingDuration.minutes} minute
+              {meetingDuration.minutes > 1 ? "s" : ""}
+            </>
+          )}
         </div>
         <div>
           <strong>Next meeting: </strong>
@@ -192,7 +215,7 @@ export default async function Page({ params }: Props) {
         </div>
       </div>
       <Separator className="bg-slate-400 dark:bg-slate-900 my-4" />
-      <div className="hyphens-manual break-all">
+      <div className="hyphens-manual break-words">
         {Array.isArray(meetingItems) && meetingItems.length > 0 ? (
           <PortableText
             value={meetingItems}
@@ -208,10 +231,12 @@ export default async function Page({ params }: Props) {
 
 function MembersPresentDisplay({
   type,
+  date,
   members,
 }: {
   type: string;
-  members: { position: string; avatar?: SanityImageType; fullName: string }[];
+  date: Date;
+  members: MeetingMinutesExecutiveAttendance[];
 }) {
   const membersArray = Array.isArray(members) ? members : [];
   return (
@@ -221,18 +246,64 @@ function MembersPresentDisplay({
         <div className="pl-4 flex flex-col gap-1">
           {membersArray.length > 0 ? (
             membersArray.map((member) => (
-              <div className="flex items-center gap-2" key={member.fullName}>
-                <ExecutiveAvatar executive={member} />
-                <span>
-                  {member.fullName} ({member.position})
-                </span>
-              </div>
+              <IndividualMemberPresentDisplay
+                key={member.fullName}
+                date={date}
+                executive={member}
+              />
             ))
           ) : (
             <div>None</div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function IndividualMemberPresentDisplay({
+  executive,
+  date,
+}: {
+  executive: MeetingMinutesExecutiveAttendance;
+  date: Date;
+}) {
+  const positionsArray = Array.isArray(executive.positions)
+    ? executive.positions
+    : [];
+
+  let currentPosition: unknown = positionsArray;
+
+  if (Array.isArray(currentPosition)) {
+    const filterCurrentPositions = currentPosition.filter(
+      (position) =>
+        (!position.endDate || new Date(position.endDate) >= date) &&
+        (!position.startDate || new Date(position.startDate) <= date)
+    );
+    if (filterCurrentPositions.length === 1) {
+      currentPosition = filterCurrentPositions[0];
+    }
+  }
+
+  const positionOrUnknown: string =
+    typeof currentPosition === `object` &&
+    currentPosition !== null &&
+    "position" in currentPosition
+      ? (currentPosition.position as string)
+      : "Unknown";
+
+  return (
+    <div className="flex items-center gap-2" key={executive.fullName}>
+      <ExecutiveAvatar
+        executive={{
+          fullName: executive.fullName,
+          position: positionOrUnknown,
+          avatar: executive.avatar,
+        }}
+      />
+      <span>
+        {executive.fullName} ({positionOrUnknown})
+      </span>
     </div>
   );
 }

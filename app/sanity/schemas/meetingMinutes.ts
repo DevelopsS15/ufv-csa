@@ -20,9 +20,9 @@ const filterOutIncludedExecutives = ({
   const absentExecutiveIds = getExecutiveIds(document.executivesAbsent);
   // isCurrent == $isCurrent &&
   return {
-    filter: `!(_id in $ids)`,
+    filter: `isCurrent == $isCurrent && !(_id in $ids)`,
     params: {
-      isCurrent: false,
+      isCurrent: true,
       ids: presentExecutiveIds.concat(absentExecutiveIds),
     },
   };
@@ -35,9 +35,9 @@ const filterPresentExecutives = ({
 }) => {
   const presentExecutiveIds = getExecutiveIds(document.executivesPresent);
   return {
-    filter: `_id in $ids`,
+    filter: `isCurrent == $isCurrent && _id in $ids`,
     params: {
-      isCurrent: false,
+      isCurrent: true,
       ids: presentExecutiveIds,
     },
   };
@@ -167,11 +167,11 @@ export default defineType({
       type: "slug",
       options: {
         source: "calledAt",
-        slugify: (input) =>
+        slugify: (input?: unknown) =>
           typeof input === `string` ? input.substring(0, 10) : "",
       },
       validation: (rule) =>
-        rule.required().custom((value, context) => {
+        rule.required().custom((value: { current?: string }, context) => {
           const calledAtValue = context.document?.calledAt as string;
           const slugValue = value?.current;
           if (!calledAtValue) return true;
@@ -232,7 +232,7 @@ export default defineType({
           to: [{ type: "executives" }],
         },
       ],
-      validation: (rule) => rule.min(1).unique(),
+      validation: (rule) => rule.required().unique(),
       readOnly: (data) => preventChangeAfterFirstPublish(data),
     }),
   ],
@@ -248,7 +248,7 @@ export default defineType({
         title: isNaN(calledAtDate.getTime())
           ? "Unknown Meeting Minutes"
           : `${calledAtDate.toDateString()} @ ${GetTimeStringFromDate(
-              calledAtDate,
+              calledAtDate
             )}`,
         subtitle: `Created by: ${
           typeof createdBy === `string` ? ` ${createdBy}` : ""

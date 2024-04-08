@@ -1,6 +1,6 @@
 import groq from "groq";
 import { LucideLoader2, LucideTrash2 } from "lucide-react";
-import { createClient } from "next-sanity";
+// import { createClient } from "next-sanity";
 import React from "react";
 import {
   DocumentActionConfirmDialogProps,

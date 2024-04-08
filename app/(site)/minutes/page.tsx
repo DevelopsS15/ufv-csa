@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   description: `View all the meeting minutes posted by the ${AppFullName}.`,
 };
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 86400;
+// export const dynamic = 'force-static';
 export default async function Page() {
   const minutes = await getMeetingMinutes();
   return (

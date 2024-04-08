@@ -6,9 +6,6 @@ import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
 import { isXDaysAhead } from "~/app/(site)/utils";
 import { headers } from "next/headers";
 
-// TODO March 18, 2024: Look into parsing headers for Discord Rate Limits.
-// https://discord.com/developers/docs/topics/rate-limits#rate-limits
-
 export async function GET() {
   const reqHeaders = headers();
   if (
@@ -60,14 +57,16 @@ export async function GET() {
       if (!eventData) continue;
       try {
         type typeOfReminderEnum = "month" | "week" | "day";
-        let periodReminder: typeOfReminderEnum | null = null;
+        let periodReminder: typeOfReminderEnum | null = "month";
 
         const currentDateISO = new Date().toISOString();
         const CheckReminder = (
           typeOfReminder: typeOfReminderEnum,
           daysAhead: number
         ) => {
-          console.log(`Checking 30 days reminder for: ${eventDocumentIdRef}`);
+          console.log(
+            `Checking ${daysAhead} days reminder for: ${eventDocumentIdRef}`
+          );
           if (!isXDaysAhead(currentDateISO, eventData?.startDate!, daysAhead))
             console.log(
               `Preparing ${daysAhead} days reminder for: ${eventDocumentIdRef}`
@@ -96,6 +95,10 @@ export async function GET() {
           await NotifyInterestedDiscordMembersAboutEvent({
             eventDocumentId: eventDocumentIdRef!,
             discordEventId: discordEventId!,
+            eventReminder: {
+              discordEventDocumentId: discordEvent._id,
+              reminderInterval: periodReminder,
+            },
             eventData,
             typeOfNotification: "reminder",
           });
@@ -106,13 +109,15 @@ export async function GET() {
         console.log(`Unable to send reminders for ${eventDocumentIdRef}`);
       }
     }
+    const successMessage = `Successful event reminders: ${
+      successfulEventReminders.length > 0
+        ? successfulEventReminders.join(", ")
+        : "No reminders"
+    }`;
+    console.log(successMessage);
     return NextResponse.json({
       success: true,
-      data: `Successful event reminders: ${
-        successfulEventReminders.length > 0
-          ? successfulEventReminders.join(", ")
-          : "No reminders"
-      }`,
+      data: successMessage,
     });
   } catch (e) {
     console.log(`Unable to process reminders for `);

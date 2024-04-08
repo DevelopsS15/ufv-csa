@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Executives",
 };
 
-export const revalidate = process.env.NODE_ENV === "development" ? 0 : 86400; // 1 day
+// export const revalidate = process.env.NODE_ENV === "development" ? 0 : 86400; // 1 day
 export default async function Page() {
   const executives = await getCurrentExecutives();
   const filterForExecs = (exec: getCurrentExecutiveType) =>

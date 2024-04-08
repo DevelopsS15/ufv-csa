@@ -17,7 +17,9 @@ export function ExecutiveAvatar({
 
   return (
     <BasicTooltip
-      content={`${executive.fullName}${executive.position ? ` (${executive.position})` : ""}`}
+      content={`${executive.fullName}${
+        executive.position ? ` (${executive.position})` : ""
+      }`}
     >
       {executive.avatar && !errorLoadingImage ? (
         <Image

@@ -3,6 +3,8 @@ import { writeServerClient } from "../serverClient";
 import groq from "groq";
 import { getUpcomingEventType } from "~/app/sanity/lib/query";
 import { CapitalizeFirstLetter } from "../utils";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v10";
 
 const discordServerId = process.env.DISCORD_SERVER_ID;
 const discordChannelIdEventReminder =
@@ -10,23 +12,9 @@ const discordChannelIdEventReminder =
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
 
 const discordServerInvite = process.env.DISCORD_SERVER_INVITE_LINK;
-
-export async function SendDiscordAPIRequest(options: {
-  method: "get" | "post" | "patch" | "delete" | "put";
-  headers?: Record<string, any>;
-  path: string;
-  body?: any;
-}) {
-  return await axios(`https://discord.com/api/v10/${options.path}`, {
-    method: options.method,
-    headers: {
-      Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
-      ...(options.headers ?? {}),
-    },
-    validateStatus: () => true,
-    data: options.body,
-  });
-}
+export const discordAPIRest = new REST({ version: "10" }).setToken(
+  process.env.DISCORD_BOT_TOKEN!
+);
 
 export function GetDiscordTimestampString(
   date: string | Date,
@@ -60,19 +48,17 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   let nextPaginationUserId: string | null = null;
   // Fetch all interested users via pagination (Discord Limitation)
   do {
-    const getInterestedUsersRequest = await SendDiscordAPIRequest({
-      method: "get",
-      path:
-        `guilds/${discordServerId}/scheduled-events/${discordEventId}/users?with_member=true` +
-        (nextPaginationUserId ? `&after=${nextPaginationUserId}` : ""),
-    });
+    const getInterestedUsersRequest = await discordAPIRest.get(
+      `/${
+        Routes.guildScheduledEventUsers(discordServerId!, discordEventId) +
+        "?with_member=true" +
+        (nextPaginationUserId ? `&after=${nextPaginationUserId}` : "")
+      }`
+    );
 
-    if (
-      getInterestedUsersRequest.status === 200 &&
-      Array.isArray(getInterestedUsersRequest.data)
-    ) {
+    if (Array.isArray(getInterestedUsersRequest)) {
       // Get user Ids and roles. If no roles, user left or failed to get member data. Filter out to prevent overriding roles.
-      const userIds: string[] = getInterestedUsersRequest.data.map(
+      const userIds: string[] = getInterestedUsersRequest.map(
         (user: { user_id: string; member?: { roles: string[] } }) =>
           user.user_id
       );
@@ -99,36 +85,39 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
 
   const namePrefix = `EventPing_`;
   const roleName = eventData?.title.substring(0, 100 - namePrefix.length);
-  const createNotifyRoleRequest = await SendDiscordAPIRequest({
-    method: "post",
-    path: `guilds/${discordServerId}/roles`,
-    body: {
-      name:
-        typeof roleName === `string`
-          ? `${namePrefix}${roleName}`
-          : eventDocumentId,
-    },
-  });
-  if (createNotifyRoleRequest.status !== 200) {
+  const createNotifyRoleRequest = (await discordAPIRest.post(
+    Routes.guildRoles(discordServerId!),
+    {
+      body: {
+        name:
+          typeof roleName === `string`
+            ? `${namePrefix}${roleName}`
+            : eventDocumentId,
+      },
+    }
+  )) as { id: string };
+
+  if (typeof createNotifyRoleRequest !== `object`) {
     console.log(
       `Unable to create notification role for ${eventDocumentId}: `,
-      createNotifyRoleRequest.data
+      createNotifyRoleRequest
     );
     return false;
   }
 
-  const eventReminderRoleId = createNotifyRoleRequest.data.id;
+  const eventReminderRoleId = createNotifyRoleRequest.id;
 
   // Add Discord notification role to all interested members
   for (let index = 0; index < totalInterestedUsers; index++) {
     const userId = allInterestedUserIds[index];
-    await SendDiscordAPIRequest({
-      method: "put",
-      headers: {
-        "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-      },
-      path: `guilds/${discordServerId}/members/${userId}/roles/${eventReminderRoleId}`,
-    });
+    await discordAPIRest.put(
+      Routes.guildMemberRole(discordServerId!, userId, eventReminderRoleId),
+      {
+        headers: {
+          "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+        },
+      }
+    );
   }
 
   const eventDiscordMessage = await writeServerClient.fetch<
@@ -162,16 +151,18 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     }\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
   };
 
-  const newReminderMessageRequest = await SendDiscordAPIRequest({
-    method: "post",
-    path: `/channels/${discordChannelIdEventReminder}/messages`,
-    headers: {
-      "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-    },
-    body: discordMessageBody,
-  });
+  const newReminderMessageRequest = await discordAPIRest.post(
+    Routes.channelMessages(discordChannelIdEventReminder),
+    {
+      headers: {
+        "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+      },
+      body: discordMessageBody,
+    }
+  );
 
-  if (eventReminder && newReminderMessageRequest.status === 200) {
+  console.log(eventReminder, newReminderMessageRequest);
+  if (eventReminder && typeof newReminderMessageRequest === `object`) {
     //   Store the date and time of the reminder
     await writeServerClient
       .patch(eventReminder.discordEventDocumentId)
@@ -180,26 +171,18 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   }
 
   // Delete the role right after sending message
-  await SendDiscordAPIRequest({
-    method: "delete",
-    path: `guilds/${discordServerId}/roles/${eventReminderRoleId}`,
-    headers: {
-      "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-    },
-    body: {
-      name:
-        typeof roleName === `string`
-          ? `${namePrefix}${roleName}`
-          : eventDocumentId,
-    },
-  });
+  await discordAPIRest.delete(
+    Routes.guildRole(discordServerId!, eventReminderRoleId),
+    {
+      headers: {
+        "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+      },
+    }
+  );
 
   // Return false if the message failed to send.
-  if (newReminderMessageRequest.status !== 200) {
-    console.log(
-      `Unable to send event notification`,
-      newReminderMessageRequest.data
-    );
+  if (typeof newReminderMessageRequest !== `object`) {
+    console.log(`Unable to send event notification`, newReminderMessageRequest);
     return false;
   }
   return true;

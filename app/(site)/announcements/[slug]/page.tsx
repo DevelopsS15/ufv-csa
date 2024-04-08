@@ -1,6 +1,9 @@
 import { PortableText, toPlainText } from "@portabletext/react";
 import { cn, getURLForSanityImage, sanityBodyPTComponents } from "../../utils";
-import { getAnnouncement } from "~/app/sanity/lib/query";
+import {
+  getAnnouncement,
+  getAnnouncementsForStaticParams,
+} from "~/app/sanity/lib/query";
 import { LucideArrowLeft } from "lucide-react";
 import { Separator } from "../../components/UI/separator";
 import InternalLinkButton from "../../components/General/InternalLinkButton";
@@ -19,6 +22,13 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const slug = params.slug;
   const announcement = await getAnnouncement(slug);
+  if (!announcement) {
+    return {
+      title: "Unknown announcement",
+      description: "Unable to find this announcement.",
+    };
+  }
+  
   const previousImages = (await parent).openGraph?.images || [];
   if (announcement.image) {
     previousImages.unshift(
@@ -51,6 +61,11 @@ export async function generateMetadata(
       type: "article",
     },
   };
+}
+
+export async function generateStaticParams() {
+  const announcements = await getAnnouncementsForStaticParams();
+  return announcements;
 }
 
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 3600; // 1 hour
