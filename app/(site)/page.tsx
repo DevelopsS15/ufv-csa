@@ -174,7 +174,7 @@ export default async function Page() {
                     className="w-full h-auto rounded-lg"
                     width={512}
                     height={512}
-                    src={`/home/${image.localPath}`}
+                    src={`/Home/${image.localPath}`}
                   />
                 </InternalLink>
               ))}
