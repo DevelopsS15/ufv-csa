@@ -87,6 +87,19 @@ export async function GET() {
           newsUrl: newsData.link,
         });
         successfulPosts.push(newsData.title);
+
+        try {
+          await discordAPIRest.post(
+            Routes.channelMessageCrosspost(
+              process.env.DISCORD_UFV_NEWS_CHANNEL_ID!,
+              newsMessageRequest.id
+            )
+          );
+        } catch (e) {
+          console.log(
+            `Cross-posted ${newsData.title} to all following channels`
+          );
+        }
       } catch (e) {
         console.log(`Unable to post discord message for ${newsData.title}`);
       }
