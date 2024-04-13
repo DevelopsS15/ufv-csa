@@ -147,6 +147,7 @@ export const CSACodeSegments: {
     languageFullName: "Rust",
     icon: <SiRust />,
     languageThemeColor: SiRustHex,
+    useLightBackground: true,
     code: `fn main(){\n\tprintln!("${AppFullName}");\n}`,
   },
   {
