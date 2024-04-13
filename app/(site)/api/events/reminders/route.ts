@@ -6,6 +6,7 @@ import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
 import { isXDaysAhead } from "~/app/(site)/utils";
 import { headers } from "next/headers";
 
+export const dynamic = "force-dynamic";
 export async function GET() {
   const reqHeaders = headers();
   if (

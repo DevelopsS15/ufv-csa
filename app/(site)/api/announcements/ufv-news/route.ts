@@ -8,6 +8,7 @@ import groq from "groq";
 import { discordAPIRest } from "../../utils";
 import { Routes } from "discord-api-types/v10";
 
+export const dynamic = "force-dynamic";
 export async function GET() {
   const reqHeaders = headers();
   if (reqHeaders.get("authorization") !== process.env.AUTH_TOKEN_UFV_NEWS) {
