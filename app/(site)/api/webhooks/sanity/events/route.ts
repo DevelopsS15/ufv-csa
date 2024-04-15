@@ -37,10 +37,9 @@ const validAnnouncementCategories: SanityAnnouncementType[] = [
   SanityAnnouncementType.IEEE,
 ];
 
-const eventDirectLinkDomain =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : `https://ufv-csa.vercel.app`;
+const eventDirectLinkDomain = `http${
+  process.env.NODE_ENV === "development" ? "" : "s"
+}://${process.env.SITE_DOMAIN}`;
 
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest, res: NextResponse) {
