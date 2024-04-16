@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 import { Root } from "./types";
-import { writeServerClient } from "~/app/(site)/serverClient";
+import { logger, writeServerClient } from "~/app/(site)/serverClient";
 import groq from "groq";
 import { discordAPIRest } from "../../utils";
 import { Routes } from "discord-api-types/v10";
@@ -96,12 +96,12 @@ export async function GET() {
             )
           );
         } catch (e) {
-          console.log(
+          logger.info(
             `Cross-posted ${newsData.title} to all following channels`
           );
         }
       } catch (e) {
-        console.log(`Unable to post discord message for ${newsData.title}`);
+        logger.error(`Unable to post discord message for ${newsData.title}`);
       }
     }
 
@@ -109,6 +109,7 @@ export async function GET() {
       posted: successfulPosts,
     });
   } catch (e) {
+    logger.error(`Unable to get the latest UFV news`);
     console.error(e);
     return NextResponse.json({
       success: false,
