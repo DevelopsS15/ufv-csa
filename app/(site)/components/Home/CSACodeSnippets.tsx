@@ -46,7 +46,7 @@ import {
 import Image from "next/image";
 
 // TODO: Add some networking/security -based code segments (NGINX)
-export const CSACodeSegments: {
+export const CSACodeSnippets: {
   language: string;
   languageFullName: string;
   languageThemeColor: string;

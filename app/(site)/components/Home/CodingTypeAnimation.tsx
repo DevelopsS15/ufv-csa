@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
-import { CSACodeSegments } from "./CSACodeSegments";
+import { CSACodeSnippets } from "./CSACodeSnippets";
 import { cn } from "../../utils";
 
 export const CodingTypeAnimation = () => {
-  const [currentCsaCodeSegmentsIndex, setCurrentCsaCodeSegmentsIndex] =
+  const [currentCSACodeSnippetsIndex, setCurrentCSACodeSnippetsIndex] =
     React.useState<number>(0);
   const [codeInElement, setCodeInElement] = React.useState<string>(``);
   const [displayMobileView, setDisplayMobileView] =
     React.useState<boolean>(false);
 
-  const CSACodeSegmentsForView = React.useMemo(
+  const CSACodeSnippetsForView = React.useMemo(
     () =>
-      CSACodeSegments.filter(
+      CSACodeSnippets.filter(
         (codeSegment) => !codeSegment.disableForMobile || !displayMobileView
       ),
     [displayMobileView]
@@ -21,7 +21,7 @@ export const CodingTypeAnimation = () => {
 
   React.useEffect(() => {
     let _codeInElement = "";
-    const targetText = CSACodeSegmentsForView[currentCsaCodeSegmentsIndex].code;
+    const targetText = CSACodeSnippetsForView[currentCSACodeSnippetsIndex].code;
     const textRatio = 40 / targetText.length;
     const newInterval = setInterval(() => {
       _codeInElement = targetText.substring(0, _codeInElement.length + 1);
@@ -29,10 +29,10 @@ export const CodingTypeAnimation = () => {
       if (_codeInElement.length === targetText.length) {
         clearInterval(newInterval);
         setTimeout(() => {
-          setCurrentCsaCodeSegmentsIndex(
-            currentCsaCodeSegmentsIndex + 1 === CSACodeSegmentsForView.length
+          setCurrentCSACodeSnippetsIndex(
+            currentCSACodeSnippetsIndex + 1 === CSACodeSnippetsForView.length
               ? 0
-              : currentCsaCodeSegmentsIndex + 1
+              : currentCSACodeSnippetsIndex + 1
           );
         }, 2_000);
       }
@@ -42,10 +42,10 @@ export const CodingTypeAnimation = () => {
       clearInterval(newInterval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCsaCodeSegmentsIndex]);
+  }, [currentCSACodeSnippetsIndex]);
 
   const currentCodeSegmentData =
-    CSACodeSegmentsForView[currentCsaCodeSegmentsIndex];
+    CSACodeSnippetsForView[currentCSACodeSnippetsIndex];
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -53,7 +53,7 @@ export const CodingTypeAnimation = () => {
       setDisplayMobileView(_displayMobileView);
       if (_displayMobileView !== displayMobileView) {
         setCodeInElement("");
-        setCurrentCsaCodeSegmentsIndex(0);
+        setCurrentCSACodeSnippetsIndex(0);
       }
     };
     handleResize();
