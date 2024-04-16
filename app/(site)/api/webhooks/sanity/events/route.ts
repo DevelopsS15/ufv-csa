@@ -9,7 +9,7 @@ import {
 const toMarkdown = require("@sanity/block-content-to-markdown");
 import { EventLocationDisplay } from "~/app/(site)/events/EventLocationDisplay";
 import { SanityAnnouncementType } from "~/app/types";
-import { writeServerClient } from "~/app/(site)/serverClient";
+import { logger, writeServerClient } from "~/app/(site)/serverClient";
 import { revalidatePath, revalidateTag } from "next/cache";
 import {
   GetDiscordTimestampString,
@@ -42,7 +42,8 @@ const eventDirectLinkDomain = `http${
 }://${process.env.SITE_DOMAIN}`;
 
 export const dynamic = "force-dynamic";
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
+  const loggerForRoute = logger.child({ script: "\\webhooks\\sanity\\events" });
   try {
     interface getEventTypeWithType extends getEventType {
       _type: string;
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     if (!isValidSignature) {
       const message = "Invalid signature";
-      console.log(`Invalid signature`);
+      loggerForRoute.error(`Invalid signature`);
       return NextResponse.json(
         { message, isValidSignature, body },
         {
@@ -66,14 +67,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     if (!body) {
-      console.log(`No body provided`);
       return NextResponse.json({ success: false });
     }
 
     const reqHeaders = headers();
     const idempotencyKey = reqHeaders.get("idempotency-key");
     if (typeof idempotencyKey !== `string`) {
-      console.log(`No idempotency-key provided`);
+      loggerForRoute.error(`No idempotency-key provided`);
       return NextResponse.json({ success: false });
     }
     const getIdempotencyKey = await writeServerClient.fetch(
@@ -82,9 +82,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
         idempotencyKey,
       }
     );
-    console.log(getIdempotencyKey);
     if (getIdempotencyKey) {
-      console.log(`Already handled idempotency-key provided ${idempotencyKey}`);
+      loggerForRoute.warn(
+        `Already handled idempotency-key provided ${idempotencyKey}`
+      );
       return NextResponse.json({ success: false });
     } else {
       await writeServerClient.create({
@@ -96,9 +97,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const documentType = body.before?._type ?? body.after?._type;
     const documentId = body.before?._id ?? body.after?._id;
     if (typeof documentType !== `string`) {
-      console.log(`No document type`);
-      const message = "Bad Request";
-      return NextResponse.json({ message, body });
+      loggerForRoute.warn(`No document type`);
+      return NextResponse.json({ message: "Bad Request", body });
     }
 
     let parentStaleRoute = "";
@@ -133,12 +133,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     if (parentStaleRoute.length > 0) {
-      console.log(`Revalidated parent route: ${parentStaleRoute}`);
+      loggerForRoute.info(`Revalidated parent route: ${parentStaleRoute}`);
       revalidatePath(`/${parentStaleRoute}`, "page");
     }
 
     if (documentType !== "event" && documentType !== "announcement") {
-      console.log(`Not an event/announcement so ignoring`);
+      loggerForRoute.info(`Not an event/announcement so ignoring`);
       const message = "Bad Request";
       return NextResponse.json({ message, body });
     }
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const decimalColorCode = 5414976;
     const maxDiscordTextLength = 3000;
 
-    console.log(`Received potential event/announcement from Sanity`);
+    loggerForRoute.info(`Received potential event/announcement from Sanity`);
 
     const embeds = [];
     const eventDirectLink = `${eventDirectLinkDomain}/${documentType}s/${
@@ -190,7 +190,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const eventDiscordMessageId =
           previousEventDiscordMessage?.discordMessageId ?? undefined;
         const discordEventMessageDocumentId = previousEventDiscordMessage?._id;
-        console.log(
+        loggerForRoute.info(
           `Handling ${body.after ? "CREATE/UPDATE" : "DELETE"} event.`,
           previousEventDiscordMessage
         );
@@ -255,26 +255,28 @@ export async function POST(req: NextRequest, res: NextResponse) {
             embeds: embeds,
           };
 
-          try {
-            const discordEventBody = {
-              name: eventTitle,
-              channel_id: null,
-              privacy_level: 2,
-              scheduled_start_time: body.after.startDate,
-              scheduled_end_time: body.after.endDate,
-              description:
-                textDescription.length > 975
-                  ? `${textDescription.substring(0, 975)}...`
-                  : textDescription,
-              entity_type: 3,
-              entity_metadata: {
-                location: eventLocationString ?? "Unknown",
-              },
-            };
+          const discordEventBody = {
+            name: eventTitle,
+            channel_id: null,
+            privacy_level: 2,
+            scheduled_start_time: body.after.startDate,
+            scheduled_end_time: body.after.endDate,
+            description:
+              textDescription.length > 975
+                ? `${textDescription.substring(0, 975)}...`
+                : textDescription,
+            entity_type: 3,
+            entity_metadata: {
+              location: eventLocationString ?? "Unknown",
+            },
+          };
 
-            // Event already has Discord Event
-            if (previousDiscordEvent) {
-              console.log(`Updating Discord Event ${previousDiscordEventId}`);
+          // Event already has Discord Event
+          if (previousDiscordEvent) {
+            try {
+              loggerForRoute.info(
+                `Updating Discord Event ${previousDiscordEventId}`
+              );
               discordMessageBody.content += `\n${discordServerInvite}?event=${previousDiscordEventId}`;
               await discordAPIRest.patch(
                 Routes.guildScheduledEvent(
@@ -362,15 +364,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
                     typeOfNotification: "update",
                     eventData: body.after,
                   });
-                console.log(
+                loggerForRoute.info(
                   `Updating Discord Event notification: ${statusOfNotification}`
                 );
               } else {
-                console.log(
+                loggerForRoute.info(
                   `No Discord Event notification as no relevant variables changed.`
                 );
               }
-            } else {
+            } catch (e) {
+              loggerForRoute.error(
+                `Unable to edit discord event and send update notification`
+              );
+              console.error(e);
+            }
+          } else {
+            try {
               const apiEvent = (await discordAPIRest.post(
                 Routes.guildScheduledEvents(discordServerId!),
                 {
@@ -378,7 +387,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 }
               )) as { id: string };
               const discordEventId = apiEvent?.id;
-              console.log(`Created Discord Event ${discordEventId}`);
+              loggerForRoute.info(`Created Discord Event ${discordEventId}`);
 
               await writeServerClient.create({
                 _type: "discordEvents",
@@ -391,13 +400,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 },
               });
               discordMessageBody.content += `\n${discordServerInvite}?event=${discordEventId}`;
+            } catch (e) {
+              loggerForRoute.error(`Unable to create discord event`);
+              console.error(e);
             }
-          } catch (e) {
-            console.log(`Unable to add discord event`);
           }
 
           // Create / update the Discord message via Webhook
-
           if (
             await HandleSendOrUpdateWebhookMessage({
               messageId: eventDiscordMessageId,
@@ -409,12 +418,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
               body: discordMessageBody,
             })
           ) {
-            console.log(
-              `Successfully posted ${documentId} event (Revision: ${revisionId}) to discord message.`
+            loggerForRoute.info(
+              `Successfully posted/edited ${documentId} event (Revision: ${revisionId}) to discord message.`
             );
           } else {
-            console.log(
-              `Unable to post message ${documentId} event (Revision: ${revisionId})`
+            loggerForRoute.error(
+              `Unable to post/edit message ${documentId} event (Revision: ${revisionId})`
             );
           }
         } else {
@@ -425,9 +434,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
             discordMessageDocumentId: discordEventMessageDocumentId,
           });
           if (resDelete) {
-            console.log(`Successfully deleted message for an event`);
+            loggerForRoute.info(`Successfully deleted message for an event`);
           } else {
-            console.log(`Unable to delete message for an event`);
+            loggerForRoute.error(`Unable to delete message for an event`);
           }
 
           // Deletes the existing discord event
@@ -438,7 +447,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 previousDiscordEventId
               )
             );
-            console.log(`Deleting the document for a Discord Event`);
+            loggerForRoute.info(`Deleting the document for a Discord Event`);
             await writeServerClient.delete(previousDiscordEvent._id);
           }
         }
@@ -458,7 +467,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           !announcementCategory ||
           !validAnnouncementCategories.includes(announcementCategory)
         ) {
-          console.log(`Unable to parse valid announcement category`);
+          loggerForRoute.error(`Unable to parse valid announcement category`);
           return NextResponse.json({
             success: false,
             data: `Unable to parse valid announcement category`,
@@ -481,7 +490,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const discordAnnouncementMessageDocumentId =
           previousAnnounceDiscordMessage?._id;
 
-        console.log(
+        loggerForRoute.info(
           `Handling ${
             announcementBody.after ? "CREATE/UPDATE" : "DELETE"
           } announcement.`,
@@ -532,11 +541,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
               body: discordMessageBody,
             })
           ) {
-            console.log(
+            loggerForRoute.info(
               `Successfully posted ${documentId} announcement (Revision: ${revisionId}) to discord message.`
             );
           } else {
-            console.log(
+            loggerForRoute.error(
               `Unable to post discord message ${documentId} announcement (Revision: ${revisionId})`
             );
           }
@@ -547,9 +556,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
             discordMessageDocumentId: discordAnnouncementMessageDocumentId,
           });
           if (resDelete) {
-            console.log(`Successfully deleted message for an announcement`);
+            loggerForRoute.info(
+              `Successfully deleted message for an announcement`
+            );
           } else {
-            console.log(`Unable to delete message for an announcement`);
+            loggerForRoute.error(
+              `Unable to delete message for an announcement`
+            );
           }
         }
         break;
@@ -580,7 +593,7 @@ async function HandleSendOrUpdateWebhookMessage({
   body: object;
 }) {
   const bodyType = type;
-  console.log(
+  logger.debug(
     `Trying to send/update webhook message for ${bodyType} ${documentId}`
   );
   if (messageId) {
@@ -592,7 +605,7 @@ async function HandleSendOrUpdateWebhookMessage({
       .patch(messageDocumentId)
       .set({ revisionId: revisionId })
       .commit();
-    console.log(
+    logger.info(
       `Updated ${documentId} event (Revision: ${revisionId}) to discord message: ${updatedMessage?.id}`
     );
     return true;
