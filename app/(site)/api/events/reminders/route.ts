@@ -1,6 +1,6 @@
 import groq from "groq";
 import { NextResponse } from "next/server";
-import { writeServerClient } from "~/app/(site)/serverClient";
+import { logger, writeServerClient } from "~/app/(site)/serverClient";
 import { getUpcomingEvents } from "~/app/sanity/lib/query";
 import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
 import { isXDaysAhead } from "~/app/(site)/utils";
@@ -24,26 +24,30 @@ export async function GET() {
   }
 
   try {
+    logger.info(`Looking for event reminders`);
     const currentEvents = await getUpcomingEvents(1000);
-    const getAllDiscordEvents = await writeServerClient.fetch<
-      {
-        _id: string;
-        discordEventId?: string;
-        eventDocumentId?: {
-          _ref: string;
-        };
-        reminders?: {
-          month?: string;
-          week?: string;
-          day?: string;
-        };
-      }[]
-    >(
-      groq`*[_type == "discordEvents" && eventDocumentId._ref in $eventDocuments]`,
-      {
-        eventDocuments: currentEvents.map((event) => event._id),
-      }
-    );
+    const getAllDiscordEvents =
+      Array.isArray(currentEvents) && currentEvents.length > 0
+        ? await writeServerClient.fetch<
+            {
+              _id: string;
+              discordEventId?: string;
+              eventDocumentId?: {
+                _ref: string;
+              };
+              reminders?: {
+                month?: string;
+                week?: string;
+                day?: string;
+              };
+            }[]
+          >(
+            groq`*[_type == "discordEvents" && eventDocumentId._ref in $eventDocuments]`,
+            {
+              eventDocuments: currentEvents.map((event) => event._id),
+            }
+          )
+        : [];
 
     const successfulEventReminders: string[] = [];
     const totalDiscordEvents = getAllDiscordEvents.length;
@@ -63,33 +67,41 @@ export async function GET() {
         const currentDateISO = new Date().toISOString();
         const CheckReminder = (
           typeOfReminder: typeOfReminderEnum,
-          daysAhead: number
+          daysAhead: number,
+          reminderPosted?: string
         ) => {
-          console.log(
+          if (periodReminder) {
+            return;
+          }
+          logger.info(
             `Checking ${daysAhead} days reminder for: ${eventDocumentIdRef}`
           );
-          if (!isXDaysAhead(currentDateISO, eventData?.startDate!, daysAhead))
-            console.log(
-              `Preparing ${daysAhead} days reminder for: ${eventDocumentIdRef}`
+          if (reminderPosted) {
+            logger.info(
+              `Already posted ${daysAhead} days reminder for: ${eventDocumentIdRef}`
             );
+            return;
+          }
+          if (!isXDaysAhead(currentDateISO, eventData?.startDate!, daysAhead)) {
+            logger.info(
+              `Too early for ${daysAhead} days reminder for: ${eventDocumentIdRef}`
+            );
+            return;
+          }
           periodReminder = typeOfReminder;
         };
 
-        if (!discordEvent.reminders?.month) {
-          CheckReminder("month", 30);
-        }
-
-        if (!periodReminder && !discordEvent.reminders?.week) {
-          CheckReminder("week", 7);
-        }
-
-        if (!periodReminder && !discordEvent.reminders?.day) {
-          CheckReminder("day", 1);
-        }
+        CheckReminder("month", 30, discordEvent.reminders?.month);
+        CheckReminder("week", 7, discordEvent.reminders?.week);
+        CheckReminder("day", 1, discordEvent.reminders?.day);
 
         if (periodReminder === null) {
-          console.log(`No reminder for ${eventDocumentIdRef}`);
+          logger.warn(`No reminder for: ${eventDocumentIdRef}`);
           continue;
+        } else {
+          logger.info(
+            `Posting ${periodReminder} reminder for: ${eventDocumentIdRef}`
+          );
         }
 
         const statusOfNotification =
@@ -99,6 +111,7 @@ export async function GET() {
             eventReminder: {
               discordEventDocumentId: discordEvent._id,
               reminderInterval: periodReminder,
+              previousReminders: discordEvent.reminders,
             },
             eventData,
             typeOfNotification: "reminder",
@@ -107,7 +120,8 @@ export async function GET() {
         if (statusOfNotification)
           successfulEventReminders.push(eventDocumentIdRef!);
       } catch (e) {
-        console.log(`Unable to send reminders for ${eventDocumentIdRef}`);
+        logger.error(`Unable to send reminders for: ${eventDocumentIdRef}`);
+        console.error(e);
       }
     }
     const successMessage = `Successful event reminders: ${
@@ -115,13 +129,13 @@ export async function GET() {
         ? successfulEventReminders.join(", ")
         : "No reminders"
     }`;
-    console.log(successMessage);
+    logger.info(successMessage);
     return NextResponse.json({
       success: true,
       data: successMessage,
     });
   } catch (e) {
-    console.log(`Unable to process reminders for `);
+    logger.error(`Unable to process reminders for ${new Date().toISOString()}`);
     return NextResponse.json(
       { success: false, data: `Internal Server Error` },
       { status: 500 }

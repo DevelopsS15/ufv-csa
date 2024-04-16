@@ -1,5 +1,5 @@
 import axios from "axios";
-import { writeServerClient } from "../serverClient";
+import { logger, writeServerClient } from "../serverClient";
 import groq from "groq";
 import { getUpcomingEventType } from "~/app/sanity/lib/query";
 import { CapitalizeFirstLetter } from "../utils";
@@ -39,6 +39,13 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   eventReminder?: {
     discordEventDocumentId: string;
     reminderInterval: string;
+    previousReminders:
+      | {
+          month?: string | undefined;
+          week?: string | undefined;
+          day?: string | undefined;
+        }
+      | undefined;
   };
   typeOfNotification: "reminder" | "update";
   customMessageContents?: string;
@@ -75,13 +82,13 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   // Only notify if there is atleast one interested user
   const totalInterestedUsers = allInterestedUserIds.length;
   if (totalInterestedUsers === 0) {
-    console.log(
+    logger.info(
       `No ${typeOfNotification} notification for ${eventDocumentId} due to no interested users.`
     );
     return false;
   }
 
-  console.log(`Notifying members for event Id: ${eventDocumentId}`);
+  logger.info(`Notifying members for event Id: ${eventDocumentId}`);
 
   const namePrefix = `EventPing_`;
   const roleName = eventData?.title.substring(0, 100 - namePrefix.length);
@@ -98,7 +105,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   )) as { id: string };
 
   if (typeof createNotifyRoleRequest !== `object`) {
-    console.log(
+    logger.error(
       `Unable to create notification role for ${eventDocumentId}: `,
       createNotifyRoleRequest
     );
@@ -131,7 +138,6 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
       eventDocument: eventDocumentId,
     }
   );
-  console.log(eventDiscordMessage);
 
   // Send notification Discord message
   const startDateSeconds = Math.round(
@@ -143,12 +149,18 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
       ? `${customMessageContents}\n`
       : "";
 
+  const ReminderIntervalBeforeText =
+    typeof eventReminder?.reminderInterval === `string`
+      ? `${CapitalizeFirstLetter(eventReminder?.reminderInterval)} before `
+      : "";
+  const originalEventMessageLink = `https://discord.com/channels/${discordServerId}/${discordChannelIdEvent}/${
+    eventDiscordMessage?.discordMessageId ?? ""
+  }`;
+
   const discordMessageBody = {
-    content: `## ${typeOfNotificationText}\n**${
+    content: `## ${ReminderIntervalBeforeText}${typeOfNotificationText}\n**${
       eventData?.title ?? "Unknown event"
-    }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) https://discord.com/channels/${discordServerId}/${discordChannelIdEvent}/${
-      eventDiscordMessage?.discordMessageId ?? ""
-    }\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
+    }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) ${originalEventMessageLink}\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
   };
 
   const newReminderMessageRequest = await discordAPIRest.post(
@@ -161,12 +173,16 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     }
   );
 
-  console.log(eventReminder, newReminderMessageRequest);
   if (eventReminder && typeof newReminderMessageRequest === `object`) {
     //   Store the date and time of the reminder
     await writeServerClient
       .patch(eventReminder.discordEventDocumentId)
-      .set({ reminders: { [eventReminder.reminderInterval]: new Date() } })
+      .set({
+        reminders: {
+          ...(eventReminder.previousReminders ?? {}),
+          ...{ [eventReminder.reminderInterval]: new Date() },
+        },
+      })
       .commit();
   }
 
@@ -182,7 +198,10 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
 
   // Return false if the message failed to send.
   if (typeof newReminderMessageRequest !== `object`) {
-    console.log(`Unable to send event notification`, newReminderMessageRequest);
+    logger.error(
+      `Unable to send event notification`,
+      newReminderMessageRequest
+    );
     return false;
   }
   return true;

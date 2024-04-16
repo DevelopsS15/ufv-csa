@@ -105,7 +105,7 @@ export function isXDaysAhead(date1: string, date2: string, daysAhead: number) {
   const timeDiff = d2.getTime() - d1.getTime();
   // Convert milliseconds to days
   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  // Check if the second date is exactly 30 days ahead of the first date
+  // Check if the second date is exactly x days ahead of the first date
   return daysDiff === daysAhead;
 }
 
