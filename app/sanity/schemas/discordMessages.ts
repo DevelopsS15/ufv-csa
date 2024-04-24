@@ -17,8 +17,9 @@ export default defineType({
     }),
     defineField({
       name: "discordMessageId",
+      description: "DO NOT MODIFY THIS VALUE UNLESS THE ORIGINAL MESSAGE WAS DELETED.",
       type: "string",
-      readOnly: true,
+      // readOnly: true,
       validation: (rule) => [
         rule.required().error("You must provide a Discord Id"),
         rule
@@ -40,7 +41,7 @@ export default defineType({
           },
           {
             title: "announcement",
-            value: "event",
+            value: "announcement",
           },
         ],
       },
