@@ -38,6 +38,7 @@
     "@sanity/webhook": "^4.0.2",
     "@uiw/react-textarea-code-editor": "^3.0.2",
     "axios": "^1.6.7",
+    "cache-manager": "^5.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
