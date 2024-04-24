@@ -19,6 +19,7 @@ import {
 import { allCampusOptions } from "~/app/sanity/schemas/event";
 import { headers } from "next/headers";
 import { Routes } from "discord-api-types/v10";
+import { caching } from "cache-manager";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
@@ -41,9 +42,14 @@ const eventDirectLinkDomain = `http${
   process.env.NODE_ENV === "development" ? "" : "s"
 }://${process.env.SITE_DOMAIN}`;
 
+const memoryCache = caching("memory", {
+  max: 100,
+  ttl: 30 * 60 * 1000, // 30 minutes
+});
+
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
-  const loggerForRoute = logger.child({ script: "\\webhooks\\sanity\\events" });
+  let loggerForRoute = logger.child({ script: "\\webhooks\\sanity\\events" });
   try {
     interface getEventTypeWithType extends getEventType {
       _type: string;
@@ -76,26 +82,28 @@ export async function POST(req: NextRequest) {
       loggerForRoute.error(`No idempotency-key provided`);
       return NextResponse.json({ success: false });
     }
-    const getIdempotencyKey = await writeServerClient.fetch(
-      groq`*[_type=="idempotencyKey" && value==$idempotencyKey][0]`,
-      {
-        idempotencyKey,
-      }
-    );
+
+    const getIdempotencyKey = await (await memoryCache).get(idempotencyKey);
     if (getIdempotencyKey) {
       loggerForRoute.warn(
         `Already handled idempotency-key provided ${idempotencyKey}`
       );
       return NextResponse.json({ success: false });
     } else {
-      await writeServerClient.create({
-        _type: "idempotencyKey",
-        value: idempotencyKey,
-      });
+      await (await memoryCache).set(idempotencyKey!, true);
     }
 
     const documentType = body.before?._type ?? body.after?._type;
     const documentId = body.before?._id ?? body.after?._id;
+    if (typeof documentId !== `string`) {
+      loggerForRoute.warn(`No document id`);
+      return NextResponse.json({ message: "Bad Request", body });
+    }
+    loggerForRoute = logger.child({
+      sanityIdempotencyKey: idempotencyKey,
+      sanityDocumentId: documentId,
+      script: "\\webhooks\\sanity\\events",
+    });
     if (typeof documentType !== `string`) {
       loggerForRoute.warn(`No document type`);
       return NextResponse.json({ message: "Bad Request", body });
@@ -546,7 +554,7 @@ export async function POST(req: NextRequest) {
             );
           } else {
             loggerForRoute.error(
-              `Unable to post discord message ${documentId} announcement (Revision: ${revisionId})`
+              `Unable to post/update discord message ${documentId} announcement (Revision: ${revisionId})`
             );
           }
         } else {
@@ -593,55 +601,65 @@ async function HandleSendOrUpdateWebhookMessage({
   body: object;
 }) {
   const bodyType = type;
-  logger.debug(
-    `Trying to send/update webhook message for ${bodyType} ${documentId}`
-  );
-  if (messageId) {
-    const updatedMessage = (await discordAPIRest.patch(
-      Routes.channelMessage(channelId, messageId),
-      { body }
-    )) as { id: string };
-    await writeServerClient
-      .patch(messageDocumentId)
-      .set({ revisionId: revisionId })
-      .commit();
-    logger.info(
-      `Updated ${documentId} event (Revision: ${revisionId}) to discord message: ${updatedMessage?.id}`
-    );
-    return true;
-  } else {
-    const sentMessage = (await discordAPIRest.post(
-      Routes.channelMessages(channelId),
-      {
-        body,
-      }
-    )) as { id: string };
-    const sentMessageId = sentMessage?.id;
-    if (sentMessageId) {
-      await writeServerClient.create({
-        _type: "discordMessages",
-        discordMessageId: sentMessageId,
-        type: bodyType,
-        revisionId: revisionId,
-        eventDocumentId:
-          bodyType === "event"
-            ? {
-                _type: "reference",
-                _ref: documentId,
-                _weak: true,
-              }
-            : undefined,
-        announcementDocumentId:
-          bodyType === "announcement"
-            ? {
-                _type: "reference",
-                _ref: documentId,
-                _weak: true,
-              }
-            : undefined,
-      });
+  try {
+    if (messageId) {
+      logger.debug(
+        `Trying to update webhook message for ${bodyType} ${documentId}`
+      );
+      const updatedMessage = (await discordAPIRest.patch(
+        Routes.channelMessage(channelId, messageId),
+        { body }
+      )) as { id: string };
+      await writeServerClient
+        .patch(messageDocumentId)
+        .set({ revisionId: revisionId })
+        .commit();
+      logger.info(
+        `Updated ${documentId} event (Revision: ${revisionId}) to discord message: ${updatedMessage?.id}`
+      );
       return true;
+    } else {
+      logger.debug(
+        `Trying to send webhook message for ${bodyType} ${documentId}`
+      );
+      const sentMessage = (await discordAPIRest.post(
+        Routes.channelMessages(channelId),
+        {
+          body,
+        }
+      )) as { id: string };
+      const sentMessageId = sentMessage?.id;
+      if (sentMessageId) {
+        await writeServerClient.create({
+          _type: "discordMessages",
+          discordMessageId: sentMessageId,
+          type: bodyType,
+          revisionId: revisionId,
+          eventDocumentId:
+            bodyType === "event"
+              ? {
+                  _type: "reference",
+                  _ref: documentId,
+                  _weak: true,
+                }
+              : undefined,
+          announcementDocumentId:
+            bodyType === "announcement"
+              ? {
+                  _type: "reference",
+                  _ref: documentId,
+                  _weak: true,
+                }
+              : undefined,
+        });
+        return true;
+      }
     }
+  } catch (e) {
+    logger.error(
+      `Unexpected error for sending/updating webhook message for ${bodyType} ${documentId}`
+    );
+    console.error(e);
   }
   return false;
 }
@@ -655,13 +673,17 @@ async function DeleteDiscordMessageViaAPI({
   channelId: string;
   discordMessageDocumentId?: string;
 }): Promise<boolean> {
-  if (discordMessageDocumentId)
-    await writeServerClient.delete(discordMessageDocumentId);
-  if (typeof messageId !== `string`) return true;
   try {
+    if (typeof messageId !== `string`) return true;
     await discordAPIRest.delete(Routes.channelMessage(channelId, messageId));
+    if (discordMessageDocumentId)
+      await writeServerClient.delete(discordMessageDocumentId);
     return true;
   } catch (e) {
+    logger.error(
+      `Unable to delete the discord message ${messageId} for documentId: ${discordMessageDocumentId}`
+    );
+    console.error(e);
     return false;
   }
 }
