@@ -21,6 +21,7 @@ import {
   SiLinkedin,
 } from "@icons-pack/react-simple-icons";
 import { cn } from "./utils";
+import ElectionBanner from "./components/Home/ElectionBanner";
 
 export default async function Page() {
   const upcomingEvents = await getUpcomingEvents(3);
@@ -153,6 +154,11 @@ export default async function Page() {
               or via social media.
             </div>
           </div>
+        </div>
+      </div>
+      <div className="bg-slate-700/75">
+        <div className="w-11/12 max-w-screen-xl mx-auto py-8">
+          <ElectionBanner />
         </div>
       </div>
       <div className="w-11/12 sm:w-9/12 mx-auto py-20">
