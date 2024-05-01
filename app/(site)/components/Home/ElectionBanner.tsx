@@ -11,6 +11,7 @@ import { Progress } from "../UI/progress";
 import React from "react";
 import { AppDiscordInviteLink, AppFullName } from "../../config";
 import InternalLinkButton from "../General/InternalLinkButton";
+import BasicTooltip from "../General/Tooltip";
 
 export default function ElectionBanner() {
   return (
@@ -38,6 +39,7 @@ export default function ElectionBanner() {
           endDate={new Date("2024-05-14T12:00:00.000-07:00")}
           title="Voting"
           description="Vote for your ideal candidate for each position"
+          link="https://forms.office.com/r/kQVsUmeJt1"
           icon={<LucideArchive />}
         />
         <ElectionBannerTimelineSegment
@@ -82,16 +84,33 @@ function ElectionBannerTimelineSegment({
   endDate.setMinutes(59);
   endDate.setSeconds(59);
   endDate.setMilliseconds(999);
-  const [currentDate, setCurrentDate] = React.useState<Date>(new Date());
+  const [elapsedMs, setElapsedMs] = React.useState<number>(
+    new Date().getTime() - startDate.getTime()
+  );
   const totalMs = endDate.getTime() - startDate.getTime();
-  const elapsedMs = currentDate.getTime() - startDate.getTime();
   const elapsedPercent = Math.floor((elapsedMs / totalMs) * 100);
   const isDatePriorToSegment = elapsedPercent <= 0;
   const isDateAfterSegment = elapsedPercent >= 100;
 
+  const [leftOverMs, setLeftOverMs] = React.useState<number>(0);
+
   React.useEffect(() => {
-    setCurrentDate(new Date());
-  }, []);
+    if (isDateAfterSegment) return;
+    const interval = setInterval(() => {
+      const currentDate = new Date();
+      setLeftOverMs(endDate.getTime() - currentDate.getTime());
+      setElapsedMs(currentDate.getTime() - startDate.getTime());
+    }, 1000);
+
+    //Clearing the interval
+    return () => clearInterval(interval);
+  }, [endDate, isDateAfterSegment, isDatePriorToSegment, startDate]);
+
+  const timeUntilEndSeconds = Math.abs(Math.round(leftOverMs / 1000));
+  const days = Math.floor(timeUntilEndSeconds / (3600 * 24));
+  const hours = Math.floor((timeUntilEndSeconds % (3600 * 24)) / 3600);
+  const minutes = Math.floor((timeUntilEndSeconds % 3600) / 60);
+  const remainingSeconds = timeUntilEndSeconds % 60;
 
   return (
     <div>
@@ -100,16 +119,32 @@ function ElectionBannerTimelineSegment({
           {React.cloneElement(icon, {
             className: isDatePriorToSegment
               ? "stroke-white-500"
-              : "stroke-green-400",
+              : "stroke-green-500",
           })}
         </div>
-        <div className="flex w-full bg-gray-200 h-0.5 dark:bg-gray-700">
+        {!isDateAfterSegment ? (
+          <BasicTooltip
+            content={`${
+              isDatePriorToSegment
+                ? `Starts in`
+                : isDateAfterSegment
+                ? "Ended"
+                : "Ends in"
+            } ${days} days, ${hours} hours, ${minutes} minutes, ${remainingSeconds} seconds`}
+          >
+            <Progress
+              className="h-1.5 rounded-l-none md:rounded-none"
+              value={isDateAfterSegment ? 100 : elapsedPercent}
+              max={100}
+            />
+          </BasicTooltip>
+        ) : (
           <Progress
-            className="h-1"
+            className="h-1.5 rounded-l-none md:rounded-none"
             value={isDateAfterSegment ? 100 : elapsedPercent}
             max={100}
           />
-        </div>
+        )}
       </div>
       <div className="md:mt-2 md:pe-4">
         <a
