@@ -87,12 +87,14 @@ function ElectionBannerTimelineSegment({
   const [elapsedMs, setElapsedMs] = React.useState<number>(
     new Date().getTime() - startDate.getTime()
   );
-  const totalMs = endDate.getTime() - startDate.getTime();
-  const elapsedPercent = Math.floor((elapsedMs / totalMs) * 100);
+  const [leftOverMs, setLeftOverMs] = React.useState<number>(0);
+  const elapsedPercent = React.useMemo(() => {
+    const totalMs = endDate.getTime() - startDate.getTime();
+    return Math.floor((elapsedMs / totalMs) * 100);
+  }, [elapsedMs, endDate, startDate]);
+
   const isDatePriorToSegment = elapsedPercent <= 0;
   const isDateAfterSegment = elapsedPercent >= 100;
-
-  const [leftOverMs, setLeftOverMs] = React.useState<number>(0);
 
   React.useEffect(() => {
     if (isDateAfterSegment) return;
@@ -104,7 +106,7 @@ function ElectionBannerTimelineSegment({
 
     //Clearing the interval
     return () => clearInterval(interval);
-  }, [endDate, isDateAfterSegment, isDatePriorToSegment, startDate]);
+  }, [endDate, isDateAfterSegment, startDate]);
 
   const timeUntilEndSeconds = Math.abs(Math.round(leftOverMs / 1000));
   const days = Math.floor(timeUntilEndSeconds / (3600 * 24));
@@ -115,13 +117,6 @@ function ElectionBannerTimelineSegment({
   return (
     <div>
       <div className="flex items-center mt-4 md:mt-0">
-        <div className="z-10 flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full ring-white dark:bg-gray-900 p-2 dark:ring-gray-900">
-          {React.cloneElement(icon, {
-            className: isDatePriorToSegment
-              ? "stroke-white-500"
-              : "stroke-green-500",
-          })}
-        </div>
         {!isDateAfterSegment ? (
           <BasicTooltip
             content={`${
@@ -132,19 +127,22 @@ function ElectionBannerTimelineSegment({
                 : "Ends in"
             } ${days} days, ${hours} hours, ${minutes} minutes, ${remainingSeconds} seconds`}
           >
-            <Progress
-              className="h-1.5 rounded-l-none md:rounded-none"
-              value={isDateAfterSegment ? 100 : elapsedPercent}
-              max={100}
+            <ElectionBannerTimelineSegmentIcon
+              isDatePriorToSegment={isDatePriorToSegment}
+              icon={icon}
             />
           </BasicTooltip>
         ) : (
-          <Progress
-            className="h-1.5 rounded-l-none md:rounded-none"
-            value={isDateAfterSegment ? 100 : elapsedPercent}
-            max={100}
+          <ElectionBannerTimelineSegmentIcon
+            isDatePriorToSegment={isDatePriorToSegment}
+            icon={icon}
           />
         )}
+        <Progress
+          className="h-1.5 rounded-l-none md:rounded-none"
+          value={isDateAfterSegment ? 100 : elapsedPercent}
+          max={100}
+        />
       </div>
       <div className="md:mt-2 md:pe-4">
         <a
@@ -170,6 +168,24 @@ function ElectionBannerTimelineSegment({
           {description}
         </p>
       </div>
+    </div>
+  );
+}
+
+function ElectionBannerTimelineSegmentIcon({
+  isDatePriorToSegment,
+  icon,
+}: {
+  isDatePriorToSegment: boolean;
+  icon: JSX.Element;
+}) {
+  return (
+    <div className="z-10 flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full ring-white dark:bg-gray-900 p-2 dark:ring-gray-900">
+      {React.cloneElement(icon, {
+        className: isDatePriorToSegment
+          ? "stroke-white-500"
+          : "stroke-green-500",
+      })}
     </div>
   );
 }
