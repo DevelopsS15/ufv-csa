@@ -12,4 +12,6 @@ export const writeServerClient = createClient({
   token: token,
 });
 
-export const logger = require("pino")();
+export const logger = require("pino")({
+  level: "debug",
+});
