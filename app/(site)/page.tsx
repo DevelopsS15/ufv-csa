@@ -62,10 +62,10 @@ export default async function Page() {
 
   const columnThreeHighlightImages: HighlightsImage[] = [
     {
-      localPath: "TechPanel_4.jpg",
+      localPath: "CSAHackathon_1.jpg",
       sourcePath:
-        "https://flickr.com/photos/ufv/53588768322/in/album-72177720315460690/",
-      eventName: "Tech Panel",
+        "https://flickr.com/photos/ufv/53740057128/in/album-72177720317223688/",
+      eventName: "CSA Startup Hackathon",
     },
     {
       localPath: "TechPanel_5.jpg",
@@ -156,11 +156,11 @@ export default async function Page() {
           </div>
         </div>
       </div>
-      <div className="bg-slate-700/75">
+      {/* <div className="bg-slate-700/75">
         <div className="w-11/12 max-w-screen-xl mx-auto py-8">
           <ElectionBanner />
         </div>
-      </div>
+      </div> */}
       <div className="w-11/12 sm:w-9/12 mx-auto py-20">
         <h1 className="text-3xl font-bold text-center">Highlights</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 max-w-6xl mx-auto">
