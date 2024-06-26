@@ -28,10 +28,14 @@ export function ExecutiveAvatar({
           onError={() => setErrorLoadingImage(true)}
           width={imageDimensionsPX}
           height={imageDimensionsPX}
-          src={getURLForSanityImage(executive.avatar)
-            .width(imageDimensionsPX)
-            .height(imageDimensionsPX)
-            .url()}
+          src={
+            typeof executive.avatar === `string`
+              ? executive.avatar
+              : getURLForSanityImage(executive.avatar)
+                  .width(imageDimensionsPX)
+                  .height(imageDimensionsPX)
+                  .url()
+          }
         />
       ) : (
         <div className="bg-slate-500 size-8 rounded-full flex items-center justify-center">

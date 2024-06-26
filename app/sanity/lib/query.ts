@@ -48,6 +48,33 @@ export async function getCurrentExecutives() {
   );
 }
 
+export async function getExecutivesByName(names: string[]) {
+  return readClient.fetch<getCurrentExecutiveType[]>(
+    groq`*[_type == "executives" && lower(fullName) in $names]{
+    _id,
+    fullName,
+    avatar,
+    "latestPosition": positions[0]{
+      startDate,
+      endDate,
+      "title": position->title,
+    },
+    startDate,
+    twitter,
+    instagram,
+    linkedin,
+    discordUsername,
+    discordId
+  }`,
+    {
+      names: Array.isArray(names)
+        ? names.map((name) => name.toLowerCase())
+        : [],
+    },
+    sanityFetchNextOptions_Executives
+  );
+}
+
 const sanityFetchNextOptions_Events = {
   next: {
     tags: ["events"],
@@ -229,14 +256,14 @@ export async function getLatestAnnouncements(limit = 25) {
 //
 //
 export interface MeetingMinutesExecutive {
-  position: string;
+  position?: string;
   fullName: string;
-  avatar?: SanityImageType;
+  avatar?: SanityImageType | string;
 }
 
 export interface MeetingMinutesExecutiveAttendance {
   fullName: string;
-  avatar?: SanityImageType;
+  avatar?: SanityImageType | string;
   positions: {
     position: string;
     startDate?: string;

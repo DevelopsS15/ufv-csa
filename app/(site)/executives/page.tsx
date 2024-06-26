@@ -16,11 +16,14 @@ export default async function Page() {
   const filterForExecs = (exec: getCurrentExecutiveType) =>
     exec.latestPosition?.title?.toLowerCase().includes("president");
 
-  const presidents = executives.filter(filterForExecs);
+  const presidents = executives
+    .filter(filterForExecs)
+    .sort((exec1, exec2) =>
+      exec1.latestPosition?.title.toLowerCase() === "president" ? -1 : 1
+    );
   const otherExecs = executives.filter((exec) => !filterForExecs(exec));
 
-  const execGroupClassName =
-    "flex flex-wrap justify-center mx-auto max-w-4xl";
+  const execGroupClassName = "flex flex-wrap justify-center mx-auto max-w-4xl";
   const execItemClassName = `w-full sm:w-2/4 md:w-1/3 lg:w-1/4 p-4`;
 
   return (
