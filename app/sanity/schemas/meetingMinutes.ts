@@ -18,9 +18,8 @@ const filterOutIncludedExecutives = ({
 }) => {
   const presentExecutiveIds = getExecutiveIds(document.executivesPresent);
   const absentExecutiveIds = getExecutiveIds(document.executivesAbsent);
-  // isCurrent == $isCurrent &&
   return {
-    filter: `isCurrent == $isCurrent && !(_id in $ids)`,
+    filter: `!(_id in $ids)`,
     params: {
       isCurrent: true,
       ids: presentExecutiveIds.concat(absentExecutiveIds),
@@ -35,9 +34,8 @@ const filterPresentExecutives = ({
 }) => {
   const presentExecutiveIds = getExecutiveIds(document.executivesPresent);
   return {
-    filter: `isCurrent == $isCurrent && _id in $ids`,
+    filter: `_id in $ids`,
     params: {
-      isCurrent: true,
       ids: presentExecutiveIds,
     },
   };
