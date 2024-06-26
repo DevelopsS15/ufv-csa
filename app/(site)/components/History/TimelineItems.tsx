@@ -922,7 +922,7 @@ export const TimelineItems: TimelineItem[] = [
         <Link href="/history/NEW_COOP_PROGRAM.jpg" target="_blank">
           <Image
             className="rounded-t-md max-h-96 w-auto"
-            src="/history/NEW_COOP_PROGRAM.jpg"
+            src="/History/NEW_COOP_PROGRAM.jpg"
             width={512}
             height={512}
             alt="UCFV Coop Newsletter 1991"
@@ -951,7 +951,7 @@ export const TimelineItems: TimelineItem[] = [
         </div>
         <Image
           className="rounded-t-md max-h-96 w-auto"
-          src="/history/UCFV.jpg"
+          src="/History/UCFV.jpg"
           width={512}
           height={512}
           alt="UCFV Announcement"
@@ -1537,7 +1537,7 @@ export const TimelineItems: TimelineItem[] = [
     date: "2003-03-02",
     description: (
       <Image
-        src="/history/CISPoster2003.jpg"
+        src="/History/CISPoster2003.jpg"
         width={256}
         height={256}
         alt="CIS AT UCFV POSTER"
