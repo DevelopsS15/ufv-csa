@@ -910,7 +910,7 @@ export const TimelineItems: TimelineItem[] = [
         <div>
           Fraser Valley College&apos;s Co-operative Education office is founded.
           Co-op option is offered initially to Computer Information Systems and
-          Business Admin students.
+          Business Administration students.
         </div>
         <ExternalLink
           className="text-sm"
@@ -939,7 +939,7 @@ export const TimelineItems: TimelineItem[] = [
     ),
   },
   {
-    header: "FRASER VALLEY COLLEGE GAINS UNIVERSITY-COLLEGE STATUS",
+    header: 'FRASER VALLEY COLLEGE GAINS "UNIVERSITY-COLLEGE" STATUS',
     date: "1991-07-05",
     icon: <LucideTag />,
     description: (
@@ -1132,6 +1132,9 @@ export const TimelineItems: TimelineItem[] = [
               ))}
             </CarouselContent>
           </Carousel>
+          <div className="text-sm mt-2">
+            Note: Use the arrow buttons to view more election results.
+          </div>
         </div>
         <div className="text-sm">
           <ExternalLink
@@ -1210,7 +1213,7 @@ export const TimelineItems: TimelineItem[] = [
     icon: Icons_ExecutiveList,
     description: (
       <>
-        <div>Sandi resigned from Treasurer</div>
+        <div>Sandi resigned as Treasurer</div>
         <div className="text-sm">
           <ExternalLink
             href="https://web.archive.org/web/20010512040331fw_/http://www.ucfv.bc.ca/cissa/meetings/2000/mn011000.htm#sixteen"
@@ -1536,12 +1539,14 @@ export const TimelineItems: TimelineItem[] = [
     icon: <LucideImage />,
     date: "2003-03-02",
     description: (
-      <Image
-        src="/History/CISPoster2003.jpg"
-        width={256}
-        height={256}
-        alt="CIS AT UCFV POSTER"
-      />
+      <Link href={"/History/CISPoster2003.jpg"} target="_blank">
+        <Image
+          src="/History/CISPoster2003.jpg"
+          width={256}
+          height={256}
+          alt="CIS AT UCFV POSTER"
+        />
+      </Link>
     ),
   },
   // {
@@ -1665,6 +1670,9 @@ export const TimelineItems: TimelineItem[] = [
           />
         </Carousel>
         <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
+        <div className="text-sm">
           <ExternalLink
             href="https://web.archive.org/web/20041216084626/http://www.cissa.ca/forum/viewthread.php?tid=563"
             target="_blank"
@@ -1741,7 +1749,7 @@ export const TimelineItems: TimelineItem[] = [
   },
   {
     header: "NEW WEBSITE AND LOGO 2005",
-    icon: <LucideImage />,
+    icon: <LucideGlobe />,
     date: "2005-12-14",
     description: (
       <>
@@ -1909,7 +1917,7 @@ export const TimelineItems: TimelineItem[] = [
     ],
   },
   {
-    header: "UCFV ACHIEVES UNIVERSITY STATUS, BECOMES UFV",
+    header: 'UCFV ACHIEVES "UNIVERSITY" STATUS, BECOMES UFV',
     icon: <LucideTag />,
     date: "2008-04-21",
     description: (
@@ -1918,7 +1926,13 @@ export const TimelineItems: TimelineItem[] = [
           Premier Gordon Campbell visits UCFV to announce university status and
           a name change to the University of the Fraser Valley.
         </div>
-        <div className="text-sm">Source: UFV 50th Timeline</div>
+        <ExternalLink
+          className="text-sm"
+          href="https://ufv.ca/50/timeline"
+          target="_blank"
+        >
+          Source: UFV 50th Timeline
+        </ExternalLink>
       </>
     ),
   },
@@ -1998,6 +2012,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
       </>
     ),
   },
@@ -2163,7 +2180,7 @@ export const TimelineItems: TimelineItem[] = [
   },
   {
     header: "NEW WEBSITE AND LOGO 2012",
-    icon: <LucideImage />,
+    icon: <LucideGlobe />,
     date: "2012-07-25",
     description: (
       <>
@@ -2404,6 +2421,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm mt-2">
+          Note: Use the arrow buttons to view more photos.
+        </div>
       </div>
     ),
   },
@@ -2724,6 +2744,9 @@ export const TimelineItems: TimelineItem[] = [
               ))}
             </CarouselContent>
           </Carousel>
+          <div className="text-sm mt-2">
+            Note: Use the arrow buttons to view more election results.
+          </div>
         </div>
         <div className="text-sm">
           Source: CSA AGM Minutes - October 13, 2015
@@ -2900,6 +2923,9 @@ export const TimelineItems: TimelineItem[] = [
               ))}
             </CarouselContent>
           </Carousel>
+          <div className="text-sm mt-2">
+            Note: Use the arrow buttons to view more election results.
+          </div>
         </div>
         <div className="text-sm">
           Source: CSA AGM Minutes - September 22, 2016
@@ -3010,6 +3036,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
         <div className="text-sm">Source: CSA Games Day 2016 Poster</div>
       </>
     ),
@@ -3072,7 +3101,7 @@ export const TimelineItems: TimelineItem[] = [
   },
   {
     header: "NEW WEBSITE AND LOGO 2017",
-    icon: <LucideImage />,
+    icon: <LucideGlobe />,
     date: "2017-02-12",
     description: (
       <>
@@ -3208,6 +3237,9 @@ export const TimelineItems: TimelineItem[] = [
               ))}
             </CarouselContent>
           </Carousel>
+          <div className="text-sm mt-2">
+            Note: Use the arrow buttons to view more election results.
+          </div>
         </div>
       </>
     ),
@@ -3572,6 +3604,22 @@ export const TimelineItems: TimelineItem[] = [
     ],
   },
   {
+    header: "NEW LOGO 2021",
+    icon: <LucideImage />,
+    date: "2021-10-25",
+    description: (
+      <>
+        <div>Credits to Nathan Roberts for the new logo</div>
+        <Image
+          src={`/History/Logo/2022.png`}
+          width={256}
+          height={80}
+          alt="CSA 2022 and later Logo"
+        />
+      </>
+    ),
+  },
+  {
     header: "JAN 2022 EXECUTIVES",
     icon: Icons_ExecutiveList,
     date: "2022-01-01",
@@ -3620,13 +3668,13 @@ export const TimelineItems: TimelineItem[] = [
     ),
   },
   {
-    header: "CSA Merch 2022",
+    header: "CSA Merchandise 2022",
     icon: <LucideShirt />,
     date: "2022-02-09",
     description: (
       <>
         <div>
-          The CSA Merch for 2022 finally arrived after numerous unexpected
+          The CSA Merchandise for 2022 finally arrived after numerous unexpected
           delays.
         </div>
         <Image
@@ -3634,9 +3682,15 @@ export const TimelineItems: TimelineItem[] = [
           src="/History/Events/CSAMerch2022/Hoodie.jpg"
           width={256}
           height={256}
-          alt="CSA Merch 2022"
+          alt="CSA Merchandise 2022"
         />
-        <div className="text-sm">Source: CSA Discord Server</div>
+        <ExternalLink
+          href={AppDiscordInviteLink}
+          target="_blank"
+          className="text-sm"
+        >
+          Source: CSA Discord Server
+        </ExternalLink>
       </>
     ),
   },
@@ -3664,18 +3718,11 @@ export const TimelineItems: TimelineItem[] = [
     ],
   },
   {
-    header: "NEW WEBSITE AND LOGO 2022",
+    header: "NEW WEBSITE 2022",
     icon: <LucideGlobe />,
     date: "2022-05-22",
     description: (
       <>
-        <div>Credits to Nathan Roberts for the new logo</div>
-        <Image
-          src={`/History/Logo/2022.png`}
-          width={256}
-          height={80}
-          alt="CSA 2022 and later Logo"
-        />
         <Link
           className="block"
           href={"/History/Website/2022-2024.png"}
@@ -3732,6 +3779,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more election results.
+        </div>
       </>
     ),
   },
@@ -3887,6 +3937,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more election results.
+        </div>
       </>
     ),
   },
@@ -3986,6 +4039,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
       </>
     ),
   },
@@ -4157,7 +4213,7 @@ export const TimelineItems: TimelineItem[] = [
     ),
   },
   {
-    header: "CSA MERCH 2024",
+    header: "CSA MERCHANDISE 2024",
     icon: <LucideShirt />,
     date: "2024-03-16",
     description: (
@@ -4198,7 +4254,7 @@ export const TimelineItems: TimelineItem[] = [
                 src={`/History/Events/CSAMerch2024/FinalMerchImages.jpg`}
                 width={720}
                 height={360}
-                alt="Final merch images"
+                alt="Final merchandise images"
               />
             </CarouselItem>
           </CarouselContent>
@@ -4209,6 +4265,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
       </>
     ),
   },
@@ -4374,6 +4433,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           />
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more election results.
+        </div>
       </>
     ),
   },
@@ -4401,11 +4463,13 @@ export const TimelineItems: TimelineItem[] = [
         name: "Simranjit Singh",
         linkedInUsername: "simranjit-singh-9aa15a246",
         position: Executive_Treasurer_Name,
+        imageURL: `https://cdn.sanity.io/images/aldsu8ui/production/f894eef5221d1f304920599e04d6c6a7b8e1c053-656x656.jpg`,
       },
       {
         name: "Krish Manchanda",
         linkedInUsername: "krish-manchanda-23a08b285",
         position: Executive_CommunicationManager_Name,
+        imageURL: `https://cdn.sanity.io/images/aldsu8ui/production/0b2295873bb784762d1fe441d5d3f82aca9f4701-167x167.jpg`,
       },
     ],
   },
@@ -4436,7 +4500,7 @@ export const TimelineItems: TimelineItem[] = [
         </div>
         <div className="text-sm">
           <ExternalLink
-            className="https://chilliwack.tech/Hackathon"
+            href="https://chilliwack.tech/Hackathon"
             target="_blank"
           >
             Source: Chilliwack.Tech Startup Hackathon
@@ -4532,6 +4596,69 @@ export const TimelineItems: TimelineItem[] = [
                 <br />
               </div>
             </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/ColinWithATeam.JPG`}
+                width={720}
+                height={360}
+                alt="Colin Schmidt and Dave Leger with Team MATRIX"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/OverviewOfEvent.JPG`}
+                width={720}
+                height={360}
+                alt="Overview of attendees"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/Team_ItsBazaar.JPG`}
+                width={720}
+                height={360}
+                alt="Team It's Bazaar"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/Team_CentCheck.JPG`}
+                width={720}
+                height={360}
+                alt="Team CentCheck"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/Team_Matrix.JPG`}
+                width={720}
+                height={360}
+                alt="Team MATRIX"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/Team_TiffinBox.JPG`}
+                width={720}
+                height={360}
+                alt="Team Tiffin Box"
+              />
+            </CarouselItem>
+            <CarouselItem className="w-full">
+              <Image
+                className="w-full rounded-md"
+                src={`/History/Events/CSAHackathon2024/Judges.JPG`}
+                width={720}
+                height={360}
+                alt="Judges"
+              />
+            </CarouselItem>
           </CarouselContent>
           {/* <CarouselNext
             style={{
@@ -4540,6 +4667,9 @@ export const TimelineItems: TimelineItem[] = [
             }}
           /> */}
         </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
       </>
     ),
   },
