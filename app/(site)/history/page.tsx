@@ -48,49 +48,52 @@ export default function Page() {
             <div>
               Special thanks to the following (in no particular order):{" "}
             </div>
-            <div>
-              <strong>WaybackMachine</strong> for the archives of prior
-              websites. Most of this wouldn&apos;t be possible without their
-              service
-            </div>
-            <div>
-              <strong>LinkedIn</strong> for their search functionality which
-              identified many executives/members of CISSA/CSA
-            </div>
-            <div>
-              <strong>
-                Mike Lee (1994 Co-Founder & Vice-President, 1995 President)
-              </strong>{" "}
-              for the invaluable information regarding the startings of the
-              association and for their efforts in creating the CIS Student
-              Council (changed to CISSA later)
-            </div>
-            <div>
-              <strong>Avinesh Bangar (1996-2000 Webmaster)</strong> for
-              providing some crucial information from 1996-2000
-            </div>
-            <div>
-              <strong>Derek Forese (2011-2012 President)</strong> for providing
-              valuable information, names of executives, and connections
-            </div>
-            <div>
-              <strong>Graham St. Eloi (2011-2017, various positions)</strong>{" "}
-              for providing details regarding executives and fundamental
-              milestones for CISSA/CSA throughout 2012 to 2015
-            </div>
-            <div>
-              <strong>
-                Maxine Cowan (2015-2017 Secretary, 2017-2018 Finance Officer)
-              </strong>{" "}
-              and <strong>Cody Beaty (2016-2020, various positions)</strong> for
-              improving the quality and consistency of meeting minutes from 2015
-              to 2018
-            </div>
-            <div>
-              <strong>Samuel Shull (2024 Webmaster/Vice-President)</strong> for
-              researching, collecting, and constructing this history into one
-              place up until 2024
-            </div>
+            <ul className="list-disc list-inside">
+              <li>
+                <strong>WaybackMachine</strong> for the archives of prior
+                websites. Most of this wouldn&apos;t be possible without their
+                service
+              </li>
+              <li>
+                <strong>LinkedIn</strong> for their search functionality which
+                identified many executives/members of CISSA/CSA
+              </li>
+              <li>
+                <strong>
+                  Mike Lee (1994 Co-Founder & Vice-President, 1995 President)
+                </strong>{" "}
+                for the invaluable information regarding the startings of the
+                association and for their efforts in creating the CIS Student
+                Council (changed to CISSA later)
+              </li>
+              <li>
+                <strong>Avinesh Bangar (1996-2000 Webmaster)</strong> for
+                providing some crucial information from 1996-2000
+              </li>
+              <li>
+                <strong>Derek Forese (2011-2012 President)</strong> for
+                providing valuable information, names of executives, and
+                connections
+              </li>
+              <li>
+                <strong>Graham St. Eloi (2011-2017, various positions)</strong>{" "}
+                for providing details regarding executives and fundamental
+                milestones for CISSA/CSA throughout 2012 to 2015
+              </li>
+              <li>
+                <strong>
+                  Maxine Cowan (2015-2017 Secretary, 2017-2018 Finance Officer)
+                </strong>{" "}
+                and <strong>Cody Beaty (2016-2020, various positions)</strong>{" "}
+                for improving the quality and consistency of meeting minutes
+                from 2015 to 2018
+              </li>
+              <li>
+                <strong>Samuel Shull (2024 Webmaster/Vice-President)</strong>{" "}
+                for researching, collecting, and constructing this history into
+                one place up until 2024
+              </li>
+            </ul>
           </div>
         </div>
         <div className="mt-4">
