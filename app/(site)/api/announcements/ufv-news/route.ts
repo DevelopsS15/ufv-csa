@@ -2,11 +2,12 @@ import axios from "axios";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
-import { Root } from "./types";
+import { ItemCustom, Root } from "./types";
 import { logger, writeServerClient } from "~/app/(site)/serverClient";
 import groq from "groq";
 import { discordAPIRest } from "../../utils";
 import { Routes } from "discord-api-types/v10";
+import he from "he";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -24,15 +25,45 @@ export async function GET() {
       );
     }
 
-    const abbotsfordCentreFeed = await axios.get(
-      "https://blogs.ufv.ca/urgent-news/feed/"
-    );
-    const abbotsfordCentreFeedXML = abbotsfordCentreFeed.data as string;
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-    });
-    const parsedXML = parser.parse(abbotsfordCentreFeedXML) as Root;
-    const latestNews = parsedXML.rss.channel.item;
+    const ufvFeedItems: ItemCustom[] = [];
+
+    // UFV Urgent News
+    try {
+      const ufvUrgentNewsFeed = await axios.get(
+        "https://blogs.ufv.ca/urgent-news/feed/"
+      );
+      const ufvUrgentNewsFeedXML = ufvUrgentNewsFeed.data as string;
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+      });
+      const parsedXML = parser.parse(ufvUrgentNewsFeedXML) as Root;
+      const latestNews = parsedXML.rss.channel.item.map((item) => ({
+        ...item,
+        pingEveryone: true,
+      }));
+      ufvFeedItems.push(...latestNews);
+    } catch (e) {
+      console.log(`Unable to fetch the UFV urgent news`);
+    }
+
+    // UFV IT Services
+    try {
+      const itServicesFeed = await axios.get(
+        "https://blogs.ufv.ca/itservices/feed/"
+      );
+      const itServicesFeedXML = itServicesFeed.data as string;
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+      });
+      const parsedXML = parser.parse(itServicesFeedXML) as Root;
+      const latestITS = parsedXML.rss.channel.item.map((item) => ({
+        ...item,
+        pingEveryone: false,
+      }));
+      ufvFeedItems.push(...latestITS);
+    } catch (e) {
+      console.log(`Unable to fetch the UFV IT Services news`);
+    }
 
     const getLatestUFVNewsDocuments = await writeServerClient.fetch<
       {
@@ -41,13 +72,13 @@ export async function GET() {
         newsUrl: string;
       }[]
     >(groq`*[_type == "ufvUrgentNews" && newsUrl in $newsURLs]`, {
-      newsURLs: latestNews.map((news) => news.link),
+      newsURLs: ufvFeedItems.map((feedItem) => feedItem.link),
     });
 
     const successfulPosts = [];
 
-    for (let index = latestNews.length - 1; index >= 0; index--) {
-      const newsData = latestNews[index];
+    for (let index = ufvFeedItems.length - 1; index >= 0; index--) {
+      const newsData = ufvFeedItems[index];
       // Check if already posted
       if (
         getLatestUFVNewsDocuments.find(
@@ -68,8 +99,18 @@ export async function GET() {
         indexOfTripleDot > -1 ? indexOfTripleDot : undefined
       );
 
+      const decodedTitle = he.decode(newsData.title);
+      const decodedDescription = he.decode(
+        newsDescriptionSubstring.trim().replace(/<[^>]*>/g, "")
+      );
       const discordMessageBody = {
-        content: `## [${newsData.title}](${newsData.link})\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${newsData["dc:creator"]} \n\n${newsDescriptionSubstring}\n@everyone`,
+        content: `## [${decodedTitle}](${
+          newsData.link
+        })\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${
+          newsData["dc:creator"]
+        } \n\n${decodedDescription}${indexOfTripleDot > -1 ? "..." : ""}${
+          newsData.pingEveryone ? "\n@everyone" : ""
+        }`,
       };
 
       try {

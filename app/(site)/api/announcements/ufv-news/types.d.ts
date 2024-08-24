@@ -48,6 +48,10 @@ export interface Item {
   "content:encoded": string;
 }
 
+export interface ItemCustom extends Item {
+  pingEveryone: boolean;
+}
+
 export interface Guid {
   "#text": string;
   "@_isPermaLink": string;
