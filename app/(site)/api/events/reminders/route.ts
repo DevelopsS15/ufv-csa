@@ -2,9 +2,9 @@ import groq from "groq";
 import { NextResponse } from "next/server";
 import { logger, writeServerClient } from "~/app/(site)/serverClient";
 import { getUpcomingEvents } from "~/app/sanity/lib/query";
-import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
-import { isXDaysAhead } from "~/app/(site)/utils";
 import { headers } from "next/headers";
+import { isXDaysAhead } from "~/app/(site)/utils";
+import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
 
 export const dynamic = "force-dynamic";
 export async function GET() {

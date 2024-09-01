@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+// import transpileModules from "next-transpile-modules";
+// const withTM = transpileModules(["undici"]);
+
 const nextConfig = {
   images: {
     remotePatterns: [
