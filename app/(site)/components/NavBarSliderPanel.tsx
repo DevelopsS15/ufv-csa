@@ -35,6 +35,9 @@ export default function NavBarSliderPanel() {
                   <SheetNavButton href="/executives" onClick={onClick}>
                     Executives
                   </SheetNavButton>
+                  <SheetNavButton href="/history" onClick={onClick}>
+                    History
+                  </SheetNavButton>
                   <SheetNavButton href="/regulations" onClick={onClick}>
                     Regulations
                   </SheetNavButton>
