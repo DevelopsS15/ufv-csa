@@ -7,6 +7,7 @@ import {
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
+  AppFoundedYear,
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
@@ -51,7 +52,7 @@ export default function Footer() {
             territory of the Stó:lō peoples.
           </div>
           <div>
-            &copy; 2006-{new Date().getFullYear()} {AppFullName} (
+            &copy; {AppFoundedYear}-{new Date().getFullYear()} {AppFullName} (
             {AppAbbreviationName})
           </div>
         </div>

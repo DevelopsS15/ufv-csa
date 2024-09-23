@@ -56,6 +56,7 @@ import {
 } from "@icons-pack/react-simple-icons";
 import {
   AppAbbreviationName,
+  AppFoundedYear,
   AppFullName,
   AppLogoBlendedGreen,
 } from "../../config";
@@ -263,7 +264,7 @@ export const CSACodeSnippets: {
     language: "basic",
     languageFullName: "BASIC",
     languageThemeColor: SiCHex,
-    code: `2006 PRINT "${AppFullName}"\n${new Date().getFullYear()} END`,
+    code: `${AppFoundedYear} PRINT "${AppFullName}"\n${new Date().getFullYear()} END`,
   },
   {
     language: "pascal",
@@ -348,7 +349,7 @@ export const CSACodeSnippets: {
     language: "sql",
     languageFullName: "SQL",
     languageThemeColor: "#db7432",
-    code: `CREATE TABLE Association(\n\tName VARCHAR(2006) DEFAULT ("${AppFullName}")\n);`,
+    code: `CREATE TABLE Association(\n\tName VARCHAR(${AppFoundedYear}) DEFAULT ("${AppFullName}")\n);`,
   },
   {
     language: "plsql",

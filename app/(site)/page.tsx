@@ -3,6 +3,7 @@ import React from "react";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
+  AppFoundedYear,
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
@@ -105,7 +106,7 @@ export default async function Page() {
             </div> */}
             <div className="text-lg sm:text-xl">
               Representing computing students to {UniversityAbbreviationName}{" "}
-              faculty and staff since 2006
+              faculty and staff since {AppFoundedYear}
             </div>
             <InternalLinkButton
               variant={"success"}

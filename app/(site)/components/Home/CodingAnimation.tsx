@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
-import { AppFullName, UniversityAbbreviationName } from "../../config";
+import { AppFoundedYear, AppFullName, UniversityAbbreviationName } from "../../config";
 
 export const CodingAnimation = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -74,7 +74,7 @@ export const CodingAnimation = () => {
               </div>
               <div className="text-lg sm:text-xl">
                 Representing computing students to {UniversityAbbreviationName}{" "}
-                faculty and staff since 2006
+                faculty and staff since {AppFoundedYear}
               </div>
             </div>
           </div>
