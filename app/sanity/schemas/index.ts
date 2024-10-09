@@ -8,6 +8,7 @@ import meetingMinutes from "./meetingMinutes";
 import discordEvents from "./discordEvents";
 import idempotencyKey from "./idempotencyKey";
 import ufvUrgentNews from "./ufvUrgentNews";
+import roomStatus from "./roomStatus";
 
 export const schemaTypes = [
   event,
@@ -16,6 +17,7 @@ export const schemaTypes = [
   meetingMinutes,
   executives,
   executivePositions,
+  roomStatus,
   ufvUrgentNews,
   discordMessages,
   discordEvents,

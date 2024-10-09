@@ -1,4 +1,3 @@
-import axios from "axios";
 import { logger, writeServerClient } from "../serverClient";
 import groq from "groq";
 import { getUpcomingEventType } from "~/app/sanity/lib/query";
