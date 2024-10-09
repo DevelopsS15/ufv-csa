@@ -1,6 +1,5 @@
 import {
   SiDiscord,
-  SiFacebook,
   SiInstagram,
   SiLinkedin,
 } from "@icons-pack/react-simple-icons";
@@ -12,6 +11,7 @@ import {
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
+  AppRoomNumber,
 } from "../config";
 import { LucideMail, LucideMapPin } from "lucide-react";
 import DiscordWidget from "./DiscordWidget";
@@ -39,7 +39,9 @@ export default function Page() {
             className={socialMediaLinkClassName}
           >
             <LucideMapPin className="inline" />{" "}
-            <span className="underline">UFV Abbotsford Campus D224</span>
+            <span className="underline">
+              UFV Abbotsford Campus {AppRoomNumber}
+            </span>
           </Link>
           <Link
             href={`mailto:${AppEmail}`}

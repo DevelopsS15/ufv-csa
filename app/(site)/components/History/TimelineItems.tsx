@@ -43,6 +43,8 @@ import {
   AppAbbreviationName,
   AppDiscordInviteLink,
   AppFullName,
+  AppRoomName,
+  AppRoomNumber,
 } from "../../config";
 import InternalLink from "../General/InternalLink";
 import { SiInstagram } from "@icons-pack/react-simple-icons";
@@ -1958,7 +1960,7 @@ export const TimelineItems: TimelineItem[] = [
         <div>
           After several attempts and over 17,438 push pins, the signature Mario
           pushpin mural was completed. It was eventually put outside of the
-          Student Computing Centre in plexiglass for everyone to see. The Flickr
+          {AppRoomName} in plexiglass for everyone to see. The Flickr
           album by Ranadok has received over 250k views as of May 23, 2024.
         </div>
         <div className="text-sm">
@@ -2224,7 +2226,7 @@ export const TimelineItems: TimelineItem[] = [
       <>
         <div>
           Using over 16,900 pins, this iconic Zelda mural is one of many pushpin
-          murals located at the Student Computing Centre (SCC) in Room D224.
+          murals located at the {AppRoomName} (SCC) in Room {AppRoomNumber}.
         </div>
         <Image
           className="block rounded-md"
@@ -3992,7 +3994,7 @@ export const TimelineItems: TimelineItem[] = [
     description: (
       <>
         <div>
-          The Student Computing Centre (SCC) in D224 received approval for
+          The {AppRoomName} (SCC) in {AppRoomNumber} received approval for
           renovations. The renovations were completed by March 15, 2024. Credits
           to Andrew and Henry Majka for the progress photos.
         </div>

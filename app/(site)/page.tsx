@@ -7,7 +7,8 @@ import {
   AppFullName,
   AppInstagramLink,
   AppLinkedInLink,
-  AppLogoBlendedGreen,
+  AppRoomName,
+  AppRoomNumber,
   UniversityAbbreviationName,
 } from "./config";
 import InternalLink from "./components/General/InternalLink";
@@ -139,9 +140,9 @@ export default async function Page() {
               request tutors or help for projects through our{" "}
               <InternalLink href={AppDiscordInviteLink}>Discord</InternalLink>{" "}
               and events. We manage the{" "}
-              <strong>Student Computing Centre (SCC)</strong> in room{" "}
+              <strong>{AppRoomName} (SCC)</strong> in room{" "}
               <InternalLink target="_blank" href="./FloorPlans/A-D2.pdf">
-                D224
+                {AppRoomNumber}
               </InternalLink>{" "}
               at the Abbotsford campus and it has numerous resources for
               students to take advantage of.

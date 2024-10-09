@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { AppAbbreviationName, AppFullName } from "../config";
+import { AppAbbreviationName, AppFullName, AppRoomName, AppRoomNumber } from "../config";
 import { Metadata } from "next";
 import { BulletPoints } from "../components/General/BulletPoints";
 
@@ -148,14 +148,14 @@ export default function Page() {
             />
           </>,
           <>
-            <div className={xlTitleClass}>Student Computing Centre</div>
+            <div className={xlTitleClass}>{AppRoomName}</div>
             <BulletPoints
               points={[
                 <>
                   The Association has been allocated the Student Computing
                   Centre by UFV Administration and, as such, is subject to
                   restrictions set in place by UFV Administration. UFV
-                  Administration carries full authority over how room ABD224
+                  Administration carries full authority over how room AB{AppRoomNumber}
                   will be utilized. The primary purpose for the SCC is to serve
                   as an academic resource for students.
                 </>,
