@@ -10,6 +10,7 @@ import { verifyInteractionRequest } from "~/app/(site)/utils";
 import { Routes } from "discord-api-types/v10";
 import { discordAPIRest } from "../../../utils";
 import { writeServerClient } from "~/app/(site)/serverClient";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 /**
  * Use edge runtime which is faster, cheaper, and has no cold-boot.
@@ -139,6 +140,8 @@ export async function POST(request: Request) {
               },
             }
           );
+          revalidateTag("roomStatus");
+          revalidatePath("/api/room-status", "page");
           return new NextResponse("Success");
         } catch (e) {
           console.error(e);

@@ -253,6 +253,26 @@ export async function getLatestAnnouncements(limit = 25) {
 }
 
 //
+export interface getLatestRoomStatus {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+}
+export async function getLatestRoomStatus() {
+  return readClient.fetch<getLatestAnnouncement[]>(
+    groq`*[_type == "roomStatus"] | order(_createdAt desc)[0...$limit]`,
+    {
+      limit: 1,
+    },
+    {
+      next: {
+        tags: ["roomStatus"],
+      },
+    }
+  );
+}
+
+//
 //
 //
 export interface MeetingMinutesExecutive {
