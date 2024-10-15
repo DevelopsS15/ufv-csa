@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   },
   description: AppDescription,
   icons: "/CSA.ico",
+  verification: {
+    google: "ig20PaAR7MNSk40sGERlhCESaTn485W4pQqlNytLV0s",
+  },
 };
 
 export const viewport: Viewport = {
