@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@discordjs/rest": "^2.2.0",
@@ -52,6 +53,7 @@
     "micromatch": "^4.0.8",
     "next": "^14.2.13",
     "next-sanity": "^8.1.3",
+    "next-sitemap": "^4.2.3",
     "next-themes": "^0.2.1",
     "pino": "^8.20.0",
     "react": "^18",
