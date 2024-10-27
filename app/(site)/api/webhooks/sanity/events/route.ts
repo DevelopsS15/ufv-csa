@@ -262,6 +262,7 @@ export async function POST(req: NextRequest) {
           const discordMessageBody = {
             content: `@everyone\n# [${eventTitle}](${eventDirectLink})`,
             embeds: embeds,
+            enforce_nonce: true,
           };
 
           const discordEventBody = {
@@ -293,10 +294,7 @@ export async function POST(req: NextRequest) {
                   previousDiscordEventId
                 ),
                 {
-                  body: discordEventBody,
-                  headers: {
-                    "X-Nonce": uuidv4(),
-                  },
+                  body: discordEventBody
                 }
               );
 
@@ -397,10 +395,7 @@ export async function POST(req: NextRequest) {
               const apiEvent = (await discordAPIRest.post(
                 Routes.guildScheduledEvents(discordServerId!),
                 {
-                  body: discordEventBody,
-                  headers: {
-                    "X-Nonce": uuidv4(),
-                  },
+                  body: discordEventBody
                 }
               )) as { id: string };
               const discordEventId = apiEvent?.id;
@@ -462,12 +457,7 @@ export async function POST(req: NextRequest) {
               Routes.guildScheduledEvent(
                 discordServerId!,
                 previousDiscordEventId
-              ),
-              {
-                headers: {
-                  "X-Nonce": uuidv4(),
-                },
-              }
+              )
             );
             loggerForRoute.info(`Deleting the document for a Discord Event`);
             await writeServerClient.delete(previousDiscordEvent._id);
@@ -549,6 +539,7 @@ export async function POST(req: NextRequest) {
               announcementBody?.after.title ?? "No Title"
             }](${eventDirectLink})`,
             embeds: embeds,
+            enforce_nonce: true,
           };
 
           //
@@ -697,11 +688,7 @@ async function DeleteDiscordMessageViaAPI({
 }): Promise<boolean> {
   try {
     if (typeof messageId !== `string`) return true;
-    await discordAPIRest.delete(Routes.channelMessage(channelId, messageId), {
-      headers: {
-        "X-Nonce": uuidv4(),
-      },
-    });
+    await discordAPIRest.delete(Routes.channelMessage(channelId, messageId));
     if (discordMessageDocumentId)
       await writeServerClient.delete(discordMessageDocumentId);
     return true;

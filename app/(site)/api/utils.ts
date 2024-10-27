@@ -60,12 +60,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
         Routes.guildScheduledEventUsers(discordServerId!, discordEventId) +
         "?with_member=true" +
         (nextPaginationUserId ? `&after=${nextPaginationUserId}` : "")
-      }`,
-      {
-        headers: {
-          "X-Nonce": uuidv4(),
-        },
-      }
+      }`
     );
 
     if (Array.isArray(getInterestedUsersRequest)) {
@@ -105,10 +100,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
           typeof roleName === `string`
             ? `${namePrefix}${roleName}`
             : eventDocumentId,
-      },
-      headers: {
-        "X-Nonce": uuidv4(),
-      },
+      }
     }
   )) as { id: string };
 
@@ -130,7 +122,6 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
       {
         headers: {
           "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-          "X-Nonce": uuidv4(),
         },
       }
     );
@@ -167,6 +158,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   }`;
 
   const discordMessageBody = {
+    enforce_nonce: true,
     content: `## ${ReminderIntervalBeforeText}${typeOfNotificationText}\n**${
       eventData?.title ?? "Unknown event"
     }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) ${originalEventMessageLink}\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
@@ -202,7 +194,6 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     {
       headers: {
         "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-        "X-Nonce": uuidv4(),
       },
     }
   );

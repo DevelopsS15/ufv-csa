@@ -105,6 +105,7 @@ export async function GET() {
         newsDescriptionSubstring.trim().replace(/<[^>]*>/g, "")
       );
       const discordMessageBody = {
+        enforce_nonce: true,
         content: `## [${decodedTitle}](${
           newsData.link
         })\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${
@@ -138,12 +139,7 @@ export async function GET() {
             Routes.channelMessageCrosspost(
               process.env.DISCORD_UFV_NEWS_CHANNEL_ID!,
               newsMessageRequest.id
-            ),
-            {
-              headers: {
-                "X-Nonce": uuidv4(),
-              },
-            }
+            )
           );
         } catch (e) {
           logger.info(

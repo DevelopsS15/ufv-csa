@@ -103,10 +103,7 @@ export async function POST(request: Request) {
             body: {
               type: 5,
               flags: MessageFlags.Ephemeral,
-            },
-            headers: {
-              "X-Nonce": uuidv4(),
-            },
+            }
           }
         );
 
@@ -118,10 +115,7 @@ export async function POST(request: Request) {
             {
               body: {
                 name: `${roomItems.emoji} ${isRoomOpen ? "open" : "closed"}`,
-              },
-              headers: {
-                "X-Nonce": uuidv4(),
-              },
+              }
             }
           );
           await Promise.all([
@@ -129,9 +123,9 @@ export async function POST(request: Request) {
               Routes.channelMessages(DISCORD_SCC_ROOM_CHANNEL_ID),
               {
                 body: {
+                  enforce_nonce: true,
                   content: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the ${AppRoomName}`,
                 },
-
                 headers: {
                   "X-Nonce": uuidv4(),
                 },
@@ -150,6 +144,7 @@ export async function POST(request: Request) {
                 content: `You have ${roomItems.statusPastTense} the ${AppRoomName}!`,
                 flags: MessageFlags.Ephemeral,
                 with_response: true,
+                enforce_nonce: true,
               },
               headers: {
                 "X-Nonce": uuidv4(),
@@ -168,6 +163,7 @@ export async function POST(request: Request) {
                 content: `:octagonal_sign: Internal App Error. Try again or contact an ${AppAbbreviationName} Executive`,
                 flags: MessageFlags.Ephemeral,
                 with_response: true,
+                enforce_nonce: true,
               },
               headers: {
                 "X-Nonce": uuidv4(),
