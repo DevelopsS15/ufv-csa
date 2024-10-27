@@ -20,6 +20,7 @@ import { allCampusOptions } from "~/app/sanity/schemas/event";
 import { headers } from "next/headers";
 import { Routes } from "discord-api-types/v10";
 import { caching } from "cache-manager";
+import { v4 as uuidv4 } from "uuid";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
@@ -291,7 +292,12 @@ export async function POST(req: NextRequest) {
                   discordServerId!,
                   previousDiscordEventId
                 ),
-                { body: discordEventBody }
+                {
+                  body: discordEventBody,
+                  headers: {
+                    "X-Nonce": uuidv4(),
+                  },
+                }
               );
 
               // Only send Event Notification if one of the below values have changed.
@@ -392,6 +398,9 @@ export async function POST(req: NextRequest) {
                 Routes.guildScheduledEvents(discordServerId!),
                 {
                   body: discordEventBody,
+                  headers: {
+                    "X-Nonce": uuidv4(),
+                  },
                 }
               )) as { id: string };
               const discordEventId = apiEvent?.id;
@@ -453,7 +462,12 @@ export async function POST(req: NextRequest) {
               Routes.guildScheduledEvent(
                 discordServerId!,
                 previousDiscordEventId
-              )
+              ),
+              {
+                headers: {
+                  "X-Nonce": uuidv4(),
+                },
+              }
             );
             loggerForRoute.info(`Deleting the document for a Discord Event`);
             await writeServerClient.delete(previousDiscordEvent._id);
@@ -608,7 +622,12 @@ async function HandleSendOrUpdateWebhookMessage({
       );
       const updatedMessage = (await discordAPIRest.patch(
         Routes.channelMessage(channelId, messageId),
-        { body }
+        {
+          body,
+          headers: {
+            "X-Nonce": uuidv4(),
+          },
+        }
       )) as { id: string };
       await writeServerClient
         .patch(messageDocumentId)
@@ -626,6 +645,9 @@ async function HandleSendOrUpdateWebhookMessage({
         Routes.channelMessages(channelId),
         {
           body,
+          headers: {
+            "X-Nonce": uuidv4(),
+          },
         }
       )) as { id: string };
       const sentMessageId = sentMessage?.id;
@@ -675,7 +697,11 @@ async function DeleteDiscordMessageViaAPI({
 }): Promise<boolean> {
   try {
     if (typeof messageId !== `string`) return true;
-    await discordAPIRest.delete(Routes.channelMessage(channelId, messageId));
+    await discordAPIRest.delete(Routes.channelMessage(channelId, messageId), {
+      headers: {
+        "X-Nonce": uuidv4(),
+      },
+    });
     if (discordMessageDocumentId)
       await writeServerClient.delete(discordMessageDocumentId);
     return true;

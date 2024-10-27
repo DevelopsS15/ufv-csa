@@ -66,6 +66,7 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "tweetnacl": "^1.0.3",
+    "uuid": "^10.0.0",
     "ws": "^8.18.0",
     "zod": "^3.22.4"
   },

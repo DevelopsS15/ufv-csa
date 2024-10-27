@@ -4,6 +4,7 @@ import { getUpcomingEventType } from "~/app/sanity/lib/query";
 import { CapitalizeFirstLetter } from "../utils";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
+import { v4 as uuidv4 } from "uuid";
 
 const discordServerId = process.env.DISCORD_SERVER_ID;
 const discordChannelIdEventReminder =
@@ -59,7 +60,12 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
         Routes.guildScheduledEventUsers(discordServerId!, discordEventId) +
         "?with_member=true" +
         (nextPaginationUserId ? `&after=${nextPaginationUserId}` : "")
-      }`
+      }`,
+      {
+        headers: {
+          "X-Nonce": uuidv4(),
+        },
+      }
     );
 
     if (Array.isArray(getInterestedUsersRequest)) {
@@ -100,6 +106,9 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
             ? `${namePrefix}${roleName}`
             : eventDocumentId,
       },
+      headers: {
+        "X-Nonce": uuidv4(),
+      },
     }
   )) as { id: string };
 
@@ -121,6 +130,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
       {
         headers: {
           "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+          "X-Nonce": uuidv4(),
         },
       }
     );
@@ -167,6 +177,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     {
       headers: {
         "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+        "X-Nonce": uuidv4(),
       },
       body: discordMessageBody,
     }
@@ -191,6 +202,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     {
       headers: {
         "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
+        "X-Nonce": uuidv4(),
       },
     }
   );

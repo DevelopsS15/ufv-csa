@@ -11,6 +11,7 @@ import { Routes } from "discord-api-types/v10";
 import { discordAPIRest } from "../../../utils";
 import { writeServerClient } from "~/app/(site)/serverClient";
 import { revalidateTag, revalidatePath } from "next/cache";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Use edge runtime which is faster, cheaper, and has no cold-boot.
@@ -57,7 +58,9 @@ export async function POST(request: Request) {
             },
           });
 
-        const hasSCCRole = discordMember.roles.includes(process.env.DISCORD_SCC_ROOM_ROLE_ID!);
+        const hasSCCRole = discordMember.roles.includes(
+          process.env.DISCORD_SCC_ROOM_ROLE_ID!
+        );
         if (!hasSCCRole)
           return NextResponse.json({
             type: InteractionResponseType.ChannelMessageWithSource,
@@ -101,6 +104,9 @@ export async function POST(request: Request) {
               type: 5,
               flags: MessageFlags.Ephemeral,
             },
+            headers: {
+              "X-Nonce": uuidv4(),
+            },
           }
         );
 
@@ -113,6 +119,9 @@ export async function POST(request: Request) {
               body: {
                 name: `${roomItems.emoji} ${isRoomOpen ? "open" : "closed"}`,
               },
+              headers: {
+                "X-Nonce": uuidv4(),
+              },
             }
           );
           await Promise.all([
@@ -121,6 +130,10 @@ export async function POST(request: Request) {
               {
                 body: {
                   content: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the ${AppRoomName}`,
+                },
+
+                headers: {
+                  "X-Nonce": uuidv4(),
                 },
               }
             ),
@@ -138,6 +151,9 @@ export async function POST(request: Request) {
                 flags: MessageFlags.Ephemeral,
                 with_response: true,
               },
+              headers: {
+                "X-Nonce": uuidv4(),
+              },
             }
           );
           revalidateTag("roomStatus");
@@ -152,6 +168,9 @@ export async function POST(request: Request) {
                 content: `:octagonal_sign: Internal App Error. Try again or contact an ${AppAbbreviationName} Executive`,
                 flags: MessageFlags.Ephemeral,
                 with_response: true,
+              },
+              headers: {
+                "X-Nonce": uuidv4(),
               },
             }
           );

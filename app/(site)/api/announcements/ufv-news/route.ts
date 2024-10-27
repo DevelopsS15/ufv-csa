@@ -8,6 +8,7 @@ import groq from "groq";
 import { discordAPIRest } from "../../utils";
 import { Routes } from "discord-api-types/v10";
 import he from "he";
+import { v4 as uuidv4 } from "uuid";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -118,6 +119,9 @@ export async function GET() {
           Routes.channelMessages(process.env.DISCORD_UFV_NEWS_CHANNEL_ID!),
           {
             body: discordMessageBody,
+            headers: {
+              "X-Nonce": uuidv4(),
+            },
           }
         )) as { id: string };
 
@@ -134,7 +138,12 @@ export async function GET() {
             Routes.channelMessageCrosspost(
               process.env.DISCORD_UFV_NEWS_CHANNEL_ID!,
               newsMessageRequest.id
-            )
+            ),
+            {
+              headers: {
+                "X-Nonce": uuidv4(),
+              },
+            }
           );
         } catch (e) {
           logger.info(
