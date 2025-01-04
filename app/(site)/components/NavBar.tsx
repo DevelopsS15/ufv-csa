@@ -10,14 +10,14 @@ export default function NavBar() {
         <LogoWithCSAStacked />
         <div className="hidden md:block">
           <NavBarAboutDropdown />
+          <InternalLinkButton href="/history" variant="ghost">
+            History
+          </InternalLinkButton>
           <InternalLinkButton href="/announcements" variant="ghost">
             Announcements
           </InternalLinkButton>
           <InternalLinkButton href="/events" variant="ghost">
             Events
-          </InternalLinkButton>
-          <InternalLinkButton href="/minutes" variant="ghost">
-            Minutes
           </InternalLinkButton>
           <InternalLinkButton href="/contact" variant="ghost">
             Contact

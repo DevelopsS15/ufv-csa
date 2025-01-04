@@ -22,11 +22,11 @@ export default function NavBarAboutDropdown() {
           Executives
         </InternalLinkButton>
         <InternalLinkButton
-          href="/history"
+          href="/minutes"
           variant="ghost"
           onClick={buttonOnClick}
         >
-          History
+          Minutes
         </InternalLinkButton>
         <InternalLinkButton
           href="/regulations"
