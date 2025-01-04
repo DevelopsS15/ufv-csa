@@ -3,7 +3,7 @@ import {
   SiDiscord,
   SiInstagram,
   SiLinkedin,
-  SiTwitter,
+  SiX,
 } from "@icons-pack/react-simple-icons";
 import { LucideUserSquare2, LucideUsersRound } from "lucide-react";
 import { defaultSanityDateTimeFormatOptions } from "../lib/utils";
@@ -104,7 +104,7 @@ export default defineType({
       description:
         "https://twitter.com/YourUsername. This will be publicly displayed",
       fieldset: "socialMedia",
-      icon: SiTwitter,
+      icon: SiX,
     }),
     defineField({
       name: "discordId",

@@ -5,7 +5,7 @@ import {
   SiDiscord,
   SiInstagram,
   SiLinkedin,
-  SiTwitter,
+  SiX,
 } from "@icons-pack/react-simple-icons";
 import BasicTooltip from "../components/General/Tooltip";
 import Link from "next/link";
@@ -89,7 +89,7 @@ export function ExecutiveDisplay({
               target="_blank"
               href={`https://twitter.com/${executive.twitter}`}
             >
-              <SiTwitter />
+              <SiX />
             </Link>
           )}
         </div>
