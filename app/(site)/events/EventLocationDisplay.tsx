@@ -7,6 +7,7 @@ import {
   getValidString,
   isEventOnCampus,
 } from "../utils";
+import InternalLink from "../components/General/InternalLink";
 
 export function EventLocationDisplay({
   event,
@@ -30,32 +31,37 @@ export function EventLocationDisplay({
         : " TBD"
       : ` ${additionalDetails}`;
 
-    return `${campusName}${eventBuildingOrAdditionalDetails}`;
+    return `${campusName}${eventBuildingOrAdditionalDetails.trim().endsWith(',') ? eventBuildingOrAdditionalDetails.substring(0, eventBuildingOrAdditionalDetails.length - 1) : eventBuildingOrAdditionalDetails}`;
   } else {
+    let floor = eventRoom.substring(
+      0,
+      1
+    );
+    if (eventBuilding === "S" && eventRoom.toLowerCase().includes('evered hall')) {
+      floor = '1';
+    }
+    const validDomains = [`ufv-ca.zoom.us`];
     return (
       <>
-        {campusName},{" "}
+        {campusName}
         {isEventOnCampus(campus) ? (
-          <>
+          <>,{" "}
             {buildingText}{" "}
             {hasBuilding && eventRoom.length > 0 ? (
-              <Link
-                href={`/FloorPlans/${campus}-${eventBuilding}${eventRoom.substring(
-                  0,
-                  1
-                )}.pdf`}
+              <InternalLink
+                href={`/FloorPlans/${campus}-${eventBuilding}${floor}.pdf`}
                 target="_blank"
                 className="underline"
               >
                 {eventBuilding}
-                {eventRoom}
-              </Link>
+                {/\d/.test(eventRoom[0]) ? eventRoom : ` ${eventRoom}`}
+              </InternalLink>
             ) : (
               <>{hasBuilding ? `${eventBuilding} ${eventRoomOrTBD}` : "TBD"}</>
             )}
           </>
         ) : (
-          <>{additionalDetails}</>
+          <>{additionalDetails.length > 0 ? <>, {validDomains.some((domain) => additionalDetails.startsWith(`https://${domain}`)) ? <InternalLink target="_blank" href={additionalDetails}>{additionalDetails}</InternalLink> : additionalDetails}</> : null}</>
         )}
       </>
     );
