@@ -129,7 +129,7 @@ export default async function Page() {
             <div>
               Formerly known as the{" "}
               <strong>
-                {UniversityAbbreviationName} Computer Information Systems
+                Computer Information Systems
                 Student Association (CISSA)
               </strong>
               , the <strong>{AppFullName}</strong> aims to represent computing
