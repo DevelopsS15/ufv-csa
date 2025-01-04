@@ -3,13 +3,11 @@ import {
   AreDatesTheSame,
   GetTimeStringFromDate,
   getURLForSanityImage,
-  sanityBlocksToText,
   sanityBodyPTComponents,
 } from "../../utils";
 import {
   getEvent,
   getEventType,
-  getEvents,
   getEventsForStaticParams,
 } from "~/app/sanity/lib/query";
 import {
@@ -43,7 +41,7 @@ export async function generateMetadata(
       description: "Unable to find this event.",
     };
   }
-  
+
   const previousImages = (await parent).openGraph?.images || [];
   if (event.image) {
     previousImages.unshift(getURLForSanityImage(event.image).quality(50).url());
@@ -112,21 +110,21 @@ export default async function Page({ params }: Props) {
           Go back
         </Link>
       </div>
-      <BannerImageWithBlurredBackground
+      {event.image && <BannerImageWithBlurredBackground
         image={event.image}
         title={event.title}
-      />
+      />}
       <div>
         <div className="text-xl md:text-3xl font-bold">{event.title}</div>
         <div className="text-base sm:text-lg md:text-1xl font-medium">
           <LucideCalendarClock className="size-5 inline-block" />{" "}
           <span>
-            {startDate.toDateString()} @ {GetTimeStringFromDate(startDate)}
+            <strong>{startDate.toDateString()} {GetTimeStringFromDate(startDate)}</strong>
             {" to "}
-            {!AreDatesTheSame(startDate, endDate) && (
-              <>{endDate.toDateString()} @ </>
+            <strong>{!AreDatesTheSame(startDate, endDate) && (
+              <>{endDate.toDateString()} </>
             )}
-            {GetTimeStringFromDate(new Date(event.endDate))}
+              {GetTimeStringFromDate(new Date(event.endDate))}</strong>
           </span>
         </div>
         <div className="text-base sm:text-lg md:text-1xl font-medium">
@@ -147,7 +145,7 @@ export default async function Page({ params }: Props) {
         )}
       </div>
       <Separator className="bg-slate-400 dark:bg-slate-900 my-4" />
-      <div className="hyphens-manual break-all">
+      <div className="hyphens-auto break-words">
         {Array.isArray(body) && body.length > 0 ? (
           <PortableText value={body} components={sanityBodyPTComponents} />
         ) : (
