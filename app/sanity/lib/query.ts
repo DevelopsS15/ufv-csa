@@ -99,7 +99,8 @@ export async function getEvent(slug: string) {
     room,
     relevantLinks,
     body,
-    bookTicket
+    bookTicket,
+    additionalDetails
   }[0]`,
     { slug },
     sanityFetchNextOptions_Events
