@@ -3450,7 +3450,14 @@ export const TimelineItems: TimelineItem[] = [
         position: Executive_President_Name,
       },
       {
-        name: "William",
+        name: "Derek Van Nievwkoop",
+        linkedInUsername: "derek-van-nieuwkoop-b74b8611b",
+        imageURL: `${Executive_Image_Path}Derek_Van_Nieuwkoop.jpg`,
+        position: Executive_FinanceOfficer_Name,
+      },
+      {
+        name: "William Fioraso",
+        // https://www.linkedin.com/in/williamfioraso/
         position: Executive_Secretary_Name,
       },
     ],
@@ -3519,7 +3526,7 @@ export const TimelineItems: TimelineItem[] = [
     executives: [
       {
         ...Executive_Profile_Michael_Bennett,
-        position: "President",
+        position: Executive_President_Name,
       },
       {
         ...Executive_Profile_James_Purdey,
@@ -4070,8 +4077,7 @@ export const TimelineItems: TimelineItem[] = [
         <div className="my-2">
           Thanks to Dr. Maryam Siahbani and Dr. Russell Campbell for
           facilitating the event and congratulations to team &quot;BRIKS&quot;
-          (Kshitij Goyal, Ishwak Sharda, and{" "}
-          {Executive_Profile_Samuel_Shull.name}) for earning 1st place.
+          (Ishwak Sharda, {Executive_Profile_Samuel_Shull.name}, and Kshitij Goyal) for earning 1st place.
         </div>
         <ExternalLink
           className="text-sm"
@@ -4089,8 +4095,7 @@ export const TimelineItems: TimelineItem[] = [
     date: "2024-02-24",
     description: (
       <>
-        Team &quot;BRIKS&quot; (Kshitij Goyal, Ishwak Sharda, and{" "}
-        {Executive_Profile_Samuel_Shull.name}), coached by Dr. Maryam Siahbani,
+        Team &quot;BRIKS&quot; (Ishwak Sharda, {Executive_Profile_Samuel_Shull.name}, and Kshitij Goyal), coached by Dr. Maryam Siahbani,
         represented UFV at the ICPC North America Pacific Northwest Regional in
         Division 2. They placed 25th out of 76 teams.
         <br />
@@ -4668,6 +4673,80 @@ export const TimelineItems: TimelineItem[] = [
               marginRight: 48,
             }}
           /> */}
+        </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
+      </>
+    ),
+  },
+  {
+    header: "Gaming Night 2024",
+    date: "2024-11-12",
+    icon: <LucideGamepad2 />,
+    description: (
+      <>
+        <div>
+          In collaboration with UFV E-Sports, we hosted an exciting night of fun and games at the Red Eye Gaming Lounge. Attendees could participate in a Valorant Tournament or enjoy free play on the computers and video games on the big screen.
+        </div>
+        <div className="text-sm">
+          <ExternalLink
+            href="https://csa.ufv.ca/events/csa-x-ufv-e-sports-gaming-night"
+            target="_blank"
+          >
+            Source: CSA X UFV E-SPORTS GAMING NIGHT
+          </ExternalLink>
+        </div>
+        <Carousel className="max-h-96 mt-2">
+          <CarouselPrevious
+            style={{
+              zIndex: 100,
+              marginLeft: 48,
+            }}
+          />
+          <CarouselContent className="max-h-max">
+            {[
+              {
+                src: "Poster.jpg",
+                alt: "Gaming Night 2024 Poster",
+              },
+              {
+                src: "WinningTeam.jpg",
+                alt: "Winning team for the Valorant tournament"
+              },
+              {
+                src: "RedEyeOverview.jpg",
+                alt: "Group of members at the gaming lounge",
+              },
+              {
+                src: "RedEyeOverview2.jpg",
+                alt: "Group of members at the gaming lounge",
+              },
+              {
+                src: "RedEyeOverview3.jpg",
+                alt: "Group of members at the gaming lounge",
+              },
+            ].map((item) => (
+              <CarouselItem
+                key={item.src}
+                className="bg-slate-700 text-center rounded-md"
+              >
+                <Image
+                  className="max-h-96 w-auto mx-auto rounded-md"
+                  src={`/History/Events/GamingNight2024/${item.src}`}
+                  width={720}
+                  height={360}
+                  alt={item.alt}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext
+            style={{
+              zIndex: 100,
+              marginRight: 48,
+            }}
+          />
         </Carousel>
         <div className="text-sm">
           Note: Use the arrow buttons to view more photos.
