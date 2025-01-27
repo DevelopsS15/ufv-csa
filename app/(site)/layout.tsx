@@ -51,7 +51,7 @@ export default function RootLayout({
         </LayoutWrapper>
         <Script
           defer
-          src="https://analytics.us.umami.is/script.js"
+          src="https://cloud.umami.is/script.js"
           data-website-id={process.env.NEXT_PUBLIC_UMAMI_ANALYTICS_SITE_ID}
         />
       </body>
