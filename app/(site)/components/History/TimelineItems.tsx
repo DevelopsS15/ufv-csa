@@ -4,7 +4,9 @@ import {
   LucideArchive,
   LucideArmchair,
   LucideAward,
+  LucideBookUser,
   LucideBug,
+  LucideCalendarClock,
   LucideCalendarDays,
   LucideCalendarHeart,
   LucideCircleDollarSign,
@@ -790,6 +792,24 @@ const ChildsPlay2013CarouselItems: CarouselItems[] = [
     alt: "Raffle Prizes",
   },
 ];
+
+const ProgrammingCompetition2025Items: CarouselItems[] = [{
+  fileName: "Poster.jpg",
+  alt: "Poster",
+  status: "Promotional poster",
+}, {
+  fileName: "1stPlaceTeam.jpg",
+  alt: "1st Place Team",
+  status: "1st Place Team - The Walking Johnnys (Division 1)"
+}, {
+  fileName: "2ndPlaceTeam.jpg",
+  alt: "2nd Place Team",
+  status: "2nd Place Team - Algorithm Avengers (Division 2)"
+}, {
+  fileName: "Teams.jpg",
+  alt: "Teams",
+  status: "Teams during the competition",
+}];
 
 //
 //
@@ -4211,7 +4231,7 @@ export const TimelineItems: TimelineItem[] = [
         </div>
         <Image
           className="max-h-72 w-auto h-auto rounded-md"
-          src={`/History/Events/TechPanel/MembersOfThePanel.jpg`}
+          src={`/History/Events/TechPanel2024/MembersOfThePanel.jpg`}
           width={720}
           height={360}
           alt="Members of the panel"
@@ -4304,7 +4324,7 @@ export const TimelineItems: TimelineItem[] = [
     ),
   },
   {
-    header: "FIELD TRIP TO CHINA",
+    header: "FIELD TRIP TO CHINA 2024",
     icon: <LucidePlane />,
     date: "2024-04-14",
     description: (
@@ -4320,13 +4340,13 @@ export const TimelineItems: TimelineItem[] = [
           .
         </div>
         <Link
-          href="/History/Events/FieldTripToChina/TheGroup2.jpg"
+          href="/History/Events/FieldTripToChina2024/TheGroup2.jpg"
           target="_blank"
           className="block"
         >
           <Image
             className="max-h-64 w-auto rounded-md"
-            src="/History/Events/FieldTripToChina/TheGroup2.jpg"
+            src="/History/Events/FieldTripToChina2024/TheGroup2.jpg"
             width={512}
             height={348}
             alt="The group of students and instructors"
@@ -4750,6 +4770,192 @@ export const TimelineItems: TimelineItem[] = [
         </Carousel>
         <div className="text-sm">
           Note: Use the arrow buttons to view more photos.
+        </div>
+      </>
+    ),
+  },
+  {
+    header: "SCC Schedule",
+    date: "2025-01-05",
+    icon: <LucideCalendarClock />,
+    description: <div>The Student Computing Centre (SCC) was assigned a new schedule so all students can drop by and take advantage of the space and it's resources. It's a great place to study, work on projects, or just hang out with friends.</div>
+  },
+  {
+    header: "Chilliwack.Tech Game Jam 2025",
+    date: "2025-01-24",
+    icon: <LucideGamepad2 />,
+    description: (
+      <>
+        <div>
+          The Chilliwack.Tech Game Jam was a 24-hour event at Imagine High Integrated Arts and Technology Secondary School for highschool and university students.
+        </div>
+        <div className="text-sm">
+          <ExternalLink
+            href="https://chilliwack.tech/GameJam"
+            target="_blank"
+          >
+            Source: Chilliwack.Tech Game Jam
+          </ExternalLink>
+        </div>
+        <div>
+          <Image
+            className="max-h-80 w-auto rounded-md"
+            src={`/History/Events/ChilliwackGameJam2025/Poster.png`}
+            width={720}
+            height={360}
+            alt="Game Jam 2025 Poster"
+          />
+        </div>
+      </>
+    ),
+  },
+  {
+    header: "Campus Engagement Expo 2025",
+    date: "2025-01-29",
+    icon: <LucideCalendarDays />,
+    description: <div>
+      We were part of the Campus Engagement Expo 2025 and were excited to meet tons of students looking to get involved with clubs and associations, and other campus activities.
+      <Image src="/History/Events/CampusEngagementExpo2025/EventTable.jpg" alt="Campus Engagement Expo 2025 Booth" className="rounded-md max-h-96 w-auto mt-2" width={720} height={360} />
+    </div>
+  },
+  {
+    header: "LAUNCH OF CSA TUTORING",
+    icon: <LucideBookUser />,
+    date: "2025-02-18",
+    description: <>
+      <div>
+        CSA launched its tutoring service on Discord to assist students with their computing questions from a variety of subjects like software development, networking, cybersecurity, and AI/ML.
+      </div>
+      <div className="mt-2">
+        These tutors were provided benefits including CSA merchandise discounts and potential opportunities with the School of Computing.
+      </div>
+    </>
+  },
+  {
+    header: "UFV COMPETITIVE PROGRAMMING MAR/25",
+    icon: <LucideKeyboard />,
+    date: "2025-03-07",
+    description: <>
+      <div>
+        <InternalLink href="https://icpc.global/" target="_blank">
+          ICPC
+        </InternalLink>
+        -inspired programming competition using C++, Java, or Python. 9
+        students in four teams attempted to solve six questions over three
+        hours.{" "}
+        <ExternalLink
+          href="https://www.instagram.com/p/DG9mQyCJTK5/"
+          target="_blank"
+        >
+          Check it out
+        </ExternalLink>
+      </div>
+      <Carousel className="mt-2">
+        <CarouselPrevious
+          style={{
+            zIndex: 100,
+            marginLeft: 48,
+          }}
+        />
+        <CarouselContent>
+          {ProgrammingCompetition2025Items.map((item) => (
+            <CarouselItem
+              key={item.fileName}
+              className="bg-slate-700 text-center relative h-full w-full flex self-end"
+            >
+              <Image
+                className="w-full h-full max-w-max mx-auto block max-h-96"
+                src={`/History/Events/CSAProgrammingCompetitionMar2025/${item.fileName}`}
+                width={720}
+                height={360}
+                alt={item.status ?? "Programming Competition Image"}
+              />
+              <div className="absolute bottom-0 w-full text-nowrap bg-slate-700 py-1 max-sm:text-sm">
+                {item.status}
+                {item.date && (
+                  <>
+                    {" - "}
+                    {item.date.toLocaleDateString(undefined, {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </>
+                )}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselNext
+          style={{
+            zIndex: 100,
+            marginRight: 48,
+          }}
+        />
+      </Carousel>
+      <div className="text-sm">
+        Source: <ExternalLink
+          href="https://www.instagram.com/p/DGjIOj-TS62/"
+          target="_blank"
+        >Instagram Post</ExternalLink>, <ExternalLink href="https://www.instagram.com/p/DG9mQyCJTK5/" target="_blank">Instagram Post</ExternalLink>
+      </div>
+    </>
+  },
+  {
+    header: "TECH PANEL & CAREER FAIR 2025",
+    icon: <LucideArmchair />,
+    date: "2025-03-13",
+    description: (
+      <>
+        <div>
+          In collaboration with CECE (Center for Experiential and Career
+          Education), this 2-hour tech panel consisted of four industry
+          professionals answering questions from computing students. After the
+          tech panel, there was a Career Fair with organisations from all over
+          the Fraser Valley.
+        </div>
+        <div className="mt-2">
+          Left to right:{" "}
+          <ExternalLink
+            href="https://www.linkedin.com/in/1pka/"
+            target="_blank"
+          >
+            Prashant Agrawal (Be Pacific)
+          </ExternalLink>
+          ,{" "}
+          <ExternalLink
+            href="https://www.linkedin.com/in/im-schmidt/"
+            target="_blank"
+          >
+            Isabelle Schmidt (Kerkhoff Technologies Inc.)
+          </ExternalLink>
+          ,{" "}
+          <ExternalLink
+            href="https://www.linkedin.com/in/mirzaraza/"
+            target="_blank"
+          >
+            Raza Mirza (Amazon)
+          </ExternalLink>
+          , and {" "}
+          <ExternalLink
+            href="https://www.linkedin.com/in/jtswong/"
+            target="_blank"
+          >
+            Jason Wong (Beta Collective, Coworking BC Society)
+          </ExternalLink>
+        </div>
+        <Image
+          className="max-h-72 w-auto h-auto rounded-md"
+          src={`/History/Events/TechPanel2025/MembersOfThePanel.jpg`}
+          width={720}
+          height={360}
+          alt="Members of the panel"
+        />
+        <div className="text-sm">
+          Source: <ExternalLink
+            href="https://flickr.com/photos/ufv/54397399719/in/album-72177720324519627"
+            target="_blank"
+          >Flickr Image</ExternalLink>
         </div>
       </>
     ),
