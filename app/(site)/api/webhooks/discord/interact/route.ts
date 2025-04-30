@@ -80,7 +80,7 @@ export async function POST(request: Request) {
           return NextResponse.json({
             type: InteractionResponseType.ChannelMessageWithSource,
             data: {
-              content: `Internal App Error`,
+              content: `Internal App Error: Unable to determine the status of the ${AppRoomName}. Try again or contact an ${AppAbbreviationName} Executive`,
               flags: MessageFlags.Ephemeral,
             },
           });
@@ -102,7 +102,6 @@ export async function POST(request: Request) {
           {
             body: {
               type: 5,
-              flags: MessageFlags.Ephemeral,
             }
           }
         );
@@ -143,7 +142,6 @@ export async function POST(request: Request) {
               body: {
                 content: `You have ${roomItems.statusPastTense} the ${AppRoomName}!`,
                 flags: MessageFlags.Ephemeral,
-                with_response: true,
                 enforce_nonce: true,
               },
               headers: {
@@ -162,7 +160,6 @@ export async function POST(request: Request) {
               body: {
                 content: `:octagonal_sign: Internal App Error. Try again or contact an ${AppAbbreviationName} Executive`,
                 flags: MessageFlags.Ephemeral,
-                with_response: true,
                 enforce_nonce: true,
               },
               headers: {
