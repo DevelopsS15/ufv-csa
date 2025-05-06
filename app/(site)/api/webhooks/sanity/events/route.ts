@@ -3,6 +3,7 @@ import { parseBody } from "next-sanity/webhook";
 import groq from "groq";
 import { getEventType, getLatestAnnouncement } from "~/app/sanity/lib/query";
 import {
+  CapitalizeFirstLetter,
   SanityImageWithAltType,
   getURLForSanityImage,
 } from "~/app/(site)/utils";
@@ -39,9 +40,8 @@ const validAnnouncementCategories: SanityAnnouncementType[] = [
   SanityAnnouncementType.IEEE,
 ];
 
-const eventDirectLinkDomain = `http${
-  process.env.NODE_ENV === "development" ? "" : "s"
-}://${process.env.SITE_DOMAIN}`;
+const eventDirectLinkDomain = `http${process.env.NODE_ENV === "development" ? "" : "s"
+  }://${process.env.SITE_DOMAIN}`;
 
 const memoryCache = caching("memory", {
   max: 100,
@@ -139,6 +139,11 @@ export async function POST(req: NextRequest) {
         revalidateTag("executives");
         parentStaleRoute = "executives";
         break;
+      case "roomStatus":
+        revalidateTag("roomStatus");
+        revalidatePath("/scc", "page");
+        revalidatePath("/api/room-status", "page");
+        break;
     }
 
     if (parentStaleRoute.length > 0) {
@@ -160,31 +165,32 @@ export async function POST(req: NextRequest) {
     loggerForRoute.info(`Received potential event/announcement from Sanity`);
 
     const embeds = [];
-    const eventDirectLink = `${eventDirectLinkDomain}/${documentType}s/${
-      documentSlug?.current ?? ""
-    }`;
+    const eventDirectLink = `${eventDirectLinkDomain}/${documentType}s/${documentSlug?.current ?? ""
+      }`;
     let numberOfEmbedImages = 0;
     const textDescription = Array.isArray(body.after?.body)
       ? `${toMarkdown(body.after.body, {
-          serializers: {
-            types: {
-              image: (props: { node: SanityImageWithAltType }) => {
-                const imageFilename = props?.node?.asset?._ref;
-                if (typeof imageFilename !== `string`) return ``;
-                const url = getURLForSanityImage(props?.node).url();
-                numberOfEmbedImages++;
-                return `:frame_photo: [Image ${numberOfEmbedImages}](${url})`;
-              },
-            },
-            marks: {
-              link: (props: { mark: { href: string; title: unknown } }) =>
-                props.mark.href,
+        serializers: {
+          types: {
+            image: (props: { node: SanityImageWithAltType }) => {
+              const imageFilename = props?.node?.asset?._ref;
+              if (typeof imageFilename !== `string`) return ``;
+              const url = getURLForSanityImage(props?.node).url();
+              numberOfEmbedImages++;
+              return `:frame_photo: [Image ${numberOfEmbedImages}](${url})`;
             },
           },
-          imageOptions: { w: 320, h: 240, fit: "max" },
-          projectId: projectId,
-          dataset: dataset,
-        })}`
+          marks: {
+            link: (props: { children: string[], mark: { href: string; } }) => {
+              if (props.children.length === 0) return props.mark.href;
+              return `[${props.children[0]}](${props.mark.href})`;
+            },
+          },
+        },
+        imageOptions: { w: 320, h: 240, fit: "max" },
+        projectId: projectId,
+        dataset: dataset,
+      })}`
       : "";
 
     switch (documentType) {
@@ -216,9 +222,16 @@ export async function POST(req: NextRequest) {
           // Discord Message
           const afterStartDate = new Date(body.after.startDate);
 
+          const eventLocationStringMarkdown = EventLocationDisplay({
+            event: body.after,
+            type: "string",
+            withMarkdown: true,
+          });
+
           const eventLocationString = EventLocationDisplay({
             event: body.after,
             type: "string",
+            withMarkdown: false,
           });
 
           let mainEmbedDescription = `:calendar_spiral: **Start:** ${GetDiscordTimestampString(
@@ -227,10 +240,20 @@ export async function POST(req: NextRequest) {
           mainEmbedDescription += `:calendar_spiral: **End:** ${GetDiscordTimestampString(
             new Date(body.after.endDate)
           )}\n`;
-          mainEmbedDescription += `:round_pushpin: **Location:** ${eventLocationString}\n`;
+          mainEmbedDescription += `:round_pushpin: **Location:** ${eventLocationStringMarkdown}\n`;
+          mainEmbedDescription += `:dollar: **Price:** ${CapitalizeFirstLetter(
+            body.after.price
+          )}\n`;
 
-          if (body.after.bookTicket) {
-            mainEmbedDescription += `:tickets: **Register:** ${body.after.bookTicket}`;
+          const bookTicket = body.after.bookTicket;
+          if (bookTicket) {
+            mainEmbedDescription += `:tickets: **Register:** ${bookTicket}\n`;
+          }
+
+          const relevantLinks = body.after.relevantLinks;
+          if (relevantLinks && relevantLinks.length > 0) {
+            mainEmbedDescription += `:globe_with_meridians: **Relevant Links:** ${relevantLinks
+              .join(", ")}`;
           }
 
           const mainEmbed: {
@@ -503,8 +526,7 @@ export async function POST(req: NextRequest) {
           previousAnnounceDiscordMessage?._id;
 
         loggerForRoute.info(
-          `Handling ${
-            announcementBody.after ? "CREATE/UPDATE" : "DELETE"
+          `Handling ${announcementBody.after ? "CREATE/UPDATE" : "DELETE"
           } announcement.`,
           previousAnnounceDiscordMessage
         );
@@ -535,9 +557,8 @@ export async function POST(req: NextRequest) {
           const pingEveryone = announcementBody.after.pingEveryone;
 
           const discordMessageBody = {
-            content: `${pingEveryone ? `@everyone\n` : ""}# [${
-              announcementBody?.after.title ?? "No Title"
-            }](${eventDirectLink})`,
+            content: `${pingEveryone ? `@everyone\n` : ""}# [${announcementBody?.after.title ?? "No Title"
+              }](${eventDirectLink})`,
             embeds: embeds,
             enforce_nonce: true,
           };
@@ -651,18 +672,18 @@ async function HandleSendOrUpdateWebhookMessage({
           eventDocumentId:
             bodyType === "event"
               ? {
-                  _type: "reference",
-                  _ref: documentId,
-                  _weak: true,
-                }
+                _type: "reference",
+                _ref: documentId,
+                _weak: true,
+              }
               : undefined,
           announcementDocumentId:
             bodyType === "announcement"
               ? {
-                  _type: "reference",
-                  _ref: documentId,
-                  _weak: true,
-                }
+                _type: "reference",
+                _ref: documentId,
+                _weak: true,
+              }
               : undefined,
         });
         return true;

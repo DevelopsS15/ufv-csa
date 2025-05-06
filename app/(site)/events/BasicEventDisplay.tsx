@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { getUpcomingEventType } from "~/app/sanity/lib/query";
-import { GetTimeStringFromDate, getURLForSanityImage } from "../utils";
+import { CapitalizeFirstLetter, GetTimeStringFromDate, getURLForSanityImage } from "../utils";
 import {
   LucideCalendarCheck,
   LucideCalendarX,
+  LucideDollarSign,
   LucideImageOff,
   LucideMapPin,
 } from "lucide-react";
@@ -40,7 +41,7 @@ export function BasicEventDisplay({ event }: { event: getUpcomingEventType }) {
           )}`}
         >
           <BasicTooltip content="Start of event">
-            <LucideCalendarCheck className="size-4" />
+            <LucideCalendarCheck className="size-4 min-w-4" />
           </BasicTooltip>
           {startDate.toDateString()} at {GetTimeStringFromDate(startDate)}
         </div>
@@ -51,15 +52,19 @@ export function BasicEventDisplay({ event }: { event: getUpcomingEventType }) {
           )}`}
         >
           <BasicTooltip content="End of event">
-            <LucideCalendarX className="size-4" />
+            <LucideCalendarX className="size-4 min-w-4" />
           </BasicTooltip>
           {endDate.toDateString()} at {GetTimeStringFromDate(endDate)}
         </div>
-        <div className="flex items-center gap-1 text-sm mb-2">
-          <LucideMapPin className="size-4" />
+        <div className="flex items-center gap-1 text-sm">
+          <LucideMapPin className="size-4 min-w-4" />
           <div>
             <EventLocationDisplay event={event} type="node" />
           </div>
+        </div>
+        <div className="flex items-center gap-1 text-sm mb-2">
+          <LucideDollarSign className="size-4 min-w-4" />
+          <div>{CapitalizeFirstLetter(event.price)}</div>
         </div>
         <InternalLinkButton
           href={`/events/${event.slug}`}

@@ -99,6 +99,7 @@ export async function getEvent(slug: string) {
     room,
     relevantLinks,
     body,
+    price,
     bookTicket,
     additionalDetails
   }[0]`,
@@ -125,6 +126,7 @@ export interface getEventType {
   room?: string;
   relevantLinks?: string[];
   body?: PortableTextBlock;
+  price: "free" | "paid";
   bookTicket?: string;
 }
 
@@ -156,6 +158,7 @@ export async function getEvents(limit = 25) {
     campus,
     building,
     room,
+    price,
     relevantLinks,
     body
   }[0...$limit]`,
@@ -176,6 +179,7 @@ export interface getUpcomingEventType {
   campus: string;
   building?: string;
   room?: string;
+  price: "free" | "paid";
   additionalDetails?: string;
 }
 
@@ -191,6 +195,7 @@ export async function getUpcomingEvents(limit = 25) {
     campus,
     building,
     room,
+    price,
     additionalDetails,
   }[0...$limit]`,
     {
@@ -258,9 +263,11 @@ export interface getLatestRoomStatus {
   _id: string;
   _createdAt: string;
   _updatedAt: string;
+  status: boolean;
+  discordUserId: string;
 }
 export async function getLatestRoomStatus() {
-  return readClient.fetch<getLatestAnnouncement[]>(
+  return readClient.fetch<getLatestRoomStatus[]>(
     groq`*[_type == "roomStatus"] | order(_createdAt desc)[0...$limit]`,
     {
       limit: 1,

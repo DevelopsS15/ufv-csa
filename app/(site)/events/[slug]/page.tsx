@@ -1,6 +1,7 @@
 import { PortableText, toPlainText } from "@portabletext/react";
 import {
   AreDatesTheSame,
+  CapitalizeFirstLetter,
   GetTimeStringFromDate,
   getURLForSanityImage,
   sanityBodyPTComponents,
@@ -13,6 +14,7 @@ import {
 import {
   LucideArrowLeft,
   LucideCalendarClock,
+  LucideDollarSign,
   LucideExternalLink,
   LucideMapPin,
 } from "lucide-react";
@@ -98,15 +100,15 @@ export default async function Page({ params }: Props) {
   const startDate: Date = new Date(event.startDate);
   const endDate: Date = new Date(event.endDate);
   const relevantLinks = event?.relevantLinks;
-  // bg-slate-300 dark:bg-slate-950/50
+
   return (
     <article className="w-11/12 sm:w-9/12 md:w-7/12 py-8 mx-auto">
       <div className="mb-2">
         <Link
           href={"/events"}
-          className="hover:text-green-500 transition-colors"
+          className="hover:text-green-500 transition-colors flex items-center gap-1"
         >
-          <LucideArrowLeft className="inline" />
+          <LucideArrowLeft className="size-5 min-w-5" />
           Go back
         </Link>
       </div>
@@ -117,7 +119,7 @@ export default async function Page({ params }: Props) {
       <div>
         <div className="text-xl md:text-3xl font-bold">{event.title}</div>
         <div className="text-base sm:text-lg md:text-1xl font-medium">
-          <LucideCalendarClock className="size-5 inline-block" />{" "}
+          <LucideCalendarClock className="size-5 min-w-5 inline-block" />{" "}
           <span>
             <strong>{startDate.toDateString()} {GetTimeStringFromDate(startDate)}</strong>
             {" to "}
@@ -128,10 +130,14 @@ export default async function Page({ params }: Props) {
           </span>
         </div>
         <div className="text-base sm:text-lg md:text-1xl font-medium">
-          <LucideMapPin className="size-5 inline-block" />{" "}
+          <LucideMapPin className="size-5 min-w-5 inline-block" />{" "}
           <span>
             <EventLocationDisplay event={event} type="node" />
           </span>
+        </div>
+        <div className="text-base sm:text-lg md:text-1xl font-medium">
+          <LucideDollarSign className="size-5 min-w-5 inline-block" />{" "}
+          <span>{CapitalizeFirstLetter(event.price)}</span>
         </div>
         {event.bookTicket && (
           <InternalLinkButton
@@ -157,7 +163,7 @@ export default async function Page({ params }: Props) {
           <Separator className="bg-slate-400 dark:bg-slate-900 my-4" />
           <div className="flex flex-wrap gap-1">
             <div className="flex items-center gap-1">
-              <LucideExternalLink className="size-5 inline-block" />{" "}
+              <LucideExternalLink className="size-5 min-w-5 inline-block" />{" "}
               <span>Relevant Links: </span>
             </div>
             {relevantLinks.map((relLink, index) => (
