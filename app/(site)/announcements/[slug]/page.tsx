@@ -96,9 +96,9 @@ export default async function Page({ params }: Props) {
       <div className="mb-2">
         <Link
           href={"/announcements"}
-          className="hover:text-green-500 transition-colors"
+          className="hover:text-green-500 transition-colors flex items-center gap-1"
         >
-          <LucideArrowLeft className="inline" />
+          <LucideArrowLeft className="size-5 min-w-5" />
           Go back
         </Link>
       </div>
@@ -112,7 +112,7 @@ export default async function Page({ params }: Props) {
         </div>
       </div>
       <Separator className="bg-slate-400 dark:bg-slate-900 my-4" />
-      <div className="hyphens-manual break-all">
+      <div className="hyphens-manual break-words">
         {Array.isArray(body) && body.length > 0 ? (
           <PortableText value={body} components={sanityBodyPTComponents} />
         ) : (
