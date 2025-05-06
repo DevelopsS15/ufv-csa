@@ -4960,4 +4960,70 @@ export const TimelineItems: TimelineItem[] = [
       </>
     ),
   },
+  {
+    header: "Gaming Night April 2025",
+    date: "2025-04-30",
+    icon: <LucideGamepad2 />,
+    description: (
+      <>
+        <div>
+          In collaboration with UFV E-Sports, we hosted an exciting night of fun and games at the Red Eye Gaming Lounge. Attendees could enjoy free play on the computers and video games on the big screen.
+        </div>
+        <div className="text-sm">
+          <ExternalLink
+            href="https://csa.ufv.ca/events/csa-x-ufv-e-sports-gaming-night-round-2"
+            target="_blank"
+          >
+            Source: CSA X UFV E-SPORTS Gaming Night Round 2
+          </ExternalLink>
+        </div>
+        <Carousel className="max-h-96 mt-2">
+          <CarouselPrevious
+            style={{
+              zIndex: 100,
+              marginLeft: 48,
+            }}
+          />
+          <CarouselContent className="max-h-max">
+            {[
+              {
+                src: "PromotionalPoster.png",
+                alt: "Gaming Night April 2025 Poster",
+              },
+              {
+                src: "Image3.jpg",
+                alt: "Group of members at the gaming lounge",
+              },
+              {
+                src: "Image2.jpg",
+                alt: "Group of members at the gaming lounge",
+              }
+            ].map((item) => (
+              <CarouselItem
+                key={item.src}
+                className="bg-slate-700 text-center rounded-md"
+              >
+                <Image
+                  className="max-h-96 w-auto mx-auto rounded-md"
+                  src={`/History/Events/GamingNightApr2025/${item.src}`}
+                  width={720}
+                  height={360}
+                  alt={item.alt}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext
+            style={{
+              zIndex: 100,
+              marginRight: 48,
+            }}
+          />
+        </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more photos.
+        </div>
+      </>
+    ),
+  },
 ];
