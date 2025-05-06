@@ -61,19 +61,19 @@ function BasicAnnouncementDisplay({
             height={128}
           />
         ) : (
-          <LucideImageOff className="size-12" />
+          <LucideImageOff className="size-12 my-4" />
         )}
       </div>
       <div className="flex-1 p-3 flex flex-col h-full">
         {/* TODO: March 16, 2024 Verify UI for category. */}
         {/* TODO: March 16, 2024 Add filter for categories. */}
-        <div className="flex items-center text-lg sm:text-xl font-bold">
+        <div className="flex items-center gap-3 text-lg sm:text-xl font-bold">
           <span className="flex-1">{announcement.title}</span>
           <span className="bg-green-500 px-1 rounded-sm max-w-max text-sm">
             {announcement.category}
           </span>
         </div>
-        <div className="text-sm sm:text-base max-h-16 sm:max-h-full overflow-clip">
+        <div className="text-sm sm:text-base max-h-16 sm:max-h-full overflow-hidden">
           {Array.isArray(announcement.body) && announcement.body.length > 0 ? (
             <PortableText
               value={announcement.body}
