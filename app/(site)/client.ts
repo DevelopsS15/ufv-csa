@@ -15,6 +15,6 @@ export const readClientWithCDN = createClient({
   projectId: projectId,
   dataset: dataset,
   apiVersion: apiVersion,
-  useCdn: true,
+  useCdn: false,
   withCredentials: true,
 });

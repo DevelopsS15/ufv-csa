@@ -3,7 +3,6 @@ import { twMerge } from "tailwind-merge";
 import imageUrlBuilder from "@sanity/image-url";
 import { PortableTextBlock, Image as SanityImageType } from "sanity";
 import { PropsWithChildren } from "react";
-import Link from "next/link";
 import { MeetingMinutesExecutive } from "../sanity/lib/query";
 import { PortableTextComponents } from "@portabletext/react";
 import { allCampusOptions } from "../sanity/schemas/event";
@@ -13,6 +12,7 @@ import {
 	type APIPingInteraction,
 } from "discord-api-types/v10";
 import nacl from "tweetnacl";
+import InternalLink from "./components/General/InternalLink";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -158,9 +158,9 @@ export const sanityBodyPTComponents: PortableTextComponents = {
       children,
       value,
     }: PropsWithChildren<{ value?: { href: string } }>) => (
-      <Link href={value?.href ?? "#"} referrerPolicy={"no-referrer"}>
+      <InternalLink href={value?.href ?? "#"} referrerPolicy="no-referrer">
         {children}
-      </Link>
+      </InternalLink>
     ),
   },
   block: {

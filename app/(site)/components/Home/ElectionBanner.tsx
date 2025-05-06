@@ -16,35 +16,34 @@ import BasicTooltip from "../General/Tooltip";
 export default function ElectionBanner() {
   return (
     <>
-      <div className="text-3xl font-bold text-center">2024 Elections</div>
+      <div className="text-3xl font-bold text-center">2025 Elections</div>
       <div className="my-6 md:grid md:grid-cols-4">
         <ElectionBannerTimelineSegment
-          startDate={new Date("2024-03-04T12:00:00.000-07:00")}
-          endDate={new Date("2024-04-22T12:00:00.000-07:00")}
+          startDate={new Date("2025-04-07T12:00:00.000-07:00")}
+          endDate={new Date("2025-04-19T12:00:00.000-07:00")}
           title="Nominations"
           description="Those who are interested in becoming an executive can self-nominate."
-          link="https://forms.gle/q33YLi3pB4fquPMU9"
+          link="https://forms.gle/aNRjRahQUfUAjTgaA"
           icon={<LucideContact />}
         />
         <ElectionBannerTimelineSegment
-          startDate={new Date("2024-04-23T12:00:00.000-07:00")}
-          endDate={new Date("2024-04-30T12:00:00.000-07:00")}
+          startDate={new Date("2025-04-19T12:00:00.000-07:00")}
+          endDate={new Date("2025-04-28T12:00:00.000-07:00")}
           title="Campaign"
           description="Get to know more about each candidate prior to voting"
-          link="https://csa.ufv.ca/announcements/csa-nominee-campaign-begins-now"
           icon={<LucideSpeech />}
         />
         <ElectionBannerTimelineSegment
-          startDate={new Date("2024-05-01T12:00:00.000-07:00")}
-          endDate={new Date("2024-05-14T12:00:00.000-07:00")}
+          startDate={new Date("2025-04-28T12:00:00.000-07:00")}
+          endDate={new Date("2025-05-16T12:00:00.000-07:00")}
           title="Voting"
           description="Vote for your ideal candidate for each position"
-          link="https://forms.office.com/r/kQVsUmeJt1"
+          link="https://forms.cloud.microsoft/r/LaktdDTT6B"
           icon={<LucideArchive />}
         />
         <ElectionBannerTimelineSegment
-          startDate={new Date("2024-05-15T12:00:00.000-07:00")}
-          endDate={new Date("2024-05-15T12:00:00.000-07:00")}
+          startDate={new Date("2025-05-16T12:00:00.000-07:00")}
+          endDate={new Date("2025-05-16T12:00:00.000-07:00")}
           title="Results"
           description="The voting results are publicly announced"
           icon={<LucidePartyPopper />}

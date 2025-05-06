@@ -8,9 +8,9 @@ export default function Layout({ children }: PropsWithChildren) {
       <div className="mb-2">
         <Link
           href={`/minutes/`}
-          className="hover:text-green-500 transition-colors"
+          className="hover:text-green-500 transition-colors flex items-center gap-1"
         >
-          <LucideArrowLeft className="inline" />
+          <LucideArrowLeft className="size-5 min-w-5" />
           Go back
         </Link>
       </div>
