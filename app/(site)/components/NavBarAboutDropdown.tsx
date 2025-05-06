@@ -4,6 +4,7 @@ import React from "react";
 import InternalLinkButton from "./General/InternalLinkButton";
 import { Button } from "./UI/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./UI/popover";
+import { AppRoomName } from "../config";
 
 export default function NavBarAboutDropdown() {
   const [open, setOpen] = React.useState<boolean>(false);
@@ -27,6 +28,12 @@ export default function NavBarAboutDropdown() {
           onClick={buttonOnClick}
         >
           Minutes
+        </InternalLinkButton>
+        <InternalLinkButton
+          href="/scc"
+          variant="ghost"
+          onClick={buttonOnClick}>
+          SCC
         </InternalLinkButton>
         <InternalLinkButton
           href="/regulations"

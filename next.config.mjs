@@ -11,6 +11,7 @@ const nextConfig = {
       },
     ],
   },
+  transpilePackages: ['three'],
   experimental: {
     taint: true,
   },
