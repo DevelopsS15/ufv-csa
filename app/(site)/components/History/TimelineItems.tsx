@@ -2250,7 +2250,7 @@ export const TimelineItems: TimelineItem[] = [
         </div>
         <Image
           className="block rounded-md"
-          src="/History/ZeldaPushPinMural.jpg"
+          src="/History/ZeldaPushpinMural/ZeldaPushPinMural.jpg"
           width={348}
           height={348}
           alt="Zelda Push Pin Mural"
