@@ -50,29 +50,36 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
 
         const controls = new OrbitControls(camera, renderer.domElement);
         camera.position.set(3.0501035415905093, 1.2620784614055514, 1.1849161754458413);
-        camera.lookAt(0, 2.5, 0);
+        // camera.lookAt(0, 2.5, 0); // Works
         controls.update();
 
         const loader = new GLTFLoader();
         const doorGroup = new THREE.Group();
 
         loader.load('CSA_SCC_Room.glb', function (gltf) {
-            const targetOpacity = isRoomOpen ? 0.35 : 0.95;
+            const windowOpacity = 0.75;
+            const targetOpacity = isRoomOpen ? 0 : 0.95;
             const targetColor = 0xdddddd;
             gltf.scene.children.forEach((child) => {
-                if (child.name.startsWith('Window')) {
+                if (child.name.startsWith('WindowBlind')) {
                     if (!("material" in child)) return;
                     let material = new THREE.MeshStandardMaterial({ color: targetColor });
                     material.transparent = true;
                     material.opacity = targetOpacity;
                     child.material = material;
+                } else if (child.name.startsWith('Window')) {
+                    if (!("material" in child)) return;
+                    let material = new THREE.MeshStandardMaterial({ color: targetColor });
+                    material.transparent = true;
+                    material.opacity = windowOpacity;
+                    child.material = material;
                 } else if (child.name === 'Door') {
                     child.children.forEach((mesh) => {
                         // Cube001_1 is the window on the door
-                        if (mesh.name === "Cube001_1" && "material" in mesh) {
+                        if (mesh.name === "Cube001" && "material" in mesh) {
                             let material = new THREE.MeshStandardMaterial({ color: targetColor });
                             material.transparent = true;
-                            material.opacity = targetOpacity;
+                            material.opacity = windowOpacity;
                             mesh.material = material;
                         }
                     });
@@ -85,7 +92,7 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
 
             if (isRoomOpen) {
                 doorGroup.rotateY(-Math.PI / 3);
-                doorGroup.position.add(new THREE.Vector3(-0.755, 0, -2.05));
+                doorGroup.position.add(new THREE.Vector3(-0.715, 0, -2.075));
             }
             scene.add(doorGroup);
             scene.add(gltf.scene);
@@ -93,19 +100,20 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
             console.error(error);
         });
 
+        // TODO(2025-05-10): Look into how to change lookAt position while maintaining a better orbital control
         const animate = () => {
             requestAnimationFrame(animate);
-            const rotateSpeed = 0.0005;
-            const distanceSpeed = 3.25;
-            // camera.position.x = Math.sin(Date.now() * rotateSpeed) * distanceSpeed;
-            // camera.position.y = 1;
-            // camera.position.z = Math.cos(Date.now() * rotateSpeed) * distanceSpeed;
+            // const rotateSpeed = 0.0005;
+            // const distanceSpeed = 3.25;
+            // // camera.position.x = Math.sin(Date.now() * rotateSpeed) * distanceSpeed;
+            // // camera.position.y = 1;
+            // // camera.position.z = Math.cos(Date.now() * rotateSpeed) * distanceSpeed;
 
-            const ySpeed = 0.001;
-            // camera.position.y = Math.sin(Date.now() * ySpeed) * 0.025 + 0.9;
+            // const ySpeed = 0.001;
+            // // camera.position.y = Math.sin(Date.now() * ySpeed) * 0.025 + 0.9;
+            // // camera.lookAt(0, 1, 0.25);
 
-            // camera.lookAt(0, 1, 0.25);
-
+            camera.lookAt(0, 1, 0);
             controls.update();
             renderer.render(scene, camera);
         };
