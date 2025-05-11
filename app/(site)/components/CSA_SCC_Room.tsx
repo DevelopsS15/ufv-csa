@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -9,6 +9,9 @@ import { cn } from "../utils";
 export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: boolean, className?: string }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const attachedRef = useRef<boolean>(false);
+
+    const threeSceneRef = useRef<THREE.Scene | null>(null);
+    const threeControlsRef = useRef<OrbitControls | null>(null);
 
     const getCanvasDimensions = () => {
         const element = containerRef.current;
@@ -28,29 +31,41 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
         const canvasDimensions = getCanvasDimensions();
         const canvasWidth = canvasDimensions.width;
         const canvasHeight = canvasDimensions.height;
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1e293b)
+        threeSceneRef.current = new THREE.Scene();
+        threeSceneRef.current.background = new THREE.Color(0x1e293b)
 
         const camera = new THREE.PerspectiveCamera(75, canvasDimensions.aspect, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        camera.position.set(3.05, 1.1, 1.185);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(canvasDimensions.aspect);
         renderer.setSize(canvasWidth, canvasHeight);
+        renderer.setAnimationLoop(animate);
         containerRef.current.appendChild(renderer.domElement);
         attachedRef.current = true;
 
+        // Add all lighting
         const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
-        scene.add(hemisphereLight);
+        threeSceneRef.current.add(hemisphereLight);
 
         const indoorLightFar = new THREE.PointLight(0xffffff, 2);
         indoorLightFar.position.add(new THREE.Vector3(-0.5, 1.749, 0.5));
-        scene.add(indoorLightFar);
+        threeSceneRef.current.add(indoorLightFar);
 
         const indoorLightClose = new THREE.PointLight(0xffffff, 2);
         indoorLightClose.position.add(new THREE.Vector3(0.7, 1.749, -0.7));
-        scene.add(indoorLightClose);
+        threeSceneRef.current.add(indoorLightClose);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        camera.position.set(3.0501035415905093, 1.2620784614055514, 1.1849161754458413);
-        // camera.lookAt(0, 2.5, 0); // Works
+        // Add controls
+        threeControlsRef.current = new OrbitControls(camera, renderer.domElement);
+        const controls = threeControlsRef.current;
+        controls.listenToKeyEvents(window);
+        controls.target.set(0, 0.75, 0);
+        controls.maxZoom = 5;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = -3;
+        controls.minDistance = 0.25;
+        controls.maxDistance = 4;
         controls.update();
 
         const loader = new GLTFLoader();
@@ -75,8 +90,9 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
                     child.material = material;
                 } else if (child.name === 'Door') {
                     child.children.forEach((mesh) => {
-                        // Cube001_1 is the window on the door
-                        if (mesh.name === "Cube001" && "material" in mesh) {
+                        // Cube001_1 is the window on the door. When updating the model, the last name may change.
+                        // e.g. Cube001_1 -> Cube001
+                        if (mesh.name === "Cube001_1" && "material" in mesh) {
                             let material = new THREE.MeshStandardMaterial({ color: targetColor });
                             material.transparent = true;
                             material.opacity = windowOpacity;
@@ -94,28 +110,16 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
                 doorGroup.rotateY(-Math.PI / 3);
                 doorGroup.position.add(new THREE.Vector3(-0.715, 0, -2.075));
             }
-            scene.add(doorGroup);
-            scene.add(gltf.scene);
+            threeSceneRef.current?.add(doorGroup);
+            threeSceneRef.current?.add(gltf.scene);
         }, undefined, function (error) {
             console.error(error);
         });
 
-        // TODO(2025-05-10): Look into how to change lookAt position while maintaining a better orbital control
-        const animate = () => {
-            requestAnimationFrame(animate);
-            // const rotateSpeed = 0.0005;
-            // const distanceSpeed = 3.25;
-            // // camera.position.x = Math.sin(Date.now() * rotateSpeed) * distanceSpeed;
-            // // camera.position.y = 1;
-            // // camera.position.z = Math.cos(Date.now() * rotateSpeed) * distanceSpeed;
-
-            // const ySpeed = 0.001;
-            // // camera.position.y = Math.sin(Date.now() * ySpeed) * 0.025 + 0.9;
-            // // camera.lookAt(0, 1, 0.25);
-
-            camera.lookAt(0, 1, 0);
+        function animate() {
+            if (!threeSceneRef.current) return;
             controls.update();
-            renderer.render(scene, camera);
+            renderer.render(threeSceneRef.current, camera);
         };
 
         onWindowResize();

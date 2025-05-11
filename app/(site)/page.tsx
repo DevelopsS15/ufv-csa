@@ -196,11 +196,11 @@ export default async function Page() {
       <div className="bg-slate-900/50">
         <div className="w-11/12 sm:w-9/12 mx-auto py-20">
           <h1 className="text-3xl font-bold text-center">Highlights</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-8 max-w-sm sm:max-w-md md:max-w-6xl mx-auto">
             {highlightImages.map((images, index) => (
               <div
                 key={index}
-                className={cn("gap-3 grid")}
+                className={cn("grid gap-3", index === 2 ? "max-lg:md:col-span-2 max-lg:md:grid-cols-2" : undefined)}
               >
                 {images.map((image) => (
                   <InternalLink
