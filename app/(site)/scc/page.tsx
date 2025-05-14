@@ -24,7 +24,7 @@ export default async function Page() {
         <main className="pt-8 text-center">
             <div className="w-11/12 md:w-8/12 lg:w-6/12 mx-auto flex flex-col gap-2 h-full pb-4">
                 <h1 className="text-3xl font-bold">{AppRoomName} (SCC)</h1>
-                <div>See when <SCCRoomFloorplanLink /> on the Abbotsford campus is open for drop-ins so you can take advantage of the space and it's resources. <InternalLink href="https://discord.gg/w9yRFQpXYe">Join our Discord</InternalLink> for the schedule.</div>
+                <div>See when <SCCRoomFloorplanLink /> on the Abbotsford campus is open for drop-ins so you can take advantage of the space and it&apos;s resources. <InternalLink href="https://discord.gg/w9yRFQpXYe">Join our Discord</InternalLink> for the schedule.</div>
                 <div className="flex items-center justify-center">
                     <div className="font-bold bg-slate-950 px-3 py-1 rounded-l-md">
                         Status

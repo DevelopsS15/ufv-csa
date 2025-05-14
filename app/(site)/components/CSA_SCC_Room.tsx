@@ -142,6 +142,7 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
             window.removeEventListener("resize", onWindowResize);
             renderer.dispose();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

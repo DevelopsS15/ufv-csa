@@ -4778,7 +4778,7 @@ export const TimelineItems: TimelineItem[] = [
     header: "SCC Schedule",
     date: "2025-01-05",
     icon: <LucideCalendarClock />,
-    description: <div>The Student Computing Centre (SCC) was assigned a new schedule so all students can drop by and take advantage of the space and it's resources. It's a great place to study, work on projects, or just hang out with friends.</div>
+    description: <div>The Student Computing Centre (SCC) was assigned a new schedule so all students can drop by and take advantage of the space and it&apos;s resources. It&apos;s a great place to study, work on projects, or just hang out with friends.</div>
   },
   {
     header: "Chilliwack.Tech Game Jam 2025",

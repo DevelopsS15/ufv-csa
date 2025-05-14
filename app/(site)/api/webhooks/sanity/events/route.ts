@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
         break;
       case "roomStatus":
         revalidateTag("roomStatus");
+        revalidatePath("/", "page");
         revalidatePath("/scc", "page");
         revalidatePath("/api/room-status", "page");
         break;
