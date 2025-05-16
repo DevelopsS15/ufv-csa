@@ -6,7 +6,7 @@ import {
   Routes
 } from "discord-api-types/v10";
 import { NextResponse } from "next/server";
-import { AppAbbreviationName, AppRoomName } from "~/app/(site)/config";
+import { AppAbbreviationName, AppLogoBlendedGreenDecimal, AppRoomName } from "~/app/(site)/config";
 import { verifyInteractionRequest } from "~/app/(site)/utils";
 import { discordAPIRest } from "../../../utils";
 import { writeServerClient } from "~/app/(site)/serverClient";
@@ -89,13 +89,13 @@ export async function POST(request: Request) {
 
         const roomItems = isRoomOpen
           ? {
-              emoji: "🔓",
-              statusPastTense: "opened",
-            }
+            emoji: "🔓",
+            statusPastTense: "opened",
+          }
           : {
-              emoji: "🔐",
-              statusPastTense: "closed",
-            };
+            emoji: "🔐",
+            statusPastTense: "closed",
+          };
 
         await discordAPIRest.post(
           Routes.interactionCallback(interaction.id, interaction.token),
@@ -117,13 +117,22 @@ export async function POST(request: Request) {
               }
             }
           );
+
+          const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"}://${process.env.SITE_DOMAIN}`;
+
           await Promise.all([
             discordAPIRest.post(
               Routes.channelMessages(DISCORD_SCC_ROOM_CHANNEL_ID),
               {
                 body: {
                   enforce_nonce: true,
-                  content: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the ${AppRoomName}`,
+                  embeds: [{
+                    description: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the [${AppRoomName}](${siteHost}/scc)`,
+                    color: AppLogoBlendedGreenDecimal,
+                    image: {
+                      url: `${siteHost}/CSA_SCC_Room_${isRoomOpen ? "Open" : "Closed"}.png`,
+                    }
+                  }]
                 },
                 headers: {
                   "X-Nonce": uuidv4(),
