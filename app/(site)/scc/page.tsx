@@ -1,6 +1,6 @@
 
 import { AppFullName, AppRoomName } from "../config";
-import { Metadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
 import { getLatestRoomStatus } from "~/app/sanity/lib/query";
 import InternalLink from "../components/General/InternalLink";
 import { cn } from "../utils";
@@ -11,10 +11,37 @@ const CSA_SCC_Room = dynamic(
     { ssr: false }
 );
 
-export const metadata: Metadata = {
-    title: "Student Computing Centre (SCC)",
-    description: `The ${AppFullName} manages the Student Computing Centre (SCC) in room D224 at the Abbotsford campus which has numerous resources for students to take advantage of.`
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"
+  }://${process.env.SITE_DOMAIN}`;
+    const metadataTitle = `${AppRoomName} (SCC)`;
+    const metadataDescription = `The SCC is located in room D224 on the Abbotsford campus, and is managed by the ${AppFullName}.`;
+    const baseMetaData: Metadata = {
+        title: metadataTitle,
+        description: metadataDescription,
+        openGraph: {
+            title: metadataTitle,
+            description: metadataDescription,
+            url: `${siteHost}/scc`,
+            siteName: AppFullName,
+        }
+    };
+    try {
+        const roomStatus = await getLatestRoomStatus();
+        const isRoomOpen = roomStatus.length > 0 ? roomStatus[0].status : false;
+
+        if (baseMetaData.openGraph) {
+            baseMetaData.openGraph.images = {
+                url: `${siteHost}/CSA_SCC_Room_${isRoomOpen ? "Open" : "Closed"}.png`,
+                alt: `The ${AppRoomName} (SCC) 3D model`,
+            }; 
+        }
+
+        return baseMetaData;
+    } catch (e) {
+        return baseMetaData;
+    }
+}
 
 export default async function Page() {
     const roomStatus = await getLatestRoomStatus();
