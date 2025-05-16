@@ -5026,4 +5026,39 @@ export const TimelineItems: TimelineItem[] = [
       </>
     ),
   },
+  {
+    header: "CSA TUTORING RECOGNITION",
+    icon: <LucideAward />,
+    date: "2025-05-15",
+    description: (
+      <>
+        <div>
+          &quot;🎉 A big congratulations to the Computing Student Association @ufvcsa for launching their first-ever tutoring program this past year!<br/><br/>
+ 
+This initiative provided valuable academic support and created a stronger sense of community among students in computing. 💻🤝<br/><br/>
+ 
+A huge thank you to all the students who generously volunteered their time and expertise — your dedication made this program a success! 🌟🙌<br/><br/>
+ 
+Here&apos;s to more great initiatives ahead!&rdquo;
+        </div>
+        <div className="text-sm">
+          <ExternalLink
+            href="https://www.instagram.com/p/DJryC_iSyj_/"
+            target="_blank"
+          >
+            Source: UFV School of Computing Instagram Post
+          </ExternalLink>
+        </div>
+        <div>
+          <Image
+            className="max-h-80 w-auto rounded-md"
+            src={`/History/Events/TutoringRecognitionMay2025/SchoolOfComputingInstagramPost.jpg`}
+            width={720}
+            height={360}
+            alt="Photo shared by School of Computing on May 15, 2025 tagging @ufvcsa. May be a graphic of magazine, poster, card and text that says 'X Thank you! A big congratulations to the Computing Student Association (CSA) for launching their first tutoring program this past . Thank you to the students who volunteered their time and expertise to make the program successful! Ibadatt Aulakh Dewang Marya Sachin Muthayan Nathan Strong Thy Nguyen Samarth Singla Gurpreet Singh Vaibhav Datta Ayush Jain Raghav Sharma Robert Wright Join the CSA discord channel for more information about the program!'."
+          />
+        </div>
+      </>
+    )
+  }
 ];
