@@ -35,7 +35,8 @@ export default function CSA_SCC_Room({ isRoomOpen, className }: { isRoomOpen: bo
         threeSceneRef.current.background = new THREE.Color(0x1e293b)
 
         const camera = new THREE.PerspectiveCamera(75, canvasDimensions.aspect, 0.1, 1000);
-        camera.position.set(3.05, 1.1, 1.185);
+        camera.position.set(2.9, 1.1, 1.05);
+
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setPixelRatio(canvasDimensions.aspect);

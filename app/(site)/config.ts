@@ -7,6 +7,7 @@ export const AppRoomNumber = `D224`;
 export const AppLogoDarkGreen = `#36853f`;
 export const AppLogoLightGreen = `#8fc63d`;
 export const AppLogoBlendedGreen = "#52a040";
+export const AppLogoBlendedGreenDecimal = 5414976;
 export const AppDiscordInviteLink = "https://discord.gg/nu4kTTR";
 export const AppInstagramLink = "https://www.instagram.com/ufvcsa/";
 export const AppLinkedInLink = "https://www.linkedin.com/company/ufvcsa";
