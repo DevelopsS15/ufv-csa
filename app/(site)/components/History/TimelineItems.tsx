@@ -5,6 +5,7 @@ import {
   LucideArmchair,
   LucideAward,
   LucideBookUser,
+  LucideBox,
   LucideBug,
   LucideCalendarClock,
   LucideCalendarDays,
@@ -636,6 +637,29 @@ const ElectionFor2022And2023: TimelineItemVotingViaForm[] = [
 ];
 
 const ElectionFor2024: TimelineItemVotingViaForm[] = [
+  {
+    position: Executive_President_Name,
+    imageFileName: "President.jpg",
+  },
+  {
+    position: Executive_VicePresident_Name,
+    imageFileName: "VicePresident.jpg",
+  },
+  {
+    position: Executive_Secretary_Name,
+    imageFileName: "Secretary.jpg",
+  },
+  {
+    position: Executive_FinanceOfficer_Name,
+    imageFileName: "Treasurer.jpg",
+  },
+  {
+    position: Executive_CommunicationManager_Name,
+    imageFileName: "CommunicationManager.jpg",
+  },
+];
+
+const ElectionFor2025: TimelineItemVotingViaForm[] = [
   {
     position: Executive_President_Name,
     imageFileName: "President.jpg",
@@ -2250,7 +2274,7 @@ export const TimelineItems: TimelineItem[] = [
         </div>
         <Image
           className="block rounded-md"
-          src="/History/ZeldaPushpinMural/ZeldaPushPinMural.jpg"
+          src="/History/Events/ZeldaPushpinMural/ZeldaPushPinMural.jpg"
           width={348}
           height={348}
           alt="Zelda Push Pin Mural"
@@ -4500,7 +4524,6 @@ export const TimelineItems: TimelineItem[] = [
       },
     ],
   },
-  // TODO: Fix display on mobile
   {
     header: "CSA STARTUP HACKATHON",
     date: "2024-05-17",
@@ -5027,19 +5050,41 @@ export const TimelineItems: TimelineItem[] = [
     ),
   },
   {
+    header: "Student Computing Centre (SCC) in 3D",
+    date: "2025-05-13",
+    icon: <LucideBox />,
+    description: (
+      <>
+        <div>
+          The Student Computing Centre (SCC), modelled in 3D by{" "}
+          {Executive_Profile_Samuel_Shull.name}, was designed to indicate the room status, and to highlight the significance of the room, its resources, and the iconic pushpin murals.
+        </div>
+        <div className="mt-2">
+          <Image
+            className="max-h-80 w-auto rounded-md"
+            src={`/History/Events/SCC_3DModel/OpenRoom.png`}
+            width={720}
+            height={360}
+            alt="3D Model of the Student Computing Centre"
+          />
+        </div>
+      </>
+    )
+  },
+  {
     header: "CSA TUTORING RECOGNITION",
     icon: <LucideAward />,
     date: "2025-05-15",
     description: (
       <>
         <div>
-          &quot;🎉 A big congratulations to the Computing Student Association @ufvcsa for launching their first-ever tutoring program this past year!<br/><br/>
- 
-This initiative provided valuable academic support and created a stronger sense of community among students in computing. 💻🤝<br/><br/>
- 
-A huge thank you to all the students who generously volunteered their time and expertise — your dedication made this program a success! 🌟🙌<br/><br/>
- 
-Here&apos;s to more great initiatives ahead!&rdquo;
+          &quot;🎉 A big congratulations to the Computing Student Association @ufvcsa for launching their first-ever tutoring program this past year!<br /><br />
+
+          This initiative provided valuable academic support and created a stronger sense of community among students in computing. 💻🤝<br /><br />
+
+          A huge thank you to all the students who generously volunteered their time and expertise — your dedication made this program a success! 🌟🙌<br /><br />
+
+          Here&apos;s to more great initiatives ahead!&rdquo;
         </div>
         <div className="text-sm">
           <ExternalLink
@@ -5060,5 +5105,88 @@ Here&apos;s to more great initiatives ahead!&rdquo;
         </div>
       </>
     )
-  }
+  },
+  {
+    header: "CSA ELECTIONS 2025",
+    icon: Icons_ElectionResults,
+    date: "2025-05-17",
+    description: (
+      <>
+        <div>
+          After weeks of nominations, campaigns, and voting, we welcomed the
+          2025-2026 {AppAbbreviationName} Executive team.
+        </div>
+        <Carousel className="max-h-96 mt-2">
+          <CarouselPrevious
+            style={{
+              zIndex: 100,
+              marginLeft: 48,
+            }}
+          />
+          <CarouselContent className="max-h-max">
+            {ElectionFor2025.map((positionResults) => (
+              <CarouselItem
+                key={positionResults.position}
+                className="bg-slate-700 text-center rounded-md"
+              >
+                <Image
+                  className="max-h-96 w-auto mx-auto rounded-md"
+                  src={`/History/Events/CSAElections2025/${positionResults.imageFileName}`}
+                  width={720}
+                  height={360}
+                  alt={`${positionResults.position} Results`}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext
+            style={{
+              zIndex: 100,
+              marginRight: 48,
+            }}
+          />
+        </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more election results.
+        </div>
+      </>
+    ),
+  },
+  {
+    header: "2025-2026 EXECUTIVES",
+    date: "2025-05-17",
+    icon: Icons_ExecutiveList,
+    executives: [
+      {
+        name: "Rishab Manocha",
+        linkedInUsername: "mrishab",
+        imageURL: `${Executive_Image_Path}Rishab_Manocha.jpg`,
+        position: Executive_President_Name,
+      },
+      {
+        name: "Gabriel Bousquet",
+        linkedInUsername: "gabriel-bousquet-975619347",
+        imageURL: `${Executive_Image_Path}Gabriel_Bousquet.jpg`,
+        position: Executive_VicePresident_Name,
+      },
+      {
+        name: "Mridul Sharma",
+        linkedInUsername: "mridul-sharma-767678321",
+        imageURL: `${Executive_Image_Path}Mridul_Sharma.jpg`,
+        position: Executive_Secretary_Name,
+      },
+      {
+        name: "Rahool Saran",
+        linkedInUsername: "rahool-saran",
+        imageURL: `${Executive_Image_Path}Rahool_Saran.jpg`,
+        position: Executive_Treasurer_Name,
+      },
+      {
+        name: "Vaibhav Datta",
+        linkedInUsername: "vaibhavdatta",
+        imageURL: `${Executive_Image_Path}Vaibhav_Datta.jpg`,
+        position: Executive_CommunicationManager_Name,
+      },
+    ],
+  },
 ];
