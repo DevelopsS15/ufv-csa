@@ -22,6 +22,7 @@ import { headers } from "next/headers";
 import { Routes } from "discord-api-types/v10";
 import { caching } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
+import z from "zod";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;
@@ -184,7 +185,13 @@ export async function POST(req: NextRequest) {
           marks: {
             link: (props: { children: string[], mark: { href: string; } }) => {
               if (props.children.length === 0) return props.mark.href;
-              return `[${props.children[0]}](${props.mark.href})`;
+              const linkLabel = props.children[0];
+              // If the link is a valid URL, return it as is
+              // Discord automatically converts URLs to clickable links
+              if (z.string().url().safeParse(linkLabel).success) {
+                return props.mark.href;
+              }
+              return `[${linkLabel}](${props.mark.href})`;
             },
           },
         },
@@ -633,12 +640,13 @@ async function HandleSendOrUpdateWebhookMessage({
       logger.debug(
         `Trying to update webhook message for ${bodyType} ${documentId}`
       );
+      const updatedMessageNonce = uuidv4();
       const updatedMessage = (await discordAPIRest.patch(
         Routes.channelMessage(channelId, messageId),
         {
           body,
           headers: {
-            "X-Nonce": uuidv4(),
+            "X-Nonce": updatedMessageNonce,
           },
         }
       )) as { id: string };
@@ -654,12 +662,13 @@ async function HandleSendOrUpdateWebhookMessage({
       logger.debug(
         `Trying to send webhook message for ${bodyType} ${documentId}`
       );
+      const sentMessageNonce = uuidv4();
       const sentMessage = (await discordAPIRest.post(
         Routes.channelMessages(channelId),
         {
           body,
           headers: {
-            "X-Nonce": uuidv4(),
+            "X-Nonce": sentMessageNonce,
           },
         }
       )) as { id: string };
