@@ -161,11 +161,11 @@ export default async function Page() {
           </div>
         </div>
       </div>
-      <div className="bg-slate-700/75">
+      {/* <div className="bg-slate-700/75">
         <div className="w-11/12 max-w-screen-xl mx-auto py-8">
           <ElectionBanner />
         </div>
-      </div>
+      </div> */}
       <div>
         <div className="w-11/12 sm:w-9/12 mx-auto text-center pt-8 pb-2">
           <h1 className="text-3xl font-bold"><a className="underline decoration-2 underline-offset-4" href="/scc">{AppRoomName} (SCC)</a></h1>
