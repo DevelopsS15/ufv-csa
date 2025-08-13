@@ -120,6 +120,8 @@ export async function POST(request: Request) {
 
           const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"}://${process.env.SITE_DOMAIN}`;
 
+          const sccRoomChannelMessageNonce = uuidv4();
+
           await Promise.all([
             discordAPIRest.post(
               Routes.channelMessages(DISCORD_SCC_ROOM_CHANNEL_ID),
@@ -135,7 +137,7 @@ export async function POST(request: Request) {
                   }]
                 },
                 headers: {
-                  "X-Nonce": uuidv4(),
+                  "X-Nonce": sccRoomChannelMessageNonce,
                 },
               }
             ),
@@ -145,6 +147,9 @@ export async function POST(request: Request) {
               status: isRoomOpen,
             }),
           ]);
+
+          const sccRoomChannelConfirmationNonce = uuidv4();
+
           await discordAPIRest.post(
             Routes.webhook(process.env.DISCORD_BOT_ID!, interaction.token),
             {
@@ -154,7 +159,7 @@ export async function POST(request: Request) {
                 enforce_nonce: true,
               },
               headers: {
-                "X-Nonce": uuidv4(),
+                "X-Nonce": sccRoomChannelConfirmationNonce,
               },
             }
           );
@@ -163,6 +168,7 @@ export async function POST(request: Request) {
           return new NextResponse("Success");
         } catch (e) {
           console.error(e);
+          const sccRoomChannelErrorNonce = uuidv4();
           await discordAPIRest.post(
             Routes.webhook(process.env.DISCORD_BOT_ID!, interaction.token),
             {
@@ -172,7 +178,7 @@ export async function POST(request: Request) {
                 enforce_nonce: true,
               },
               headers: {
-                "X-Nonce": uuidv4(),
+                "X-Nonce": sccRoomChannelErrorNonce,
               },
             }
           );
