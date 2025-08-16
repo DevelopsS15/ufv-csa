@@ -1,4 +1,3 @@
-import { SiDiscord } from "@icons-pack/react-simple-icons";
 import { LucideNewspaper } from "lucide-react";
 import { defineField, defineType } from "sanity";
 

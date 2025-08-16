@@ -28,21 +28,21 @@ export default function Footer() {
               href={AppDiscordInviteLink}
               target="_blank"
             >
-              <SiDiscord />
+              <SiDiscord onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
             </Link>
             <Link
               className={FooterSocialMediaClassName}
               target="_blank"
               href={AppLinkedInLink}
             >
-              <SiLinkedin />
+              <SiLinkedin onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
             </Link>
             <Link
               className={FooterSocialMediaClassName}
               href={AppInstagramLink}
               target="_blank"
             >
-              <SiInstagram />
+              <SiInstagram onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
             </Link>
           </div>
         </div>

@@ -5,7 +5,6 @@ import { PortableTextBlock, Image as SanityImageType } from "sanity";
 import { PropsWithChildren } from "react";
 import { MeetingMinutesExecutive } from "../sanity/lib/query";
 import { PortableTextComponents } from "@portabletext/react";
-import { allCampusOptions } from "../sanity/schemas/event";
 import { readClient } from "./client";
 import {
 	type APIChatInputApplicationCommandInteraction,
@@ -13,6 +12,7 @@ import {
 } from "discord-api-types/v10";
 import nacl from "tweetnacl";
 import InternalLink from "./components/General/InternalLink";
+import { allCampusOptions } from "../sanity/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

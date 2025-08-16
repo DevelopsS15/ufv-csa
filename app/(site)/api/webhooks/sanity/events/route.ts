@@ -17,12 +17,12 @@ import {
   NotifyInterestedDiscordMembersAboutEvent,
   discordAPIRest,
 } from "../../../utils";
-import { allCampusOptions } from "~/app/sanity/schemas/event";
 import { headers } from "next/headers";
 import { Routes } from "discord-api-types/v10";
 import { caching } from "cache-manager";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
+import { allCampusOptions } from "~/app/sanity/constants";
 
 const secret = process.env.SANITY_WEBHOOK_MESSAGE_SECRET!;
 const discordChannelIdEvent = process.env.DISCORD_EVENT_CHANNEL_ID!;

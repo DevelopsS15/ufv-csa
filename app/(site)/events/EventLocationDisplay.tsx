@@ -6,7 +6,7 @@ import {
 } from "../utils";
 import InternalLink from "../components/General/InternalLink";
 import React, { ReactNode } from "react";
-import { allCampusOptions } from "~/app/sanity/schemas/event";
+import { allCampusOptions } from "~/app/sanity/constants";
 
 export function EventLocationDisplay({
   event,

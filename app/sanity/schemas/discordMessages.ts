@@ -7,6 +7,7 @@ export default defineType({
   name: "discordMessages",
   title: "Discord Messages",
   type: "document",
+  // @ts-expect-error 
   icon: SiDiscord,
   fields: [
     defineField({

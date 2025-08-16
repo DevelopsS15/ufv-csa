@@ -23,7 +23,6 @@ import {
 } from "@icons-pack/react-simple-icons";
 import { cn } from "./utils";
 import dynamic from "next/dynamic";
-import ElectionBanner from "./components/Home/ElectionBanner";
 import SCCRoomFloorplanLink from "./components/SCCRoomFloorplanLink";
 const CSA_SCC_Room = dynamic(
   () => import('./components/CSA_SCC_Room'),
@@ -257,21 +256,21 @@ export default async function Page() {
               href={AppDiscordInviteLink}
               target="_blank"
             >
-              <SiDiscord className="size-8 fill-inherit" />
+              <SiDiscord className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
             </Link>
             <Link
               className={SocialMediaClassName}
               target="_blank"
               href={AppLinkedInLink}
             >
-              <SiLinkedin className="size-8 fill-inherit" />
+              <SiLinkedin className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
             </Link>
             <Link
               className={SocialMediaClassName}
               href={AppInstagramLink}
               target="_blank"
             >
-              <SiInstagram className="size-8 fill-inherit" />
+              <SiInstagram className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
             </Link>
           </div>
         </div>
