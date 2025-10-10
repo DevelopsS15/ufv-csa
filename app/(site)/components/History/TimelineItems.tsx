@@ -399,6 +399,12 @@ const Executive_Profile_Samuel_Shull = {
   linkedInUsername: "samuels22",
 };
 
+const Executive_Profile_Mridul_Sharma = {
+  name: "Mridul Sharma",
+  linkedInUsername: "mridul-sharma-767678321",
+  imageURL: `${Executive_Image_Path}Mridul_Sharma.jpg`,
+}
+
 //
 //
 //
@@ -680,6 +686,16 @@ const ElectionFor2025: TimelineItemVotingViaForm[] = [
     position: Executive_CommunicationManager_Name,
     imageFileName: "CommunicationManager.jpg",
   },
+];
+
+const ByElectionFor2025: TimelineItemVotingViaForm[] = [
+  {
+    position: Executive_President_Name,
+    imageFileName: "President.jpg",
+  }, {
+    position: Executive_Secretary_Name,
+    imageFileName: "General.jpg",
+  }
 ];
 
 //
@@ -5171,9 +5187,7 @@ export const TimelineItems: TimelineItem[] = [
         position: Executive_VicePresident_Name,
       },
       {
-        name: "Mridul Sharma",
-        linkedInUsername: "mridul-sharma-767678321",
-        imageURL: `${Executive_Image_Path}Mridul_Sharma.jpg`,
+        ...Executive_Profile_Mridul_Sharma,
         position: Executive_Secretary_Name,
       },
       {
@@ -5190,4 +5204,99 @@ export const TimelineItems: TimelineItem[] = [
       },
     ],
   },
+  {
+    header: "UFV HACKATHON 2025",
+    date: "2025-05-30",
+    icon: <LucideKeyboard />,
+    description: (
+      <>
+        <div>
+          In collaboration with CHILLIWACK.TECH and numerous sponsors, the CSA
+          was able to run a Startup Hackathon for students interested in business,
+          user experience, and/or technology. With 5 participants, each team
+          developed a technology-based business plan and project over the span
+          of 24 hours.
+        </div>
+        <div className="my-2">
+          The winning team was &quot;Get Outta Here&quot; with &quot;Circl Up&quot; as the runner-up.
+        </div>
+        <div className="text-sm">
+          <ExternalLink
+            href="https://chilliwack.tech/Hackathon"
+            target="_blank"
+          >
+            Source: Chilliwack.Tech Startup Hackathon
+          </ExternalLink>
+        </div>
+      </>
+    )
+  },
+  {
+    header: "CSA AGM 2025",
+    date: "2025-06-30",
+    icon: <LucideAlbum />,
+    description: (
+      <Image
+        src="/History/Events/CSA_AGM_2025/Promotion.jpg"
+        width={256}
+        height={256}
+        alt="CSA Annual General Meeting Poster"
+      />
+    ),
+  },
+  {
+    header: "CSA BY-ELECTIONS 2025",
+    icon: Icons_ElectionResults,
+    date: "2025-07-25",
+    executives: [
+      {
+        ...Executive_Profile_Mridul_Sharma,
+        position: Executive_President_Name,
+      },
+      {
+        name: "Harjap Singh",
+        position: Executive_Secretary_Name,
+      },
+    ],
+    description: (
+      <>
+        <div>
+          Due to unforeseen circumstances, we held by-elections to fill the vacant President position and to fulfill the Secretary position.
+        </div>
+        <Carousel className="max-h-96 mt-2">
+          <CarouselPrevious
+            style={{
+              zIndex: 100,
+              marginLeft: 48,
+            }}
+          />
+          <CarouselContent className="max-h-max">
+            {ByElectionFor2025.map((positionResults) => (
+              <CarouselItem
+                key={positionResults.position}
+                className="bg-slate-700 text-center rounded-md"
+              >
+                <Image
+                  className="max-h-96 w-auto mx-auto rounded-md"
+                  src={`/History/Events/CSAByElections2025/${positionResults.imageFileName}`}
+                  width={720}
+                  height={360}
+                  alt={`${positionResults.position} Results`}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselNext
+            style={{
+              zIndex: 100,
+              marginRight: 48,
+            }}
+          />
+        </Carousel>
+        <div className="text-sm">
+          Note: Use the arrow buttons to view more election results.
+        </div>
+      </>
+    ),
+  }
 ];
