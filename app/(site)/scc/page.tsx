@@ -1,15 +1,11 @@
 
 import { AppFullName, AppRoomName } from "../config";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import { getLatestRoomStatus } from "~/app/sanity/lib/query";
 import InternalLink from "../components/General/InternalLink";
 import { cn } from "../utils";
-import dynamic from "next/dynamic";
 import SCCRoomFloorplanLink from "../components/SCCRoomFloorplanLink";
-const CSA_SCC_Room = dynamic(
-    () => import('../components/CSA_SCC_Room'),
-    { ssr: false }
-);
+import CSA_SCC_Room from "../components/CSA_SCC_Room";
 
 export async function generateMetadata(): Promise<Metadata> {
     const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"

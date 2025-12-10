@@ -104,7 +104,6 @@ export default defineType({
       description:
         "https://twitter.com/YourUsername. This will be publicly displayed",
       fieldset: "socialMedia",
-      // @ts-expect-error 
       icon: SiX,
     }),
     defineField({
@@ -113,7 +112,6 @@ export default defineType({
       type: "string",
       description: "This will be private",
       fieldset: "socialMedia",
-      // @ts-expect-error 
       icon: SiDiscord,
       validation: (rule) =>
         rule
@@ -126,7 +124,6 @@ export default defineType({
       description: "This will be publicly displayed",
       type: "string",
       fieldset: "socialMedia",
-      // @ts-expect-error 
       icon: SiDiscord,
     }),
     defineField({
@@ -136,7 +133,6 @@ export default defineType({
       description:
         "https://linkedin.com/in/YourUsername. This will be publicly displayed",
       fieldset: "socialMedia",
-      // @ts-expect-error 
       icon: SiLinkedin,
     }),
     defineField({
@@ -146,7 +142,6 @@ export default defineType({
         "https://instagram.com/YourUsername. This will be publicly displayed",
       type: "string",
       fieldset: "socialMedia",
-      // @ts-expect-error 
       icon: SiInstagram,
     }),
   ],

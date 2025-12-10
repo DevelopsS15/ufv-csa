@@ -7,8 +7,6 @@ import {
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "~/app/sanity/schemas";
 import StudioLogo from "./app/(studio)/StudioLogo";
-import { useDocumentOperation } from "sanity";
-import { ConfirmDialogAction } from "./app/sanity/lib/actions/publish/dialog";
 
 const config: WorkspaceOptions = {
   name: "default",

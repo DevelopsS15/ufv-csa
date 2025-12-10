@@ -13,14 +13,14 @@ import { Metadata, ResolvingMetadata } from "next";
 import { AppEmail, AppFullName } from "../../config";
 
 type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
   const announcement = await getAnnouncement(slug);
   if (!announcement) {
     return {
@@ -28,7 +28,7 @@ export async function generateMetadata(
       description: "Unable to find this announcement.",
     };
   }
-  
+
   const previousImages = (await parent).openGraph?.images || [];
   if (announcement.image) {
     previousImages.unshift(
@@ -70,7 +70,7 @@ export async function generateStaticParams() {
 
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 3600; // 1 hour
 export default async function Page({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
   const announcement = await getAnnouncement(slug);
   const baseClassName = "w-11/12 sm:w-9/12 md:w-7/12 py-8 mx-auto";
   if (!announcement) {

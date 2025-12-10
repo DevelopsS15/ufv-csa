@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
-  const reqHeaders = headers();
+  const reqHeaders = await headers();
   try {
     if (reqHeaders.get("authorization") !== process.env.AUTH_TOKEN_UFV_NEWS) {
       return NextResponse.json(

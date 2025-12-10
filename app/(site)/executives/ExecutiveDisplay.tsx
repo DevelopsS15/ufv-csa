@@ -65,7 +65,7 @@ export function ExecutiveDisplay({
         <div className="flex items-center justify-center gap-2">
           {executive.discordUsername && (
             <BasicTooltip content={executive.discordUsername}>
-              <SiDiscord onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
+              <SiDiscord />
             </BasicTooltip>
           )}
           {executive.instagram && (
@@ -73,7 +73,7 @@ export function ExecutiveDisplay({
               target="_blank"
               href={`https://instagram.com/${executive.instagram}`}
             >
-              <SiInstagram onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
+              <SiInstagram />
             </Link>
           )}
           {executive.linkedin && (
@@ -81,7 +81,7 @@ export function ExecutiveDisplay({
               target="_blank"
               href={`https://linkedin.com/in/${executive.linkedin}`}
             >
-              <SiLinkedin onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
+              <SiLinkedin />
             </Link>
           )}
           {executive.twitter && (
@@ -89,7 +89,7 @@ export function ExecutiveDisplay({
               target="_blank"
               href={`https://twitter.com/${executive.twitter}`}
             >
-              <SiX onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>
+              <SiX />
             </Link>
           )}
         </div>

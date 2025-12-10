@@ -3765,7 +3765,6 @@ export const TimelineItems: TimelineItem[] = [
   },
   {
     header: "100 INSTAGRAM FOLLOWERS",
-    // @ts-expect-error
     icon: <SiInstagram />,
     date: "2022-02-28",
     description: <></>,

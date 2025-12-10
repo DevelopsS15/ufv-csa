@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useRef } from "react";
+import React from "react";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
@@ -22,12 +22,8 @@ import {
   SiLinkedin,
 } from "@icons-pack/react-simple-icons";
 import { cn } from "./utils";
-import dynamic from "next/dynamic";
 import SCCRoomFloorplanLink from "./components/SCCRoomFloorplanLink";
-const CSA_SCC_Room = dynamic(
-  () => import('./components/CSA_SCC_Room'),
-  { ssr: false }
-);
+import CSA_SCC_Room from "./components/CSA_SCC_Room";
 
 export default async function Page() {
   const upcomingEvents = await getUpcomingEvents(3);
@@ -256,21 +252,21 @@ export default async function Page() {
               href={AppDiscordInviteLink}
               target="_blank"
             >
-              <SiDiscord className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+              <SiDiscord className="size-8 fill-inherit" />
             </Link>
             <Link
               className={SocialMediaClassName}
               target="_blank"
               href={AppLinkedInLink}
             >
-              <SiLinkedin className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+              <SiLinkedin className="size-8 fill-inherit" />
             </Link>
             <Link
               className={SocialMediaClassName}
               href={AppInstagramLink}
               target="_blank"
             >
-              <SiInstagram className="size-8 fill-inherit" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
+              <SiInstagram className="size-8 fill-inherit" />
             </Link>
           </div>
         </div>

@@ -28,14 +28,14 @@ import { Metadata, ResolvingMetadata } from "next";
 import { AppEmail, AppFullName } from "../../config";
 
 type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
   const event: getEventType = await getEvent(slug);
   if (!event) {
     return {
@@ -83,7 +83,7 @@ export async function generateStaticParams() {
 
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 1800;
 export default async function Page({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
   const event: getEventType = await getEvent(slug);
   if (!event) {
     return (

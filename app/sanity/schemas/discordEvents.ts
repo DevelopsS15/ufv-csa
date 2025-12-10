@@ -7,7 +7,6 @@ export default defineType({
   name: "discordEvents",
   title: "Discord Events",
   type: "document",
-  // @ts-expect-error 
   icon: SiDiscord,
   fields: [
     defineField({

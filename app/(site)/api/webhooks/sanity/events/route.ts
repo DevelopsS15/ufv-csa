@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false });
     }
 
-    const reqHeaders = headers();
+    const reqHeaders = await headers();
     const idempotencyKey = reqHeaders.get("idempotency-key");
     if (typeof idempotencyKey !== `string`) {
       loggerForRoute.error(`No idempotency-key provided`);

@@ -1,41 +1,27 @@
 import { PortableText } from "@portabletext/react";
 import {
   CalculateHourAndMinutesBetweenTwoDates,
-  GetMeetingMinutesCreatedBy,
   GetTimeStringFromDate,
-  getSlugFromDate,
-  getURLForSanityImage,
   longMonthDayYearDateFormatOption,
-  sanityBlocksToText,
   sanityBodyPTComponents,
 } from "../../utils";
 import {
   MeetingMinutesExecutiveAttendance,
-  getAnnouncement,
   getMeetingMinute,
   getMeetingMinutesForStaticParams,
 } from "~/app/sanity/lib/query";
-import {
-  LucideArrowLeft,
-  LucideUserCheck,
-  LucideUserMinus,
-} from "lucide-react";
 import { Separator } from "../../components/UI/separator";
 import InternalLinkButton from "../../components/General/InternalLinkButton";
-import Link from "next/link";
-import BannerImageWithBlurredBackground from "../../components/BannerImageWithBlurredBackground";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import { AppEmail, AppFullName } from "../../config";
 import { ExecutiveAvatar } from "../ExecutiveAvatar";
-import { Image as SanityImageType } from "sanity";
-import Loading from "./loading";
 
 type Props = {
-  params: { date: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ date: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const date = params.date;
+  const { date } = await params;
   const meetingMinute = await getMeetingMinute(date);
 
   if (!meetingMinute) {
@@ -78,7 +64,7 @@ export async function generateStaticParams() {
 
 // export const revalidate = process.env.NODE_ENV === "development" ? 0 : 43_200; // 12 hours
 export default async function Page({ params }: Props) {
-  const { date } = params;
+  const { date } = await params;
   const meetingMinute = await getMeetingMinute(date);
   if (!meetingMinute) {
     return (
@@ -287,8 +273,8 @@ function IndividualMemberPresentDisplay({
 
   const positionOrUnknown: string =
     typeof currentPosition === `object` &&
-    currentPosition !== null &&
-    "position" in currentPosition
+      currentPosition !== null &&
+      "position" in currentPosition
       ? (currentPosition.position as string)
       : "Unknown";
 

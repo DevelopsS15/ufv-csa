@@ -8,7 +8,7 @@ import { NotifyInterestedDiscordMembersAboutEvent } from "../../utils";
 
 export const dynamic = "force-dynamic";
 export async function GET() {
-  const reqHeaders = headers();
+  const reqHeaders = await headers();
   if (
     reqHeaders.get("authorization") !== process.env.AUTH_TOKEN_EVENT_REMINDERS
   ) {

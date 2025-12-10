@@ -56,7 +56,7 @@ export default function Page() {
             target="_blank"
             className={socialMediaLinkClassName}
           >
-            <SiDiscord className="inline" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>{" "}
+            <SiDiscord className="inline" />{" "}
             <span className="underline">
               {AppAbbreviationName} Discord Server
             </span>
@@ -66,7 +66,7 @@ export default function Page() {
             target="_blank"
             className={socialMediaLinkClassName}
           >
-            <SiLinkedin className="inline" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>{" "}
+            <SiLinkedin className="inline" />{" "}
             <span className="underline">ufvcsa</span>
           </Link>
           <Link
@@ -74,7 +74,7 @@ export default function Page() {
             target="_blank"
             className={socialMediaLinkClassName}
           >
-            <SiInstagram className="inline" onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}/>{" "}
+            <SiInstagram className="inline" />{" "}
             <span className="underline">ufvcsa</span>
           </Link>
         </div>
