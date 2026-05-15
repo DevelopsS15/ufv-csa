@@ -293,7 +293,7 @@ export async function POST(req: NextRequest) {
           const discordMessageBody = {
             content: `@everyone\n# [${eventTitle}](${eventDirectLink})`,
             embeds: embeds,
-            enforce_nonce: true,
+            nonce: uuidv4()
           };
 
           const discordEventBody = {
@@ -568,7 +568,7 @@ export async function POST(req: NextRequest) {
             content: `${pingEveryone ? `@everyone\n` : ""}# [${announcementBody?.after.title ?? "No Title"
               }](${eventDirectLink})`,
             embeds: embeds,
-            enforce_nonce: true,
+            nonce: uuidv4()
           };
 
           //
@@ -640,16 +640,9 @@ async function HandleSendOrUpdateWebhookMessage({
       logger.debug(
         `Trying to update webhook message for ${bodyType} ${documentId}`
       );
-      const updatedMessageNonce = uuidv4();
-      const updatedMessage = (await discordAPIRest.patch(
-        Routes.channelMessage(channelId, messageId),
-        {
-          body,
-          headers: {
-            "X-Nonce": updatedMessageNonce,
-          },
-        }
-      )) as { id: string };
+      const updatedMessage = (await discordAPIRest.patch(Routes.channelMessage(channelId, messageId), {
+        body
+      })) as { id: string };
       await writeServerClient
         .patch(messageDocumentId)
         .set({ revisionId: revisionId })
@@ -662,16 +655,9 @@ async function HandleSendOrUpdateWebhookMessage({
       logger.debug(
         `Trying to send webhook message for ${bodyType} ${documentId}`
       );
-      const sentMessageNonce = uuidv4();
-      const sentMessage = (await discordAPIRest.post(
-        Routes.channelMessages(channelId),
-        {
-          body,
-          headers: {
-            "X-Nonce": sentMessageNonce,
-          },
-        }
-      )) as { id: string };
+      const sentMessage = (await discordAPIRest.post(Routes.channelMessages(channelId), {
+        body,
+      })) as { id: string };
       const sentMessageId = sentMessage?.id;
       if (sentMessageId) {
         await writeServerClient.create({

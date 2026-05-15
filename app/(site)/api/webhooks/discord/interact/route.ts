@@ -120,14 +120,12 @@ export async function POST(request: Request) {
 
           const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"}://${process.env.SITE_DOMAIN}`;
 
-          const sccRoomChannelMessageNonce = uuidv4();
-
           await Promise.all([
             discordAPIRest.post(
               Routes.channelMessages(DISCORD_SCC_ROOM_CHANNEL_ID),
               {
                 body: {
-                  enforce_nonce: true,
+                  nonce: uuidv4(),
                   embeds: [{
                     description: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the [${AppRoomName}](${siteHost}/scc)`,
                     color: AppLogoBlendedGreenDecimal,
@@ -135,10 +133,7 @@ export async function POST(request: Request) {
                       url: `${siteHost}/CSA_SCC_Room_${isRoomOpen ? "Open" : "Closed"}.png`,
                     }
                   }]
-                },
-                headers: {
-                  "X-Nonce": sccRoomChannelMessageNonce,
-                },
+                }
               }
             ),
             writeServerClient.create({
@@ -148,19 +143,14 @@ export async function POST(request: Request) {
             }),
           ]);
 
-          const sccRoomChannelConfirmationNonce = uuidv4();
-
           await discordAPIRest.post(
             Routes.webhook(process.env.DISCORD_BOT_ID!, interaction.token),
             {
               body: {
                 content: `You have ${roomItems.statusPastTense} the ${AppRoomName}!`,
                 flags: MessageFlags.Ephemeral,
-                enforce_nonce: true,
-              },
-              headers: {
-                "X-Nonce": sccRoomChannelConfirmationNonce,
-              },
+                nonce: uuidv4(),
+              }
             }
           );
           revalidateTag("roomStatus");
@@ -168,18 +158,15 @@ export async function POST(request: Request) {
           return new NextResponse("Success");
         } catch (e) {
           console.error(e);
-          const sccRoomChannelErrorNonce = uuidv4();
+
           await discordAPIRest.post(
             Routes.webhook(process.env.DISCORD_BOT_ID!, interaction.token),
             {
               body: {
                 content: `:octagonal_sign: Internal App Error. Try again or contact an ${AppAbbreviationName} Executive`,
                 flags: MessageFlags.Ephemeral,
-                enforce_nonce: true,
-              },
-              headers: {
-                "X-Nonce": sccRoomChannelErrorNonce,
-              },
+                nonce: uuidv4(),
+              }
             }
           );
           return new NextResponse("Success");

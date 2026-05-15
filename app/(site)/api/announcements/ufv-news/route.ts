@@ -105,26 +105,17 @@ export async function GET() {
         newsDescriptionSubstring.trim().replace(/<[^>]*>/g, "")
       );
       const discordMessageBody = {
-        enforce_nonce: true,
-        content: `## [${decodedTitle}](${
-          newsData.link
-        })\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${
-          newsData["dc:creator"]
-        } \n\n${decodedDescription}${indexOfTripleDot > -1 ? "..." : ""}${
-          newsData.pingEveryone ? "\n@everyone" : ""
-        }`,
+        nonce: uuidv4(),
+        content: `## [${decodedTitle}](${newsData.link
+          })\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${newsData["dc:creator"]
+          } \n\n${decodedDescription}${indexOfTripleDot > -1 ? "..." : ""}${newsData.pingEveryone ? "\n@everyone" : ""
+          }`,
       };
 
       try {
-        const newsMessageRequest = (await discordAPIRest.post(
-          Routes.channelMessages(process.env.DISCORD_UFV_NEWS_CHANNEL_ID!),
-          {
-            body: discordMessageBody,
-            headers: {
-              "X-Nonce": uuidv4(),
-            },
-          }
-        )) as { id: string };
+        const newsMessageRequest = (await discordAPIRest.post(Routes.channelMessages(process.env.DISCORD_UFV_NEWS_CHANNEL_ID!), {
+          body: discordMessageBody,
+        })) as { id: string };
 
         await writeServerClient.create({
           _type: "ufvUrgentNews",

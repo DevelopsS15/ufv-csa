@@ -158,7 +158,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   }`;
 
   const discordMessageBody = {
-    enforce_nonce: true,
+    nonce: uuidv4(),
     content: `## ${ReminderIntervalBeforeText}${typeOfNotificationText}\n**${
       eventData?.title ?? "Unknown event"
     }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) ${originalEventMessageLink}\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
@@ -169,7 +169,6 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     {
       headers: {
         "X-Audit-Log-Reason": `${typeOfNotificationText} for: ${eventDocumentId}`,
-        "X-Nonce": uuidv4(),
       },
       body: discordMessageBody,
     }
