@@ -10,9 +10,6 @@ export function SanityExecutivePositionsList(props) {
   const [retrievingPositions, setRetrievingPositions] = React.useState<boolean>(true);
 
   React.useEffect(() => {
-    const hasAnyPositions = props.value.filter((item) => item.position && item.position._ref).length > 0;
-    if (!hasAnyPositions) return;
-
     const runAsync = async () => {
       try {
         setRetrievingPositions(true);
