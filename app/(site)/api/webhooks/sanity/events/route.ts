@@ -85,14 +85,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false });
     }
 
-    const getIdempotencyKey = await (await memoryCache).get(idempotencyKey);
+    const memoryCacheInstance = await memoryCache;
+    const getIdempotencyKey = await memoryCacheInstance.get(idempotencyKey);
     if (getIdempotencyKey) {
       loggerForRoute.warn(
         `Already handled idempotency-key provided ${idempotencyKey}`
       );
       return NextResponse.json({ success: false });
     } else {
-      await (await memoryCache).set(idempotencyKey!, true);
+      await memoryCacheInstance.set(idempotencyKey!, true);
     }
 
     const documentType = body.before?._type ?? body.after?._type;
@@ -293,8 +294,22 @@ export async function POST(req: NextRequest) {
           const discordMessageBody = {
             content: `@everyone\n# [${eventTitle}](${eventDirectLink})`,
             embeds: embeds,
-            nonce: uuidv4()
+            // Discord nounces are capped at 25 characters
+            nonce: idempotencyKey.substring(0, 25)
           };
+
+          // Discord events are capped at 1000, but we leave an extra buffer in case.
+          const EVENT_CHARACTER_LIMIT = 950;
+          let eventDescriptionEventLink = `\n\n[View Event](${eventDirectLink})`;
+          const eventDescriptionRemainingLength = EVENT_CHARACTER_LIMIT - eventDescriptionEventLink.length;
+
+          // Ensure the event description does not exceed Discord's character limit for events, while also leaving room for the "View Event" link.
+          // If truncated, add an ellipses to highlight there is more to read.
+          let eventDescription = textDescription.substring(0, eventDescriptionRemainingLength)
+          if (textDescription.length > eventDescriptionRemainingLength) {
+            eventDescription += "...";
+          }
+          eventDescription += eventDescriptionEventLink;
 
           const discordEventBody = {
             name: eventTitle,
@@ -302,10 +317,7 @@ export async function POST(req: NextRequest) {
             privacy_level: 2,
             scheduled_start_time: body.after.startDate,
             scheduled_end_time: body.after.endDate,
-            description:
-              textDescription.length > 975
-                ? `${textDescription.substring(0, 975)}...`
-                : textDescription,
+            description: eventDescription,
             entity_type: 3,
             entity_metadata: {
               location: eventLocationString ?? "Unknown",
@@ -568,7 +580,8 @@ export async function POST(req: NextRequest) {
             content: `${pingEveryone ? `@everyone\n` : ""}# [${announcementBody?.after.title ?? "No Title"
               }](${eventDirectLink})`,
             embeds: embeds,
-            nonce: uuidv4()
+            // Discord nounces are capped at 25 characters
+            nonce: idempotencyKey.substring(0, 25)
           };
 
           //
