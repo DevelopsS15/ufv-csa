@@ -22,12 +22,14 @@ export default defineType({
     defineField({
       name: "title",
       title: "Title",
+      description: "If the event may reoccur under the same name, include the month and/or year (e.g. '2026 AGM' or 'June 2026 ICPC Contest')",
       type: "string",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug (URL Path)",
+      description: "To ensure this is unique, we recommend using the title and appending the year and/or month (e.g., '2026-06-event-title').",
       type: "slug",
       options: {
         source: "title",
@@ -168,8 +170,8 @@ export default defineType({
           typeof title === `string` && title.length > 1 ? title : "No name",
         subtitle: isValidDate
           ? `${startDateInstance.toDateString()} @ ${GetTimeStringFromDate(
-              startDateInstance
-            )}`
+            startDateInstance
+          )}`
           : "Date: Unknown",
         media: image ?? LucideCalendarRange,
       };
