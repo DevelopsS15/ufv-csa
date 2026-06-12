@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
 
     const reqHeaders = await headers();
     const idempotencyKey = reqHeaders.get("idempotency-key");
-    if (typeof idempotencyKey !== `string`) {
+    if (typeof idempotencyKey !== `string` || idempotencyKey.length === 0) {
       loggerForRoute.error(`No idempotency-key provided`);
       return NextResponse.json({ success: false });
     }
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       loggerForRoute.warn(
         `Already handled idempotency-key provided ${idempotencyKey}`
       );
-      return NextResponse.json({ success: false });
+      return NextResponse.json({ success: true });
     } else {
       await memoryCacheInstance.set(idempotencyKey!, true);
     }
@@ -291,11 +291,13 @@ export async function POST(req: NextRequest) {
           }
 
           const eventTitle = body?.after.title ?? "No Title";
+          // https://docs.discord.com/developers/resources/message#create-message
           const discordMessageBody = {
             content: `@everyone\n# [${eventTitle}](${eventDirectLink})`,
             embeds: embeds,
             // Discord nounces are capped at 25 characters
-            nonce: idempotencyKey.substring(0, 25)
+            nonce: idempotencyKey.substring(0, 25),
+            enforce_nonce: true
           };
 
           // Discord events are capped at 1000, but we leave an extra buffer in case.
@@ -418,6 +420,7 @@ export async function POST(req: NextRequest) {
                       .join("\n")}\n`,
                     typeOfNotification: "update",
                     eventData: body.after,
+                    revisionId: revisionId!,
                   });
                 loggerForRoute.info(
                   `Updating Discord Event notification: ${statusOfNotification}`
@@ -576,12 +579,14 @@ export async function POST(req: NextRequest) {
 
           const pingEveryone = announcementBody.after.pingEveryone;
 
+          // https://docs.discord.com/developers/resources/message#create-message
           const discordMessageBody = {
             content: `${pingEveryone ? `@everyone\n` : ""}# [${announcementBody?.after.title ?? "No Title"
               }](${eventDirectLink})`,
             embeds: embeds,
             // Discord nounces are capped at 25 characters
-            nonce: idempotencyKey.substring(0, 25)
+            nonce: idempotencyKey.substring(0, 25),
+            enforce_nonce: true
           };
 
           //

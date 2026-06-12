@@ -20,9 +20,8 @@ export function GetDiscordTimestampString(
   date: string | Date,
   style: "t" | "T" | "d" | "D" | "f" | "F" | "R" | "" = ""
 ) {
-  return `<t:${Math.round(new Date(date).getTime() / 1000)}${
-    style.length > 0 ? `:${style}` : ""
-  }>`;
+  return `<t:${Math.round(new Date(date).getTime() / 1000)}${style.length > 0 ? `:${style}` : ""
+    }>`;
 }
 
 export async function NotifyInterestedDiscordMembersAboutEvent({
@@ -32,6 +31,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   eventData,
   typeOfNotification,
   customMessageContents,
+  revisionId,
 }: {
   discordEventId: string;
   eventDocumentId: string;
@@ -40,15 +40,16 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     discordEventDocumentId: string;
     reminderInterval: string;
     previousReminders:
-      | {
-          month?: string | undefined;
-          week?: string | undefined;
-          day?: string | undefined;
-        }
-      | undefined;
+    | {
+      month?: string | undefined;
+      week?: string | undefined;
+      day?: string | undefined;
+    }
+    | undefined;
   };
   typeOfNotification: "reminder" | "update";
   customMessageContents?: string;
+  revisionId: string;
 }) {
   const typeOfNotificationText = CapitalizeFirstLetter(typeOfNotification);
   const allInterestedUserIds: string[] = [];
@@ -56,10 +57,9 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   // Fetch all interested users via pagination (Discord Limitation)
   do {
     const getInterestedUsersRequest = await discordAPIRest.get(
-      `/${
-        Routes.guildScheduledEventUsers(discordServerId!, discordEventId) +
-        "?with_member=true" +
-        (nextPaginationUserId ? `&after=${nextPaginationUserId}` : "")
+      `/${Routes.guildScheduledEventUsers(discordServerId!, discordEventId) +
+      "?with_member=true" +
+      (nextPaginationUserId ? `&after=${nextPaginationUserId}` : "")
       }`
     );
 
@@ -127,17 +127,13 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     );
   }
 
-  const eventDiscordMessage = await writeServerClient.fetch<
-    | {
-        discordMessageId: string;
-      }
-    | undefined
-  >(
+  const eventDiscordMessage = await writeServerClient.fetch<{
+    discordMessageId: string;
+  } | undefined>(
     groq`*[_type == "discordMessages" && eventDocumentId._ref == $eventDocument][0]`,
     {
       eventDocument: eventDocumentId,
-    }
-  );
+    });
 
   // Send notification Discord message
   const startDateSeconds = Math.round(
@@ -145,7 +141,7 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
   );
   const customMessageContentsWithLineBreak =
     typeof customMessageContents === `string` &&
-    customMessageContents.length > 0
+      customMessageContents.length > 0
       ? `${customMessageContents}\n`
       : "";
 
@@ -153,15 +149,15 @@ export async function NotifyInterestedDiscordMembersAboutEvent({
     typeof eventReminder?.reminderInterval === `string`
       ? `${CapitalizeFirstLetter(eventReminder?.reminderInterval)} before `
       : "";
-  const originalEventMessageLink = `https://discord.com/channels/${discordServerId}/${discordChannelIdEvent}/${
-    eventDiscordMessage?.discordMessageId ?? ""
-  }`;
+  const originalEventMessageLink = `https://discord.com/channels/${discordServerId}/${discordChannelIdEvent}/${eventDiscordMessage?.discordMessageId ?? ""}`;
 
+  // https://docs.discord.com/developers/resources/message#create-message
   const discordMessageBody = {
-    nonce: uuidv4(),
-    content: `## ${ReminderIntervalBeforeText}${typeOfNotificationText}\n**${
-      eventData?.title ?? "Unknown event"
-    }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) ${originalEventMessageLink}\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
+    // Discord nonces are capped at 25 characters. This allows for event message update and this new message 
+    nonce: `evtalrt:${revisionId.substring(0, 17)}`,
+    enforce_nonce: true,
+    content: `## ${ReminderIntervalBeforeText}${typeOfNotificationText}\n**${eventData?.title ?? "Unknown event"
+      }** is on <t:${startDateSeconds}> (<t:${startDateSeconds}:R>) ${originalEventMessageLink}\n${customMessageContentsWithLineBreak}${discordServerInvite}?event=${discordEventId}\n|| <@&${eventReminderRoleId}> ||`,
   };
 
   const newReminderMessageRequest = await discordAPIRest.post(

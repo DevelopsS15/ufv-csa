@@ -121,11 +121,14 @@ export async function POST(request: Request) {
           const siteHost = `http${process.env.NODE_ENV === "development" ? "" : "s"}://${process.env.SITE_DOMAIN}`;
 
           await Promise.all([
+            // https://docs.discord.com/developers/resources/message#create-message
             discordAPIRest.post(
               Routes.channelMessages(DISCORD_SCC_ROOM_CHANNEL_ID),
               {
                 body: {
-                  nonce: uuidv4(),
+                  // Discord nonces are capped at 25 characters.
+                  nonce: uuidv4().substring(0, 25),
+                  enforce_nonce: true,
                   embeds: [{
                     description: `${roomItems.emoji}: <@${discordUser.id}> has ${roomItems.statusPastTense} the [${AppRoomName}](${siteHost}/scc)`,
                     color: AppLogoBlendedGreenDecimal,
@@ -149,7 +152,9 @@ export async function POST(request: Request) {
               body: {
                 content: `You have ${roomItems.statusPastTense} the ${AppRoomName}!`,
                 flags: MessageFlags.Ephemeral,
-                nonce: uuidv4(),
+                // Discord nonces are capped at 25 characters.
+                nonce: uuidv4().substring(0, 25),
+                enforce_nonce: true,
               }
             }
           );
@@ -165,7 +170,9 @@ export async function POST(request: Request) {
               body: {
                 content: `:octagonal_sign: Internal App Error. Try again or contact an ${AppAbbreviationName} Executive`,
                 flags: MessageFlags.Ephemeral,
-                nonce: uuidv4(),
+                // Discord nonces are capped at 25 characters.
+                nonce: uuidv4().substring(0, 25),
+                enforce_nonce: true,
               }
             }
           );

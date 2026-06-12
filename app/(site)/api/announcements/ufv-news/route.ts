@@ -81,17 +81,12 @@ export async function GET() {
     for (let index = ufvFeedItems.length - 1; index >= 0; index--) {
       const newsData = ufvFeedItems[index];
       // Check if already posted
-      if (
-        getLatestUFVNewsDocuments.find(
-          (newsDocument) => newsDocument.newsUrl === newsData.link
-        )
-      ) {
+      const alreadyPosted = getLatestUFVNewsDocuments.find((newsDocument) => newsDocument.newsUrl === newsData.link);
+      if (alreadyPosted) {
         continue;
       }
 
-      const publishedDateSeconds = Math.round(
-        new Date(newsData.pubDate).getTime() / 1000
-      );
+      const publishedDateSeconds = Math.round(new Date(newsData.pubDate).getTime() / 1000);
 
       const newsDescription = newsData.description;
       const indexOfTripleDot = newsDescription.indexOf("...");
@@ -101,15 +96,16 @@ export async function GET() {
       );
 
       const decodedTitle = he.decode(newsData.title);
-      const decodedDescription = he.decode(
-        newsDescriptionSubstring.trim().replace(/<[^>]*>/g, "")
-      );
+      const decodedDescription = he.decode(newsDescriptionSubstring.trim().replace(/<[^>]*>/g, ""));
+      const newsId = newsData.guid["#text"];
+      // https://docs.discord.com/developers/resources/message#create-message
       const discordMessageBody = {
-        nonce: uuidv4(),
-        content: `## [${decodedTitle}](${newsData.link
-          })\n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${newsData["dc:creator"]
-          } \n\n${decodedDescription}${indexOfTripleDot > -1 ? "..." : ""}${newsData.pingEveryone ? "\n@everyone" : ""
-          }`,
+        // Discord nonces are capped at 25 characters. Avoids the same link being posted twice in one cron cycle.
+        nonce: `${newsId.substring(newsId.length - 20)}`,
+        enforce_nonce: true,
+        content: `## [${decodedTitle}](${newsData.link})
+        \n:calendar_spiral: <t:${publishedDateSeconds}> (<t:${publishedDateSeconds}:R>)\n:writing_hand: ${newsData["dc:creator"]}
+        \n${decodedDescription}${indexOfTripleDot > -1 ? "..." : ""}${newsData.pingEveryone ? "\n@everyone" : ""}`,
       };
 
       try {
@@ -133,9 +129,7 @@ export async function GET() {
             )
           );
         } catch (e) {
-          logger.info(
-            `Cross-posted ${newsData.title} to all following channels`
-          );
+          logger.info(`Cross-posted '${newsData.title}' to all following channels`);
         }
       } catch (e) {
         logger.error(`Unable to post discord message for ${newsData.title}`);

@@ -115,6 +115,7 @@ export async function GET() {
             },
             eventData,
             typeOfNotification: "reminder",
+            revisionId: eventDocumentIdRef!,
           });
 
         if (statusOfNotification)
