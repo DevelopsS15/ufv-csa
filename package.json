@@ -8,6 +8,17 @@
     "lint": "next lint",
     "postbuild": "next-sitemap"
   },
+  "overrides": {
+    "@sanity/uuid": {
+      "uuid": "11.1.1"
+    },
+    "next": {
+      "postcss": "8.5.28"
+    },
+    "styled-components": {
+      "postcss": "8.5.28"
+    }
+  },
   "dependencies": {
     "@discordjs/rest": "^2.6.1",
     "@icons-pack/react-simple-icons": "^9.4.0",
@@ -43,12 +54,12 @@
     "cmdk": "^0.2.1",
     "discord-api-types": "^0.37.79",
     "embla-carousel-react": "^8.0.0",
-    "fast-xml-parser": "^4.4.1",
+    "fast-xml-parser": "^5.11.1",
     "groq": "^3.31.0",
     "he": "^1.2.0",
     "lucide-react": "^0.349.0",
     "micromatch": "^4.0.8",
-    "next": "^15.5.18",
+    "next": "^15.5.25",
     "next-sanity": "11.6.10",
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.2.1",
@@ -56,15 +67,15 @@
     "react": "^18.3.1",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.3.1",
-    "sanity": "^4.21.0",
-    "sharp": "^0.33.3",
+    "sanity": "^4.22.1",
+    "sharp": "^0.35.4",
     "simple-icons": "^11.7.0",
     "sonner": "^1.4.3",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.176.0",
     "tweetnacl": "^1.0.3",
-    "uuid": "^10.0.0",
+    "uuid": "11.1.1",
     "ws": "^8.18.0",
     "zod": "^3.22.4"
   },
@@ -78,7 +89,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^9.33.0",
     "eslint-config-next": "^15.4.6",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.28",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.2"
   }
