@@ -16,7 +16,7 @@
       "postcss": "8.5.28"
     },
     "styled-components": {
-      "postcss": "8.5.29"
+      "postcss": "8.5.28"
     }
   },
   "dependencies": {
