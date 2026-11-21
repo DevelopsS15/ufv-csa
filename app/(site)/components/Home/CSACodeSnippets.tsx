@@ -2,8 +2,8 @@ import {
   SiCHex,
   SiCplusplus,
   SiCplusplusHex,
-  SiCss3,
-  SiCss3Hex,
+  SiCss,
+  SiCssHex,
   SiDart,
   SiDartHex,
   SiDocker,
@@ -55,6 +55,7 @@ import {
   AppLogoBlendedGreen,
 } from "../../config";
 import Image from "next/image";
+import { JSX } from "react/jsx-runtime";
 
 // TODO: Add some networking/security -based code segments (NGINX)
 export const CSACodeSnippets: {
@@ -107,8 +108,8 @@ export const CSACodeSnippets: {
     {
       language: "css",
       languageFullName: "CSS",
-      icon: <SiCss3 />,
-      languageThemeColor: SiCss3Hex,
+      icon: <SiCss />,
+      languageThemeColor: SiCssHex,
       code: `#Association{\n\tcontent: "${AppFullName}";\n}`,
     },
     {

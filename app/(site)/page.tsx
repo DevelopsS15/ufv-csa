@@ -18,12 +18,12 @@ import { CodingTypeAnimation } from "./components/Home/CodingTypeAnimation";
 import Link from "next/link";
 import {
   SiDiscord,
-  SiInstagram,
-  SiLinkedin,
+  SiInstagram
 } from "@icons-pack/react-simple-icons";
 import { cn } from "./utils";
 import SCCRoomFloorplanLink from "./components/SCCRoomFloorplanLink";
 import CSA_SCC_Room from "./components/CSA_SCC_Room";
+import LinkedIn from "./components/icons/LinkedIn";
 
 export default async function Page() {
   const upcomingEvents = await getUpcomingEvents(3);
@@ -259,7 +259,7 @@ export default async function Page() {
               target="_blank"
               href={AppLinkedInLink}
             >
-              <SiLinkedin className="size-8 fill-inherit" />
+              <LinkedIn />
             </Link>
             <Link
               className={SocialMediaClassName}

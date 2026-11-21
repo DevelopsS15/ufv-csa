@@ -4,13 +4,13 @@ import { cn, getURLForSanityImage } from "../utils";
 import {
   SiDiscord,
   SiInstagram,
-  SiLinkedin,
   SiX,
 } from "@icons-pack/react-simple-icons";
 import BasicTooltip from "../components/General/Tooltip";
 import Link from "next/link";
 import { LucideUser2 } from "lucide-react";
 import { Skeleton } from "../components/UI/skeleton";
+import LinkedIn from "../components/icons/LinkedIn";
 
 export function ExecutiveDisplay({
   executive,
@@ -81,7 +81,7 @@ export function ExecutiveDisplay({
               target="_blank"
               href={`https://linkedin.com/in/${executive.linkedin}`}
             >
-              <SiLinkedin />
+              <LinkedIn />
             </Link>
           )}
           {executive.twitter && (

@@ -41,7 +41,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../UI/carousel";
-import { ReactNode } from "react";
+import { JSX, ReactNode } from "react";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
