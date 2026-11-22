@@ -66,7 +66,7 @@ export default function Page() {
             target="_blank"
             className={socialMediaLinkClassName}
           >
-            <LinkedIn className="inline" />{" "}
+            <LinkedIn className="inline" style={{fill: "currentColor"}} width={24} height={24} />{" "}
             <span className="underline">ufvcsa</span>
           </Link>
           <Link

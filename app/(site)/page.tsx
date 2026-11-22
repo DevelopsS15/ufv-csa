@@ -259,7 +259,7 @@ export default async function Page() {
               target="_blank"
               href={AppLinkedInLink}
             >
-              <LinkedIn />
+              <LinkedIn className="size-8 fill-inherit"/>
             </Link>
             <Link
               className={SocialMediaClassName}
