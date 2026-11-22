@@ -1,7 +1,6 @@
 import {
   SiDiscord,
-  SiInstagram,
-  SiLinkedin,
+  SiInstagram
 } from "@icons-pack/react-simple-icons";
 import Link from "next/link";
 import {
@@ -16,6 +15,7 @@ import {
 import { LucideMail, LucideMapPin } from "lucide-react";
 import DiscordWidget from "./DiscordWidget";
 import { Metadata } from "next";
+import LinkedIn from "../components/icons/LinkedIn";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -66,7 +66,7 @@ export default function Page() {
             target="_blank"
             className={socialMediaLinkClassName}
           >
-            <SiLinkedin className="inline" />{" "}
+            <LinkedIn className="inline" style={{fill: "currentColor"}} width={24} height={24} />{" "}
             <span className="underline">ufvcsa</span>
           </Link>
           <Link

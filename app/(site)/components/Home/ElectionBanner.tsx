@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../utils";
 import { Progress } from "../UI/progress";
-import React from "react";
+import React, { JSX } from "react";
 import { AppDiscordInviteLink, AppFullName } from "../../config";
 import InternalLinkButton from "../General/InternalLinkButton";
 import BasicTooltip from "../General/Tooltip";

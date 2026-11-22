@@ -2,12 +2,12 @@ import { defineField, defineType } from "sanity";
 import {
   SiDiscord,
   SiInstagram,
-  SiLinkedin,
-  SiX,
+  SiX
 } from "@icons-pack/react-simple-icons";
 import { LucideUserSquare2, LucideUsersRound } from "lucide-react";
 import { defaultSanityDateTimeFormatOptions } from "../lib/utils";
 import { SanityExecutivePositionsList } from "../lib/components/SanityExecutivePositionsList";
+import LinkedIn from "~/app/(site)/components/icons/LinkedIn";
 
 export default defineType({
   name: "executives",
@@ -133,7 +133,7 @@ export default defineType({
       description:
         "https://linkedin.com/in/YourUsername. This will be publicly displayed",
       fieldset: "socialMedia",
-      icon: SiLinkedin,
+      icon: LinkedIn,
     }),
     defineField({
       name: "instagram",

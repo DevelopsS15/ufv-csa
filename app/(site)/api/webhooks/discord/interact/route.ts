@@ -158,7 +158,7 @@ export async function POST(request: Request) {
               }
             }
           );
-          revalidateTag("roomStatus");
+          revalidateTag("roomStatus", { expire: 60 });
           revalidatePath("/api/room-status", "page");
           return new NextResponse("Success");
         } catch (e) {

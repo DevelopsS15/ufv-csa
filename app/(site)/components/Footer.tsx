@@ -1,9 +1,6 @@
 import Link from "next/link";
-import {
-  SiDiscord,
-  SiInstagram,
-  SiLinkedin,
-} from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiInstagram } from "@icons-pack/react-simple-icons";
+import LinkedIn from "./icons/LinkedIn";
 import {
   AppAbbreviationName,
   AppDiscordInviteLink,
@@ -35,7 +32,7 @@ export default function Footer() {
               target="_blank"
               href={AppLinkedInLink}
             >
-              <SiLinkedin />
+              <LinkedIn style={{ fill: "currentColor" }} width={24} height={24}  />
             </Link>
             <Link
               className={FooterSocialMediaClassName}

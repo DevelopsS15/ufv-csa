@@ -10,6 +10,7 @@ const nextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
+    qualities: [75, 100]
   },
   experimental: {
     taint: true,

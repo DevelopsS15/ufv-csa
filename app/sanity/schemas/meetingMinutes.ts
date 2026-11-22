@@ -1,6 +1,5 @@
 import { LucideBookMarked, LucideUser2 } from "lucide-react";
-import { SanityDocument } from "next-sanity";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, SanityDocument } from "sanity";
 import { AreDatesTheSame, GetTimeStringFromDate } from "~/app/(site)/utils";
 import { defaultSanityDateTimeFormatOptions } from "../lib/utils";
 

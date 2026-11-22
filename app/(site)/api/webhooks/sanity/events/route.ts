@@ -123,26 +123,26 @@ export async function POST(req: NextRequest) {
       case "event":
         parentStaleRoute = "events";
         revalidatePath("/", "page");
-        revalidateTag("events");
+        revalidateTag("events", { expire: 60 });
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "meetingMinutes":
         parentStaleRoute = "minutes";
-        revalidateTag("meetingMinutes");
+        revalidateTag("meetingMinutes", { expire: 60 });
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "announcement":
         parentStaleRoute = "announcements";
-        revalidateTag("announcements");
+        revalidateTag("announcements", { expire: 60 });
         revalidatePath("/api/announcements/latest", "page");
         revalidatePath(`/${parentStaleRoute}/${staleRouteSlug}`, "page");
         break;
       case "executives":
-        revalidateTag("executives");
+        revalidateTag("executives", { expire: 60 });
         parentStaleRoute = "executives";
         break;
       case "roomStatus":
-        revalidateTag("roomStatus");
+        revalidateTag("roomStatus", { expire: 60 });
         revalidatePath("/", "page");
         revalidatePath("/scc", "page");
         revalidatePath("/api/room-status", "page");
